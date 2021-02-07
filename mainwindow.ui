@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>505</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>640</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu_flie">
+    <property name="title">
+     <string>文件</string>
+    </property>
+    <widget class="QMenu" name="menu_sample">
+     <property name="title">
+      <string>示例</string>
+     </property>
+     <addaction name="action_sample_1"/>
+     <addaction name="action_sample_2"/>
+     <addaction name="action_sample_3"/>
+     <addaction name="action_sample_4"/>
+    </widget>
+    <addaction name="menu_sample"/>
+    <addaction name="action_open"/>
+    <addaction name="action_close"/>
+   </widget>
+   <widget class="QMenu" name="menu_help">
+    <property name="title">
+     <string>帮助</string>
+    </property>
+    <addaction name="action_about"/>
+   </widget>
+   <addaction name="menu_flie"/>
+   <addaction name="menu_help"/>
+  </widget>
+  <action name="action_open">
+   <property name="text">
+    <string>打开</string>
+   </property>
+  </action>
+  <action name="action_close">
+   <property name="text">
+    <string>关闭</string>
+   </property>
+  </action>
+  <action name="action_sample_1">
+   <property name="text">
+    <string>超级玛丽</string>
+   </property>
+  </action>
+  <action name="action_sample_2">
+   <property name="text">
+    <string>猫和老鼠</string>
+   </property>
+  </action>
+  <action name="action_sample_3">
+   <property name="text">
+    <string>坦克大战</string>
+   </property>
+  </action>
+  <action name="action_sample_4">
+   <property name="text">
+    <string>超时空要塞</string>
+   </property>
+  </action>
+  <action name="action_about">
+   <property name="text">
+    <string>关于</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

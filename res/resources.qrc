@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/game">
+        <file>../games/CatAndMouse.nes</file>
+        <file>../games/MacrossSeries.nes</file>
+        <file>../games/SuperMario.nes</file>
+        <file>../games/Tanks.nes</file>
+    </qresource>
+</RCC>
