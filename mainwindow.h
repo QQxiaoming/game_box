@@ -21,6 +21,9 @@ class NESThread : public QThread
 public:
     explicit NESThread(QObject *parent = nullptr,void* buff = nullptr,QString pszFileName = "");
     ~NESThread();
+
+    void setMute(bool mute);
+
     int InfoNES_OpenRom(const char *pszFileName);
     int InfoNES_ReadRom(void *buf, unsigned int len);
     void InfoNES_CloseRom(void);
@@ -48,6 +51,7 @@ private:
     QAudioFormat *audioFormat = nullptr;
     uchar *audio_buff = nullptr;
     QIODevice *audio_dev = nullptr;
+    bool m_mute = false;
 };
 
 
@@ -68,6 +72,7 @@ private slots:
     void timer_repaint();
     void open_triggered();
     void close_triggered();
+    void mute_triggered();
     void about_triggered();
     void sample_1_triggered();
     void sample_2_triggered();
