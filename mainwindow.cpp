@@ -33,14 +33,14 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    delete qImg;
-    delete[] buff;
-    delete ui;
     if(nesThread != nullptr){
         delete nesThread;
         nesThread = nullptr;
     }
+    delete qImg;
+    delete[] buff;
     delete timer;
+    delete ui;
 }
 
 void MainWindow::sample_1_triggered()
@@ -141,11 +141,11 @@ void MainWindow::keyPressEvent(QKeyEvent * event) {
         return;
     }
     switch (event->key()) {
-        case Qt::Key_Z: {
+        case Qt::Key_Period: {
             nesThread->pdwPad1 |= (1UL<<0);
             break;
         }
-        case Qt::Key_X: {
+        case Qt::Key_Slash: {
             nesThread->pdwPad1 |= (1UL<<1);
             break;
         }
@@ -157,20 +157,52 @@ void MainWindow::keyPressEvent(QKeyEvent * event) {
             nesThread->pdwPad1 |= (1UL<<3);
             break;
         }
-        case Qt::Key_Up: {
+        case Qt::Key_W: {
             nesThread->pdwPad1 |= (1UL<<4);
             break;
         }
-        case Qt::Key_Down: {
+        case Qt::Key_S: {
             nesThread->pdwPad1 |= (1UL<<5);
             break;
         }
-        case Qt::Key_Left: {
+        case Qt::Key_A: {
             nesThread->pdwPad1 |= (1UL<<6);
             break;
         }
-        case Qt::Key_Right: {
+        case Qt::Key_D: {
             nesThread->pdwPad1 |= (1UL<<7);
+            break;
+        }
+        case Qt::Key_1: {
+            nesThread->pdwPad2 |= (1UL<<0);
+            break;
+        }
+        case Qt::Key_2: {
+            nesThread->pdwPad2 |= (1UL<<1);
+            break;
+        }
+        case Qt::Key_Plus: {
+            nesThread->pdwPad2 |= (1UL<<2);
+            break;
+        }
+        case Qt::Key_Enter: {
+            nesThread->pdwPad2 |= (1UL<<3);
+            break;
+        }
+        case Qt::Key_Up: {
+            nesThread->pdwPad2 |= (1UL<<4);
+            break;
+        }
+        case Qt::Key_Down: {
+            nesThread->pdwPad2 |= (1UL<<5);
+            break;
+        }
+        case Qt::Key_Left: {
+            nesThread->pdwPad2 |= (1UL<<6);
+            break;
+        }
+        case Qt::Key_Right: {
+            nesThread->pdwPad2 |= (1UL<<7);
             break;
         }
     }
@@ -181,11 +213,11 @@ void MainWindow::keyReleaseEvent(QKeyEvent * event) {
         return;
     }
     switch (event->key()) {
-        case Qt::Key_Z: {
+        case Qt::Key_Period: {
             nesThread->pdwPad1 &= ~(1UL<<0);
             break;
         }
-        case Qt::Key_X: {
+        case Qt::Key_Slash: {
             nesThread->pdwPad1 &= ~(1UL<<1);
             break;
         }
@@ -197,20 +229,52 @@ void MainWindow::keyReleaseEvent(QKeyEvent * event) {
             nesThread->pdwPad1 &= ~(1UL<<3);
             break;
         }
-        case Qt::Key_Up: {
+        case Qt::Key_W: {
             nesThread->pdwPad1 &= ~(1UL<<4);
             break;
         }
-        case Qt::Key_Down: {
+        case Qt::Key_S: {
             nesThread->pdwPad1 &= ~(1UL<<5);
             break;
         }
-        case Qt::Key_Left: {
+        case Qt::Key_A: {
             nesThread->pdwPad1 &= ~(1UL<<6);
             break;
         }
-        case Qt::Key_Right: {
+        case Qt::Key_D: {
             nesThread->pdwPad1 &= ~(1UL<<7);
+            break;
+        }
+        case Qt::Key_1: {
+            nesThread->pdwPad2 &= ~(1UL<<0);
+            break;
+        }
+        case Qt::Key_2: {
+            nesThread->pdwPad2 &= ~(1UL<<1);
+            break;
+        }
+        case Qt::Key_Plus: {
+            nesThread->pdwPad2 &= ~(1UL<<2);
+            break;
+        }
+        case Qt::Key_Enter: {
+            nesThread->pdwPad2 &= ~(1UL<<3);
+            break;
+        }
+        case Qt::Key_Up: {
+            nesThread->pdwPad2 &= ~(1UL<<4);
+            break;
+        }
+        case Qt::Key_Down: {
+            nesThread->pdwPad2 &= ~(1UL<<5);
+            break;
+        }
+        case Qt::Key_Left: {
+            nesThread->pdwPad2 &= ~(1UL<<6);
+            break;
+        }
+        case Qt::Key_Right: {
+            nesThread->pdwPad2 &= ~(1UL<<7);
             break;
         }
     }
@@ -229,12 +293,12 @@ NESThread::NESThread(QObject *parent,uint16_t* buff,QString pszFileName) :
 }
 
 NESThread::~NESThread() {
+    memset(workFrame,0x0,256*240*2);
     this->pdwSystem = 1;
     requestInterruption();
     quit();
     wait();
     delete fileName;
-    memset(workFrame,0x0,256*240*2);
 }
 
 void NESThread::run()
