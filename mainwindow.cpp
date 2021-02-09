@@ -55,6 +55,7 @@ void MainWindow::start_nesThread(QString file_name)
     }
     this->setWindowTitle(file_name);
     nesThread = new NESThread(this, buff, file_name);
+    nesThread->setMute(ui->action_mute->isChecked());
     nesThread->start();
 }
 
@@ -106,7 +107,10 @@ void MainWindow::mute_triggered()
 {
     static bool mute = true;
     ui->action_mute->setChecked(mute);
-    nesThread->setMute(mute);
+    if (nesThread != nullptr)
+    {
+        nesThread->setMute(mute);
+    }
     mute = !mute;
 }
 
