@@ -7,6 +7,8 @@
 #include <QTimer>
 #include <QThread>
 #include <QFile>
+#include <QAudioFormat>
+#include <QAudioOutput>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -17,7 +19,7 @@ class NESThread : public QThread
     Q_OBJECT
 
 public:
-    explicit NESThread(QObject *parent = nullptr,uint16_t* buff = nullptr,QString pszFileName = "");
+    explicit NESThread(QObject *parent = nullptr,void* buff = nullptr,QString pszFileName = "");
     ~NESThread();
     int InfoNES_OpenRom(const char *pszFileName);
     int InfoNES_ReadRom(void *buf, unsigned int len);
@@ -42,6 +44,10 @@ protected:
 private:
     QFile *file = nullptr;
     QByteArray *fileName = nullptr;
+    QAudioOutput *audio = nullptr;
+    QAudioFormat *audioFormat = nullptr;
+    uchar *audio_buff = nullptr;
+    QIODevice *audio_dev = nullptr;
 };
 
 
@@ -71,9 +77,10 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QImage *qImg;
-    uint16_t* buff;
+    uchar* buff;
     NESThread *nesThread = nullptr;
     QTimer *timer;
+    void start_nesThread(QString file_name);
 };
 
 

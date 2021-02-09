@@ -6,6 +6,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#define SOUND_NUM_FARME 2
+
 const QString VERSION = APP_VERSION;
 
 MainWindow::MainWindow(QWidget *parent)
@@ -14,8 +16,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     timer = new QTimer(this);
-    buff = new uint16_t[256*240];
-    qImg = new QImage((const unsigned char*)(buff), 256, 240, QImage::Format_RGB555);
+    buff = new uchar[256*240*2];
+    qImg = new QImage(buff, 256, 240, QImage::Format_RGB555);
 
     memset(buff,0x0,256*240*2);
     this->setWindowTitle("NES Game");
@@ -43,9 +45,8 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::sample_1_triggered()
+void MainWindow::start_nesThread(QString file_name)
 {
-    QString file_name = ":/game/games/SuperMario.nes";
     if(nesThread != nullptr){
         delete nesThread;
         nesThread = nullptr;
@@ -53,42 +54,30 @@ void MainWindow::sample_1_triggered()
     this->setWindowTitle(file_name);
     nesThread = new NESThread(this,buff,file_name);
     nesThread->start();
+}
+
+void MainWindow::sample_1_triggered()
+{
+    QString file_name = ":/game/games/SuperMario.nes";
+    start_nesThread(file_name);
 }
 
 void MainWindow::sample_2_triggered()
 {
     QString file_name = ":/game/games/CatAndMouse.nes";
-    if(nesThread != nullptr){
-        delete nesThread;
-        nesThread = nullptr;
-    }
-    this->setWindowTitle(file_name);
-    nesThread = new NESThread(this,buff,file_name);
-    nesThread->start();
+    start_nesThread(file_name);
 }
 
 void MainWindow::sample_3_triggered()
 {
     QString file_name = ":/game/games/Tanks.nes";
-    if(nesThread != nullptr){
-        delete nesThread;
-        nesThread = nullptr;
-    }
-    this->setWindowTitle(file_name);
-    nesThread = new NESThread(this,buff,file_name);
-    nesThread->start();
+    start_nesThread(file_name);
 }
 
 void MainWindow::sample_4_triggered()
 {
     QString file_name = ":/game/games/MacrossSeries.nes";
-    if(nesThread != nullptr){
-        delete nesThread;
-        nesThread = nullptr;
-    }
-    this->setWindowTitle(file_name);
-    nesThread = new NESThread(this,buff,file_name);
-    nesThread->start();
+    start_nesThread(file_name);
 }
 
 
@@ -98,13 +87,7 @@ void MainWindow::open_triggered()
     if (file_name.isEmpty()) {
         return;
     }
-    if(nesThread != nullptr){
-        delete nesThread;
-        nesThread = nullptr;
-    }
-    this->setWindowTitle(file_name);
-    nesThread = new NESThread(this,buff,file_name);
-    nesThread->start();
+    start_nesThread(file_name);
 }
 
 void MainWindow::close_triggered()
@@ -285,19 +268,19 @@ void MainWindow::timer_repaint()
     this->repaint();
 }
 
-NESThread::NESThread(QObject *parent,uint16_t* buff,QString pszFileName) :
+NESThread::NESThread(QObject *parent,void* buff,QString pszFileName) :
     QThread(parent)
 {
-    workFrame = buff;
+    workFrame = static_cast<uint16_t *>(buff);
     fileName = new QByteArray(pszFileName.toUtf8().data(),pszFileName.toUtf8().size());
 }
 
 NESThread::~NESThread() {
-    memset(workFrame,0x0,256*240*2);
     this->pdwSystem = 1;
     requestInterruption();
     quit();
     wait();
+    memset(workFrame,0x0,256*240*2);
     delete fileName;
 }
 
@@ -311,12 +294,12 @@ int NESThread::InfoNES_OpenRom(const char *pszFileName)
 {
     if(file != nullptr) {
         if (file->isOpen()) {
-            return (int)file->size();
+            return static_cast<int>(file->size());
         }
     }
     file = new QFile(pszFileName);
     if(file->open(QFile::ReadOnly)) {
-        return (int)file->size();
+        return static_cast<int>(file->size());
     } else {
         return -1;
     }
@@ -324,7 +307,7 @@ int NESThread::InfoNES_OpenRom(const char *pszFileName)
 
 int NESThread::InfoNES_ReadRom(void *buf, unsigned int len)
 {
-    return (int)file->read((char *)buf,len);
+    return static_cast<int>(file->read(static_cast<char *>(buf),len));
 }
 
 void NESThread::InfoNES_CloseRom(void)
@@ -359,34 +342,62 @@ void NESThread::InfoNES_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t 
     *pdwSystem = this->pdwSystem;
 }
 
+
 void NESThread::InfoNES_SoundInit(void)
 {
-    //TODO:
+    audioFormat = new QAudioFormat();
+    audioFormat->setChannelCount(1);
+    audioFormat->setSampleSize(8);
+    audioFormat->setCodec("audio/pcm");
+    audioFormat->setByteOrder(QAudioFormat::LittleEndian);
+    audioFormat->setSampleType(QAudioFormat::UnSignedInt);
 }
 
 int NESThread::InfoNES_SoundOpen(int samples_per_sync, int sample_rate)
 {
-    //TODO:
-    (void)samples_per_sync;
-    (void)sample_rate;
-    return -1;
+    audioFormat->setSampleRate(sample_rate);
+    audio = new QAudioOutput(*audioFormat, nullptr);
+    audio_buff = new uchar[samples_per_sync*SOUND_NUM_FARME];
+    memset(audio_buff,0x0,(size_t)samples_per_sync*SOUND_NUM_FARME);
+    audio->setBufferSize(samples_per_sync*10);
+    audio_dev = audio->start();
+    return 0;
 }
 
 void NESThread::InfoNES_SoundClose(void)
 {
-    //TODO:
+    delete audio;
+    delete audioFormat;
+    delete[] audio_buff;
 }
 
 void NESThread::InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2, uint8_t *wave3,
                          uint8_t *wave4, uint8_t *wave5)
 {
-    //TODO:
-    (void)samples;
-    (void)wave1;
-    (void)wave2;
-    (void)wave3;
-    (void)wave4;
-    (void)wave5;
+
+    static int index = 0;
+    for (int i = 0; i < samples; i++)
+    {
+        uint32_t wav = ((uint32_t)wave1[i] + (uint32_t)wave2[i] + (uint32_t)wave3[i] + (uint32_t)wave4[i] + (uint32_t)wave5[i]) / 5UL;
+        audio_buff[i+index*samples] = (uchar)wav;
+    }
+    if (index < SOUND_NUM_FARME-1) {
+        index++;
+    } else {
+        int len = 0;
+        forever {
+            int n = audio_dev->write((char *)&audio_buff[len], samples*SOUND_NUM_FARME - len);
+            if (n == -1) {
+                break;
+            } else {
+                len += n;
+                if (samples*SOUND_NUM_FARME == len)
+                    break;
+            }
+        }
+        index = 0;
+    }
+
 }
 
 void NESThread::InfoNES_MessageBox(char *buf)
