@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    key_setting = new KeySetting();
     timer = new QTimer(this);
     buff = new uchar[256 * 240 * 2];
     qImg = new QImage(buff, 256, 240, QImage::Format_RGB555);
@@ -31,6 +32,7 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->action_sample_3, SIGNAL(triggered()), this, SLOT(sample_3_triggered()));
     QObject::connect(ui->action_sample_4, SIGNAL(triggered()), this, SLOT(sample_4_triggered()));
     QObject::connect(ui->action_mute, SIGNAL(triggered()), this, SLOT(mute_triggered()));
+    QObject::connect(ui->action_key_setting, SIGNAL(triggered()), this, SLOT(key_setting_triggered()));
 }
 
 MainWindow::~MainWindow()
@@ -43,6 +45,7 @@ MainWindow::~MainWindow()
     delete qImg;
     delete[] buff;
     delete timer;
+    delete key_setting;
     delete ui;
 }
 
@@ -112,6 +115,11 @@ void MainWindow::mute_triggered()
         nesThread->setMute(mute);
     }
     mute = !mute;
+}
+
+void MainWindow::key_setting_triggered()
+{
+    key_setting->show();
 }
 
 void MainWindow::about_triggered()

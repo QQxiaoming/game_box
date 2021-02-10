@@ -9,6 +9,7 @@
 #include <QFile>
 #include <QAudioFormat>
 #include <QAudioOutput>
+#include "keysetting.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -73,6 +74,7 @@ private slots:
     void open_triggered();
     void close_triggered();
     void mute_triggered();
+    void key_setting_triggered();
     void about_triggered();
     void sample_1_triggered();
     void sample_2_triggered();
@@ -85,6 +87,7 @@ private:
     uchar* buff;
     NESThread *nesThread = nullptr;
     QTimer *timer;
+    KeySetting *key_setting = nullptr;
     void start_nesThread(QString file_name);
 };
 

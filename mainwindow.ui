@@ -51,6 +51,7 @@
      <string>设置</string>
     </property>
     <addaction name="action_mute"/>
+    <addaction name="action_key_setting"/>
    </widget>
    <addaction name="menu_flie"/>
    <addaction name="menu_setting"/>
@@ -97,6 +98,11 @@
    </property>
    <property name="checkable">
     <bool>true</bool>
+   </property>
+  </action>
+  <action name="action_key_setting">
+   <property name="text">
+    <string>按键设置</string>
    </property>
   </action>
  </widget>

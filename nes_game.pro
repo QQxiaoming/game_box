@@ -16,7 +16,8 @@ SOURCES += \
     nes/src/InfoNES.cpp \
     nes/src/K6502.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    keysetting.cpp
     
 HEADERS += \
     nes/port/InfoNES_System.h \
@@ -24,10 +25,12 @@ HEADERS += \
     nes/src/InfoNES_pAPU.h \
     nes/src/InfoNES.h \
     nes/src/K6502.h \
-    mainwindow.h
+    mainwindow.h \
+    keysetting.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    keysetting.ui
 
 RESOURCES += \
         res/resources.qrc

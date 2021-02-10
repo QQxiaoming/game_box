@@ -5,4 +5,7 @@
         <file>../games/SuperMario.nes</file>
         <file>../games/Tanks.nes</file>
     </qresource>
+    <qresource prefix="/img">
+        <file>../img/key.png</file>
+    </qresource>
 </RCC>
