@@ -420,7 +420,7 @@ int NESThread::InfoNES_SoundOpen(int samples_per_sync, int sample_rate)
     audioFormat->setSampleRate(sample_rate);
     audio = new QAudioOutput(*audioFormat, nullptr);
     audio_buff = new uchar[samples_per_sync * SOUND_NUM_FARME];
-    memset(audio_buff, 0x0, (size_t)samples_per_sync * SOUND_NUM_FARME);
+    memset(audio_buff, 0x0, static_cast<size_t>(samples_per_sync * SOUND_NUM_FARME));
     audio->setBufferSize(samples_per_sync * 10);
     audio_dev = audio->start();
     return 0;
@@ -439,14 +439,19 @@ void NESThread::InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2,
     static int index = 0;
     for (int i = 0; i < samples; i++)
     {
-        uint32_t wav = ((uint32_t)wave1[i] + (uint32_t)wave2[i] + (uint32_t)wave3[i] + (uint32_t)wave4[i] + (uint32_t)wave5[i]) / 5UL;
+        //TODO: wave1 wave2 通道声音正确
+        //      其余3通道 Triangle, Noise, DPCM输出不正常
+        uint32_t wav = (static_cast<uint32_t>(wave1[i]) + static_cast<uint32_t>(wave2[i])) / 2UL;
+        Q_UNUSED(wave3);
+        Q_UNUSED(wave4);
+        Q_UNUSED(wave5);
         if(m_mute)
         {
             audio_buff[i + index * samples] = 0;
         }
         else
         {
-            audio_buff[i + index * samples] = (uchar)wav;
+            audio_buff[i + index * samples] = static_cast<uchar>(wav);
         }
     }
     if (index < SOUND_NUM_FARME - 1)
@@ -458,7 +463,8 @@ void NESThread::InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2,
         int len = 0;
         forever
         {
-            int n = audio_dev->write((char *)&audio_buff[len], samples * SOUND_NUM_FARME - len);
+            void *temp = static_cast<void *>(audio_buff+len);
+            int n = static_cast<int>(audio_dev->write(static_cast<char *>(temp), static_cast<qint64>(samples * SOUND_NUM_FARME - len)));
             if (n == -1)
             {
                 break;

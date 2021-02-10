@@ -1308,7 +1308,7 @@ void K6502_Step(uint16_t wClocks) {
 
             default:  // Unknown Instruction
                 CLK(2);
-            #if 1
+            #if 0
                 InfoNES_MessageBox( "0x%02x is unknown instruction.\n", byCode ) ;
             #endif
                 break;
@@ -1724,8 +1724,8 @@ void K6502_Write(uint16_t wAddr, uint8_t byData) {
                     break;
 
                 case 0x15: /* 0x4015 */
-                    InfoNES_pAPUWriteControl(wAddr, byData);
-                #if 1
+                    InfoNES_pAPUWriteControl( wAddr, byData );
+                #if 0
                     /* Unknown */
                     if ( byData & 0x10 ) 
                     {
@@ -1735,6 +1735,8 @@ void K6502_Write(uint16_t wAddr, uint8_t byData) {
                     break;
 
                 case 0x16: /* 0x4016 */
+                    // For VS-Unisystem
+                    MapperApu( wAddr, byData );
                     // Reset joypad
                     if (!(APU_Reg[0x16] & 1) && (byData & 1)) {
                         PAD1_Bit = 0;

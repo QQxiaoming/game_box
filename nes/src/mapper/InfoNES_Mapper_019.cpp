@@ -5,7 +5,7 @@
 /*===================================================================*/
 
 uint8_t  Map19_Chr_Ram[ 0x2000 ];
-uint8_t  Map19_Regs[ 2 ];
+uint8_t  Map19_Regs[ 3 ];
 
 uint8_t  Map19_IRQ_Enable;
 uint32_t Map19_IRQ_Cnt;

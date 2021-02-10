@@ -6,7 +6,7 @@
 
 uint8_t  Map45_Regs[7];
 uint32_t Map45_P[4],Map45_Prg0,Map45_Prg1,Map45_Prg2,Map45_Prg3;
-uint32_t Map45_C[4],Map45_Chr0, Map45_Chr1,Map45_Chr2, Map45_Chr3;
+uint32_t Map45_C[8],Map45_Chr0, Map45_Chr1,Map45_Chr2, Map45_Chr3;
 uint32_t Map45_Chr4, Map45_Chr5, Map45_Chr6, Map45_Chr7;
 
 uint8_t Map45_IRQ_Enable;
