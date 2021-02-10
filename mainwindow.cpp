@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     qImg = new QImage(buff, 256, 240, QImage::Format_RGB555);
 
     memset(buff, 0x0, 256 * 240 * 2);
-    this->setWindowTitle("NES Game");
+    this->setWindowTitle("GameBox");
     timer->start(33);
 
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(timer_repaint()));

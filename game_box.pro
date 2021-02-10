@@ -7,7 +7,10 @@ DEFINES += APP_VERSION="\\\"V0.0.1\\\""
 
 INCLUDEPATH += \
         -I ./nes/port \
-        -I ./nes/src
+        -I ./nes/src \
+        -I ./md/port \
+        -I ./md/src/musa \
+        -I ./md/src
 
 SOURCES += \
     nes/port/InfoNES_System.cpp \
@@ -15,6 +18,21 @@ SOURCES += \
     nes/src/InfoNES_pAPU.cpp \
     nes/src/InfoNES.cpp \
     nes/src/K6502.cpp \
+    md/src/musa/m68kcpu.c \
+    md/src/musa/m68kopac.c \
+    md/src/musa/m68kopdm.c \
+    md/src/musa/m68kopnz.c \
+    md/src/musa/m68kops.c \
+    md/src/md.cpp \
+    md/src/mem.cpp \
+    md/src/fm.c \
+    md/src/zz80.c \
+    md/src/vdp.cpp \
+    md/src/myfm.cpp \
+    md/src/mdfr.cpp \
+    md/src/sn76496.c \
+    md/src/romload.c \
+    md/port/md_port.cpp \
     main.cpp \
     mainwindow.cpp \
     keysetting.cpp
@@ -25,6 +43,8 @@ HEADERS += \
     nes/src/InfoNES_pAPU.h \
     nes/src/InfoNES.h \
     nes/src/K6502.h \
+    md/src/md.h \
+    md/src/fm.h \
     mainwindow.h \
     keysetting.h
 
