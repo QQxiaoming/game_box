@@ -10,27 +10,10 @@
 
 int split_screen=0;
 
-#ifdef COMPILE_WITH_STAR
-void md::run_to_odo_star(int odo_to)
-{
-  int odo_start = s68000readOdometer();
-  s68000exec(odo_to - odo_start);
-}
-#endif
-
-#ifdef COMPILE_WITH_MUSA
 void md::run_to_odo_musa(int odo_to)
 {
   odo += m68k_execute(odo_to - odo);
 }
-#endif
-
-#ifdef COMPILE_WITH_M68KEM
-void md::run_to_odo_m68kem(int odo_to)
-{
-  odo += m68000_execute(odo_to - odo);
-}
-#endif
 
 void md::run_to_odo_z80(int odo_to)
 {
@@ -55,78 +38,6 @@ void md::run_to_odo_z80(int odo_to)
 
 #define scanlength (pal? (7189547/50/0x138) : (8000000/60/0x106))
 
-#ifdef COMPILE_WITH_STAR
-int md::one_frame_star(struct bmap *bm, unsigned char retpal[256], struct sndinfo *sndi)
-{
-  int hints, odom = 0;
-
-  star_mz80_on(); // VERY IMPORTANT! Must call before using star/mz80
-
-  // Clear odos
-  s68000tripOdometer();
-  mz80GetElapsedTicks(1);
-
-  // Raster zero causes special things to happen :)
-  coo4 = 0x37; // Init status register
-  if(vdp.reg[12] & 0x2) coo5 ^= 0x10; // Toggle odd/even for interlace
-  if(vdp.reg[1]  & 0x40) coo5 &= ~0x88; // Clear vblank and vint
-  if(!(vdp.reg[1] & 0x20)) coo5 |= 0x80; // If vint disabled, vint happened
-					 // is permanently set
-  hints = vdp.reg[10]; // Set hint counter
-
-  // Video display! :D
-  for(ras = 0; ras < VBLANK_LINE; ++ras)
-    {
-      fm_timer_callback(); // update sound timers
-
-      if((vdp.reg[0] & 0x10) && (--hints < 0))
-        {
-	  // Trigger hint
-	  s68000interrupt(4, -1);
-	  hints = vdp.reg[10];
-	  may_want_to_get_pic(bm, retpal, 1);
-	} else
-	  may_want_to_get_pic(bm, retpal, 0);
-
-      coo5 |= 4; // hblank comes before, about 36/209 of the whole scanline
-      run_to_odo_star(odom + (scanlength * 36/209));
-      // Do hdisplay now
-      odom += scanlength;
-      coo5 &= ~4;
-      run_to_odo_star(odom);
-
-      // Do Z80
-      run_to_odo_z80(odom);
-    }
-  // Now we're in vblank, more special things happen :)
-  // Blank everything, and trigger vint
-  coo5 |= 0x8C;
-  if(vdp.reg[1] & 0x20) s68000interrupt(6, -1);
-  if(z80_online) mz80int(0);
-
-  // Run the course of vblank
-  for(; ras < LINES_PER_FRAME; ++ras)
-    {
-      fm_timer_callback();
-
-      // No interrupts happen in vblank
-
-      odom += scanlength;
-      run_to_odo_star(odom);
-      run_to_odo_z80(odom);
-    }
-
-  // Fill the sound buffers
-  if(sndi) may_want_to_get_sound(sndi);
-  
-  // Shut off mz80/star - VERY IMPORTANT!
-  star_mz80_off();
-
-  return 0;
-}
-#endif // COMPILE_WITH_STAR
-
-#ifdef COMPILE_WITH_MUSA
 int md::one_frame_musa(struct bmap *bm, unsigned char retpal[256], struct sndinfo *sndi)
 {
   int hints, odom = 0;
@@ -193,13 +104,6 @@ int md::one_frame_musa(struct bmap *bm, unsigned char retpal[256], struct sndinf
 
   return 0;
 }
-#endif // COMPILE_WITH_MUSA
-
-// FIXME: I'm not going to do this until I figure out 68kem better
-#ifdef COMPILE_WITH_M68KEM
-int md::one_frame_m68kem(struct bmap *bm, unsigned char retpal[256], struct sndinfo *sndi)
-{}
-#endif
 
 int md::one_frame(
   struct bmap *bm,unsigned char retpal[256],
@@ -208,15 +112,7 @@ int md::one_frame(
   ++frame;
   switch(cpu_emu)
     {
-#ifdef COMPILE_WITH_STAR
-      case 0: return one_frame_star(bm, retpal, sndi);
-#endif
-#ifdef COMPILE_WITH_MUSA
       case 1: return one_frame_musa(bm, retpal, sndi);
-#endif
-#ifdef COMPILE_WITH_M68KEM
-      case 2: return one_frame_m68kem(bm, retpal, sndi);
-#endif
       // Something's screwy here...
       default: return 1;
     }
@@ -226,12 +122,7 @@ int md::calculate_hcoord()
 {
   int x=0,hcoord;
   // c00009 is the H counter (I believe it's (h-coord>>1)&0xff)
-#ifdef COMPILE_WITH_STAR
-  if (cpu_emu==0) x = s68000readOdometer() - (ras * scanlength);
-#endif
-#if defined(COMPILE_WITH_MUSA) || defined(COMPILE_WITH_M68KEM)
   if (cpu_emu==1) x = odo - (ras * scanlength);
-#endif
 
   // hcoord=-56 (inclusive) to 364 (inclusive) in 40 column mode
 

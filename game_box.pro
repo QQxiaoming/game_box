@@ -32,6 +32,8 @@ SOURCES += \
     md/src/mdfr.cpp \
     md/src/sn76496.c \
     md/src/romload.c \
+    md/src/ras.cpp \
+    md/src/graph.cpp \
     md/port/md_port.cpp \
     main.cpp \
     mainwindow.cpp \
