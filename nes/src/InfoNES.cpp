@@ -151,13 +151,7 @@ uint16_t FrameSkip;
 uint16_t FrameCnt;
 
 /* Display Buffer */
-#if 0
-uint16_t DoubleFrame[ 2 ][ NES_DISP_WIDTH * NES_DISP_HEIGHT ];
 uint16_t *WorkFrame;
-uint16_t WorkFrameIdx;
-#else
-uint16_t *WorkFrame;
-#endif
 
 /* Character Buffer */
 uint8_t ChrBuf[256 * 2 * 8 * 8];
@@ -374,12 +368,6 @@ int InfoNES_Reset() {
     // Reset frame skip and frame count
     FrameSkip = 0;
     FrameCnt = 0;
-
-#if 0
-  // Reset work frame
-  WorkFrame = DoubleFrame[ 0 ];
-  WorkFrameIdx = 0;
-#endif
 
     // Reset update flag of ChrBuf
     ChrBufUpdate = 0xff;
@@ -669,12 +657,6 @@ int InfoNES_HSync() {
             if (FrameCnt == 0) {
                 // Transfer the contents of work frame on the screen
                 InfoNES_LoadFrame();
-
-#if 0
-        // Switching of the double buffer
-        WorkFrameIdx = 1 - WorkFrameIdx;
-        WorkFrame = DoubleFrame[ WorkFrameIdx ];
-#endif
             }
             break;
 

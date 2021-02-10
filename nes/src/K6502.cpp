@@ -1308,7 +1308,7 @@ void K6502_Step(uint16_t wClocks) {
 
             default:  // Unknown Instruction
                 CLK(2);
-            #if 0
+            #if 1
                 InfoNES_MessageBox( "0x%02x is unknown instruction.\n", byCode ) ;
             #endif
                 break;
@@ -1447,7 +1447,7 @@ uint8_t K6502_Read(uint16_t wAddr) {
         case 0x4000: /* Sound */
             if (wAddr == 0x4015) {
                 // APU control
-                byRet = APU_Reg[0x4015];
+                byRet = APU_Reg[0x15];
                 if (ApuC1Atl > 0) byRet |= (1 << 0);
                 if (ApuC2Atl > 0) byRet |= (1 << 1);
                 if (!ApuC3Holdnote) {
@@ -1458,7 +1458,7 @@ uint8_t K6502_Read(uint16_t wAddr) {
                 if (ApuC4Atl > 0) byRet |= (1 << 3);
 
                 // FrameIRQ
-                APU_Reg[0x4015] &= ~0x40;
+                APU_Reg[0x15] &= ~0x40;
                 return byRet;
             } else if (wAddr == 0x4016) {
                 // Set Joypad1 data
@@ -1553,7 +1553,7 @@ void K6502_Write(uint16_t wAddr, uint8_t byData) {
                     break;
 
                 case 2: /* 0x2002 */
-                #if 0	  
+                #if 1 
                     PPU_R2 = byData;     // 0x2002 is not writable
                 #endif
                     break;
@@ -1598,7 +1598,7 @@ void K6502_Write(uint16_t wAddr, uint8_t byData) {
                     // Set PPU Address
                     if (PPU_Latch_Flag) {
                         /* Low */
-                    #if 0
+                    #if 1
                         PPU_Addr = ( PPU_Addr & 0xff00 ) | ( (uint16_t)byData );
                     #else
                         PPU_Temp =
@@ -1608,7 +1608,7 @@ void K6502_Write(uint16_t wAddr, uint8_t byData) {
                         InfoNES_SetupScr();
                     } else {
                         /* High */
-                    #if 0
+                    #if 1
                         PPU_Addr = ( PPU_Addr & 0x00ff ) | ( (uint16_t)( byData & 0x3f ) << 8 );
                         InfoNES_SetupScr();
                     #else
@@ -1725,7 +1725,7 @@ void K6502_Write(uint16_t wAddr, uint8_t byData) {
 
                 case 0x15: /* 0x4015 */
                     InfoNES_pAPUWriteControl(wAddr, byData);
-                #if 0
+                #if 1
                     /* Unknown */
                     if ( byData & 0x10 ) 
                     {

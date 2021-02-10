@@ -143,14 +143,14 @@ void Map0_HSync(void)
  *  Dummy Callback at HSync
  *
  */
-#if 0 
+#if 1 
   // Frame IRQ
   FrameStep += STEP_PER_SCANLINE;
   if ( FrameStep > STEP_PER_FRAME && FrameIRQ_Enable )
   {
     FrameStep %= STEP_PER_FRAME;
     IRQ_REQ;
-    APU_Reg[ 0x4015 ] |= 0x40;
+    APU_Reg[ 0x15 ] |= 0x40;
   }
 #endif
 }
