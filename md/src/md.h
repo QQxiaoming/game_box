@@ -1,23 +1,18 @@
 // DGen
 
-#ifndef __MD_H__
-#define __MD_H__
+#ifndef MD_H__
+#define MD_H__
 
 #define VER "1.33"
 
 #include <stdint.h>
 
 #ifndef M68K__HEADER
-extern "C"
-{
 #include "musa/m68k.h"
-}
 #endif
 
 //#define BUILD_YM2612
-extern "C" {
 #include "fm.h"
-}
 
 #include "sn76496.h"
 
@@ -70,9 +65,9 @@ static inline void (*(*debug_(const char *file, unsigned int line,
 #undef ROM_BYTESWAP
 #define ROM_ADDR(a) (a)
 
-extern "C" int test_ctv(unsigned char *dest, int len);
-extern "C" int blur_bitmap_16(unsigned char *dest, int len);
-extern "C" int blur_bitmap_15(unsigned char *dest, int len);
+int test_ctv(unsigned char *dest, int len);
+int blur_bitmap_16(unsigned char *dest, int len);
+int blur_bitmap_15(unsigned char *dest, int len);
 
 struct bmap { unsigned char *data; int w,h; int pitch; int bpp; };
 
@@ -254,7 +249,18 @@ public:
 			// but I wanted to label it somehow.
 			if (mem)
 				*mem = (0x00 | 0x40); // local + PAL
-			mem = 0;
+            mem = 0;
+            if (pal)
+                *pal = 1;
+            if (hz)
+                *hz = PAL_HZ;
+            if (vblank)
+                *vblank = PAL_VBLANK;
+            if (lines)
+                *lines = PAL_LINES;
+            if (mem)
+                *mem = (0x80 | 0x40); // overseas + PAL
+            break;
 		case 'E':
 			// Europe (PAL).
 			if (pal)
@@ -274,6 +280,17 @@ public:
 			if (mem)
 				*mem = 0x00; // local
 			mem = 0;
+            if (pal)
+                *pal = 0;
+            if (hz)
+                *hz = NTSC_HZ;
+            if (vblank)
+                *vblank = NTSC_VBLANK;
+            if (lines)
+                *lines = NTSC_LINES;
+            if (mem)
+                *mem = 0x80; // overseas
+            break;
 		case 'U':
 			// America (NTSC).
 			if (pal)
@@ -515,4 +532,4 @@ inline int md::has_save_ram()
   return save_len;
 }
 
-#endif // __MD_H__
+#endif // MD_H__

@@ -3538,6 +3538,24 @@ unsigned int m68k_disassemble_raw(char* str_buff, unsigned int pc, const unsigne
 /* Check if the instruction is a valid one */
 unsigned int m68k_is_valid_instruction(unsigned int instruction, unsigned int cpu_type)
 {
+#ifdef __has_cpp_attribute
+#  define HAS_CPP_ATTRIBUTE(x)       __has_cpp_attribute(x)
+#else
+#  define HAS_CPP_ATTRIBUTE(x)       0
+#endif
+#if defined(__cplusplus)
+#if HAS_CPP_ATTRIBUTE(clang::fallthrough)
+#    define FALLTHROUGH() [[clang::fallthrough]]
+#elif HAS_CPP_ATTRIBUTE(gnu::fallthrough)
+#    define FALLTHROUGH() [[gnu::fallthrough]]
+#elif HAS_CPP_ATTRIBUTE(fallthrough)
+#  define FALLTHROUGH() [[fallthrough]]
+#endif
+#endif
+#ifndef FALLTHROUGH
+#    define FALLTHROUGH() (void)0
+#endif
+
 	if(!g_initialized)
 	{
 		build_opcode_table();
@@ -3566,7 +3584,8 @@ unsigned int m68k_is_valid_instruction(unsigned int instruction, unsigned int cp
 				return 0;
 			if(g_instruction_table[instruction] == d68010_rtd)
 				return 0;
-		case M68K_CPU_TYPE_68010:
+            FALLTHROUGH();
+        case M68K_CPU_TYPE_68010:
 			if(g_instruction_table[instruction] == d68020_bcc_32)
 				return 0;
 			if(g_instruction_table[instruction] == d68020_bfchg)
@@ -3687,6 +3706,7 @@ unsigned int m68k_is_valid_instruction(unsigned int instruction, unsigned int cp
 				return 0;
 			if(g_instruction_table[instruction] == d68020_unpk_mm)
 				return 0;
+            FALLTHROUGH();
 		case M68K_CPU_TYPE_68EC020:
 		case M68K_CPU_TYPE_68020:
 		case M68K_CPU_TYPE_68030:
@@ -3706,6 +3726,7 @@ unsigned int m68k_is_valid_instruction(unsigned int instruction, unsigned int cp
 				return 0;
 			if(g_instruction_table[instruction] == d68040_pflush)
 				return 0;
+            FALLTHROUGH();
 		case M68K_CPU_TYPE_68040:
 			if(g_instruction_table[instruction] == d68020_cpbcc_16)
 				return 0;

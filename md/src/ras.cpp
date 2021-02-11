@@ -91,50 +91,6 @@ static inline int get_word(unsigned char *where)
 #  define SHIFT7 (24)
 #endif // WORDS_BIGENDIAN
 
-#ifdef WITH_X86_TILES
-extern "C" {
-
-void asm_tiles_init(unsigned char *vram,
-		    unsigned char *reg,
-		    unsigned *highpal);
-
-void drawtile1(int which, int line, unsigned char *where);
-void drawtile1_solid(int which, int line, unsigned char *where);
-void drawtile2(int which, int line, unsigned char *where);
-void drawtile2_solid(int which, int line, unsigned char *where);
-void drawtile3(int which, int line, unsigned char *where);
-void drawtile3_solid(int which, int line, unsigned char *where);
-void drawtile4(int which, int line, unsigned char *where);
-void drawtile4_solid(int which, int line, unsigned char *where);
-}
-
-// Pass off these calls to assembler counterparts
-inline void md_vdp::draw_tile1_solid(int which, int line, unsigned char *where)
-  { drawtile1_solid(which, line, where); }
-
-inline void md_vdp::draw_tile1(int which, int line, unsigned char *where)
-  { drawtile1(which, line, where); }
-
-inline void md_vdp::draw_tile2_solid(int which, int line, unsigned char *where)
-  { drawtile2_solid(which, line, where); }
-
-inline void md_vdp::draw_tile2(int which, int line, unsigned char *where)
-  { drawtile2(which, line, where); }
-
-inline void md_vdp::draw_tile3_solid(int which, int line, unsigned char *where)
-  { drawtile3_solid(which, line, where); }
-
-inline void md_vdp::draw_tile3(int which, int line, unsigned char *where)
-  { drawtile3(which, line, where); }
-
-inline void md_vdp::draw_tile4_solid(int which, int line, unsigned char *where)
-  { drawtile4_solid(which, line, where); }
-
-inline void md_vdp::draw_tile4(int which, int line, unsigned char *where)
-  { drawtile4(which, line, where); }
-
-#else // WITH_X86_TILES
-
 static bool has_zero_nibbles(uint32_t u32)
 {
 	return ((u32 - 0x11111111) & ~u32 & 0x88888888);
@@ -600,7 +556,6 @@ inline void md_vdp::draw_tile4(int which, int line, unsigned char *where)
       if(tile & PIXEL7) *(wwhere+7) = pal[((tile & PIXEL7)>>SHIFT7)];
     }
 }
-#endif // WITH_X86_TILES
 
 // Draw the window (front or back)
 void md_vdp::draw_window(int line, int front)
@@ -1126,9 +1081,6 @@ void md_vdp::draw_scanline(struct bmap *bits, int line)
       else if(bits->bpp <= 24) Bpp = 3;
       else		       Bpp = 4;
       Bpp_times8 = Bpp << 3; // used for tile blitting
-#ifdef WITH_X86_TILES
-      asm_tiles_init(vram, reg, highpal); // pass these values to the asm tiles
-#endif
     }
 
   // If the palette's been changed, update it

@@ -181,7 +181,7 @@ void decode(const char *code, struct patch *result)
   /* Otherwise, we assume it's a hex code.
    * Find the colon so we know where address ends and data starts. If there's
    * no colon, then we haven't a code at all! */
-  if(!(x = strchr(code, ':'))) goto bad_code;
+  if(!(x = strchr((char *)code, ':'))) goto bad_code;
   ad = code; da = x + 1; adl = x - code; dal = len - adl - 1;
   /* If a section is empty or too long, toss it */
   if(adl == 0 || adl > 6 || dal == 0 || dal > 4) goto bad_code;

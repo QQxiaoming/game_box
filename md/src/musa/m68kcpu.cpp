@@ -680,7 +680,8 @@ void m68k_set_instr_hook_callback(int  (*callback)(void))
 
 void m68k_register_memory(m68k_mem_t memory[], unsigned int len)
 {
-	m68ki_cpu.mem = (void *)memory;
+        typedef m68k_mem_t (*mem_t)[];
+        m68ki_cpu.mem = (mem_t)memory;
 	m68ki_cpu.mem_len = len;
 }
 

@@ -3,16 +3,6 @@
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-#define SN76496_H_BEGIN_ extern "C" {
-#define SN76496_H_END_ }
-#else
-#define SN76496_H_BEGIN_
-#define SN76496_H_END_
-#endif
-
-SN76496_H_BEGIN_
-
 #define MAX_76496 4
 
 struct SN76496interface
@@ -34,7 +24,5 @@ int SN76496_init(int chip, int clock, int sample_rate, int sample_bits);
 void SN76496Write(int chip, int data);
 void SN76496Update_8_2(int chip,void *buffer, int length);
 void SN76496Update_16_2(int chip,void *buffer, int length);
-
-SN76496_H_END_
 
 #endif

@@ -172,7 +172,7 @@ void SN76496Update_8_2(int chip,void *buffer,int length)
 {
 #define DATATYPE unsigned char
 #define DATACONV(A) AUDIO_CONV((A) / (STEP * 256))
-#include "sn76496u.c"
+#include "sn76496u.cpp"
 #undef DATATYPE
 #undef DATACONV
 }
@@ -181,7 +181,7 @@ void SN76496Update_16_2(int chip,void *buffer,int length)
 {
 #define DATATYPE unsigned short
 #define DATACONV(A) ((A) / STEP)
-#include "sn76496u.c"
+#include "sn76496u.cpp"
 #undef DATATYPE
 #undef DATACONV
 }

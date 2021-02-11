@@ -194,7 +194,12 @@ uint8_t md::m68k_IO_read(uint32_t a)
 		return 0xff;
 	/* Z80 BUSREQ */
 	if ((a & 0xffff01) == 0xa11100)
-		return (!z80_st_busreq | ((m68k_read_pc() >> 8) & 0xfe));
+    {
+		if(z80_st_busreq)
+        	return (0x0 | ((m68k_read_pc() >> 8) & 0xfe));
+        else
+        	return (0x1 | ((m68k_read_pc() >> 8) & 0xfe));
+    }
 	if ((a & 0xffff01) == 0xa11101)
 		return (m68k_read_pc() & 0xff);
 	/* Z80 RESET */
@@ -542,56 +547,56 @@ void md::misc_writeword(uint32_t a, uint16_t d)
 // address will be a 24-bit value.
 
 /* Read from anywhere */
-extern "C" unsigned int m68k_read_memory_8(unsigned int address)
+unsigned int m68k_read_memory_8(unsigned int address)
 {
 	return md::md_musa->misc_readbyte(address);
 }
 
-extern "C" unsigned int m68k_read_memory_16(unsigned int address)
+unsigned int m68k_read_memory_16(unsigned int address)
 {
 	return md::md_musa->misc_readword(address);
 }
 
-extern "C" unsigned int m68k_read_memory_32(unsigned int address)
+unsigned int m68k_read_memory_32(unsigned int address)
 {
 	return ((md::md_musa->misc_readword(address) << 16) |
 		(md::md_musa->misc_readword(address + 2) & 0xffff));
 }
 
 /* Read data immediately following the PC */
-extern "C" unsigned int m68k_read_immediate_8(unsigned int address)
+unsigned int m68k_read_immediate_8(unsigned int address)
 {
 	return m68k_read_memory_8(address);
 }
 
-extern "C" unsigned int m68k_read_immediate_16(unsigned int address)
+unsigned int m68k_read_immediate_16(unsigned int address)
 {
 	return m68k_read_memory_16(address);
 }
 
-extern "C" unsigned int m68k_read_immediate_32(unsigned int address)
+unsigned int m68k_read_immediate_32(unsigned int address)
 {
 	return m68k_read_memory_32(address);
 }
 
 /* Read an instruction (16-bit word immeditately after PC) */
-extern "C" unsigned int m68k_read_instruction(unsigned int address)
+unsigned int m68k_read_instruction(unsigned int address)
 {
 	return m68k_read_memory_16(address);
 }
 
 /* Write to anywhere */
-extern "C" void m68k_write_memory_8(unsigned int address, unsigned int value)
+void m68k_write_memory_8(unsigned int address, unsigned int value)
 {
 	md::md_musa->misc_writebyte(address, value);
 }
 
-extern "C" void m68k_write_memory_16(unsigned int address, unsigned int value)
+void m68k_write_memory_16(unsigned int address, unsigned int value)
 {
 	md::md_musa->misc_writeword(address, value);
 }
 
-extern "C" void m68k_write_memory_32(unsigned int address, unsigned int value)
+void m68k_write_memory_32(unsigned int address, unsigned int value)
 {
 	md::md_musa->misc_writeword(address, ((value >> 16) & 0xffff));
 	md::md_musa->misc_writeword((address + 2), (value & 0xffff));

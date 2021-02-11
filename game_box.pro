@@ -18,20 +18,20 @@ SOURCES += \
     nes/src/InfoNES_pAPU.cpp \
     nes/src/InfoNES.cpp \
     nes/src/K6502.cpp \
-    md/src/musa/m68kcpu.c \
-    md/src/musa/m68kdasm.c \
-    md/src/musa/m68kops.c \
+    md/src/musa/m68kcpu.cpp \
+    md/src/musa/m68kdasm.cpp \
+    md/src/musa/m68kops.cpp \
     md/src/md.cpp \
     md/src/mem.cpp \
-    md/src/fm.c \
+    md/src/fm.cpp \
     md/src/vdp.cpp \
     md/src/myfm.cpp \
     md/src/mdfr.cpp \
-    md/src/sn76496.c \
+    md/src/sn76496.cpp \
     md/src/ras.cpp \
     md/src/graph.cpp \
     md/src/save.cpp \
-    md/src/decode.c \
+    md/src/decode.cpp \
     md/src/romload.cpp \
     md/port/md_port.cpp \
     main.cpp \

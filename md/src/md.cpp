@@ -372,7 +372,10 @@ int md::plug_in(unsigned char *cart,int len)
   // Plug in the cartridge specified by the uchar *
   // NB - The megadrive will free() it if unplug() is called, or it exits
   // So it must be a single piece of malloced data
-  if (cart==NULL) return 1; if (len<=0) return 1;
+  if (cart==NULL)
+      return 1;
+  if (len<=0)
+      return 1;
 #ifdef ROM_BYTESWAP
   byteswap_memory(cart,len); // for starscream
 #endif
