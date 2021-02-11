@@ -12,11 +12,10 @@
 
 ***************************************************************************/
 
-///// commented out by starshine
-//#include "driver.h"
-
-///// added by starshine
+#include <stdint.h>
+#include <string.h>
 #include "sn76496.h"
+#include "md_port.h"
 
 
 #define MAX_OUTPUT 0x7fff
@@ -54,7 +53,7 @@ struct SN76496
     int Volume[4];      /* volume of voice 0-2 and noise */
     unsigned int RNG;       /* noise generator      */
     int NoiseFB;        /* noise feedback mask */
-    int Period[4];
+    unsigned int Period[4];
     int Count[4];
     int Output[4];
 };
@@ -62,7 +61,29 @@ struct SN76496
 
 static struct SN76496 sn[MAX_76496];
 
+void SN76496_dump(int chip, uint8_t buf[16])
+{
+	struct SN76496 *R = &sn[chip];
+	uint16_t tmp;
+	unsigned int i;
 
+	for (i = 0; (i < 8); ++i) {
+		tmp = h2le16(R->Register[i]);
+		memcpy(&buf[(i * 2)], &tmp, 2);
+	}
+}
+
+void SN76496_restore(int chip, uint8_t buf[16])
+{
+	struct SN76496 *R = &sn[chip];
+	uint16_t tmp;
+	unsigned int i;
+
+	for (i = 0; (i < 8); ++i) {
+		memcpy(&tmp, &buf[(i * 2)], 2);
+		R->Register[i] = le2h16(tmp);
+	}
+}
 
 void SN76496Write(int chip,int data)
 {
@@ -140,14 +161,14 @@ void SN76496Write(int chip,int data)
 }
 
 
-void SN76496_0_w(int offset,int data) { SN76496Write(0,data); }
-void SN76496_1_w(int offset,int data) { SN76496Write(1,data); }
-void SN76496_2_w(int offset,int data) { SN76496Write(2,data); }
-void SN76496_3_w(int offset,int data) { SN76496Write(3,data); }
+void SN76496_0_w(int offset, int data) { (void)offset; SN76496Write(0, data); }
+void SN76496_1_w(int offset, int data) { (void)offset; SN76496Write(1, data); }
+void SN76496_2_w(int offset, int data) { (void)offset; SN76496Write(2, data); }
+void SN76496_3_w(int offset, int data) { (void)offset; SN76496Write(3, data); }
 
 
 
-void SN76496Update_8(int chip,void *buffer,int length)
+void SN76496Update_8_2(int chip,void *buffer,int length)
 {
 #define DATATYPE unsigned char
 #define DATACONV(A) AUDIO_CONV((A) / (STEP * 256))
@@ -156,7 +177,7 @@ void SN76496Update_8(int chip,void *buffer,int length)
 #undef DATACONV
 }
 
-void SN76496Update_16(int chip,void *buffer,int length)
+void SN76496Update_16_2(int chip,void *buffer,int length)
 {
 #define DATATYPE unsigned short
 #define DATACONV(A) ((A) / STEP)
@@ -189,7 +210,7 @@ static void SN76496_set_volume(int chip,int volume,int gain)
     int i;
     double out;
 
-
+    (void)volume;
     ///// commented out by starshine
     //stream_set_volume(R->Channel,volume);
 
@@ -218,14 +239,15 @@ int SN76496_init(int chip,int clock,int sample_rate,int sample_bits)
 {
     int i;
     struct SN76496 *R = &sn[chip];
-    char name[40];
+    /* char name[40]; */
 
+    (void)sample_bits;
     ////// commented out by starshine
     //sprintf(name,"SN76496 #%d",chip);
     //R->Channel = stream_init(msound,
     //        name,sample_rate,sample_bits,
     //        chip,(sample_bits == 16) ? SN76496Update_16 : SN76496Update_8);
-    
+
     if (R->Channel == -1)
         return 1;
 

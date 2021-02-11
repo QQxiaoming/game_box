@@ -21,7 +21,7 @@
 		int vol[4];
 		unsigned int out;
 		int left;
-
+		DATATYPE tmp;
 
 		/* vol[] keeps track of how long each square wave stays */
 		/* in the 1 position during the sample period. */
@@ -83,7 +83,11 @@
 
 		if (out > MAX_OUTPUT * STEP) out = MAX_OUTPUT * STEP;
 
-    *(buf++) = ((DATACONV(out)*3)>>3); // Dave: a bit quieter
+		tmp = ((DATACONV(out) * 3) >> 3); /* Dave: a bit quieter */
+
+		/* Both channels */
+		*(buf++) = tmp;
+		*(buf++) = tmp;
 
 		length--;
 	}

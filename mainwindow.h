@@ -56,6 +56,46 @@ private:
 };
 
 
+class DGENThread : public QThread
+{
+    Q_OBJECT
+
+public:
+    explicit DGENThread(QObject *parent = nullptr,void* buff = nullptr,QString pszFileName = "");
+    ~DGENThread();
+
+    void setMute(bool mute);
+
+    int DGEN_OpenRom(const char *pszFileName);
+    int DGEN_ReadRom(void *buf, unsigned int len);
+    void DGEN_CloseRom(void);
+    void DGEN_Wait(void);
+    void DGEN_LoadFrame(void);
+    void DGEN_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t *pdwSystem);
+    void DGEN_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2, uint8_t *wave3,
+                             uint8_t *wave4, uint8_t *wave5);
+    void DGEN_SoundClose(void);
+    int DGEN_SoundOpen(int samples_per_sync, int sample_rate);
+    void DGEN_SoundInit(void);
+    void DGEN_MessageBox(char *buf);
+    uint16_t* workFrame;
+    uint32_t pdwPad1 = 0;
+    uint32_t pdwPad2 = 0;
+    uint32_t pdwSystem = 0;
+
+protected:
+    void run();
+
+private:
+    QFile *file = nullptr;
+    QByteArray *fileName = nullptr;
+    QAudioOutput *audio = nullptr;
+    QAudioFormat *audioFormat = nullptr;
+    uchar *audio_buff = nullptr;
+    QIODevice *audio_dev = nullptr;
+    bool m_mute = false;
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -80,15 +120,19 @@ private slots:
     void sample_2_triggered();
     void sample_3_triggered();
     void sample_4_triggered();
+    void sample_5_triggered();
 
 private:
     Ui::MainWindow *ui;
-    QImage *qImg;
+    QImage *qImgNES;
+    QImage *qImgDGEN;
     uchar* buff;
     NESThread *nesThread = nullptr;
+    DGENThread *dgenThread = nullptr;
     QTimer *timer;
     KeySetting *key_setting = nullptr;
     void start_nesThread(QString file_name);
+    void start_dgenThread(QString file_name);
 };
 
 

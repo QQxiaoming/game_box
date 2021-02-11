@@ -11,7 +11,8 @@
 #include "K6502.h"
 #include "mainwindow.h"
 
-NESThread *g_nesThread;
+static NESThread *g_nesThread;
+
 void InfoNES_start(NESThread *nesThread,const char *pszFileName)
 {
     g_nesThread = nesThread;

@@ -19,21 +19,20 @@ SOURCES += \
     nes/src/InfoNES.cpp \
     nes/src/K6502.cpp \
     md/src/musa/m68kcpu.c \
-    md/src/musa/m68kopac.c \
-    md/src/musa/m68kopdm.c \
-    md/src/musa/m68kopnz.c \
+    md/src/musa/m68kdasm.c \
     md/src/musa/m68kops.c \
     md/src/md.cpp \
     md/src/mem.cpp \
     md/src/fm.c \
-    md/src/zz80.c \
     md/src/vdp.cpp \
     md/src/myfm.cpp \
     md/src/mdfr.cpp \
     md/src/sn76496.c \
-    md/src/romload.c \
     md/src/ras.cpp \
     md/src/graph.cpp \
+    md/src/save.cpp \
+    md/src/decode.c \
+    md/src/romload.cpp \
     md/port/md_port.cpp \
     main.cpp \
     mainwindow.cpp \

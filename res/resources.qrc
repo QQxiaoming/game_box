@@ -4,6 +4,7 @@
         <file>../games/MacrossSeries.nes</file>
         <file>../games/SuperMario.nes</file>
         <file>../games/Tanks.nes</file>
+        <file>../games/tiger_hunter_hero_novel_(chinese).smd</file>
     </qresource>
     <qresource prefix="/img">
         <file>../img/key.png</file>

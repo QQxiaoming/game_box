@@ -35,6 +35,8 @@
      <addaction name="action_sample_2"/>
      <addaction name="action_sample_3"/>
      <addaction name="action_sample_4"/>
+     <addaction name="separator"/>
+     <addaction name="action_sample_5"/>
     </widget>
     <addaction name="menu_sample"/>
     <addaction name="action_open"/>
@@ -87,17 +89,22 @@
     <string>超时空要塞</string>
    </property>
   </action>
+  <action name="action_sample_5">
+   <property name="text">
+    <string>水浒传</string>
+   </property>
+  </action>
   <action name="action_about">
    <property name="text">
     <string>关于</string>
    </property>
   </action>
   <action name="action_mute">
-   <property name="text">
-    <string>静音</string>
-   </property>
    <property name="checkable">
     <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>静音</string>
    </property>
   </action>
   <action name="action_key_setting">

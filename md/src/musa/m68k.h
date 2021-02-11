@@ -6,60 +6,39 @@
 /* ======================================================================== */
 /*
  *                                  MUSASHI
- *                                Version 2.0a
+ *                                Version 3.31
  *
  * A portable Motorola M680x0 processor emulation engine.
- * Copyright 1999 Karl Stenerud.  All rights reserved.
+ * Copyright 1998-2007 Karl Stenerud.  All rights reserved.
  *
- * This code may be freely used for non-commercial purpooses as long as this
+ * This code may be freely used for non-commercial purposes as long as this
  * copyright notice remains unaltered in the source code and any binary files
  * containing this code in compiled form.
  *
- * Any commercial ventures wishing to use this code must contact the author
- * (Karl Stenerud) to negotiate commercial licensing terms.
+ * All other lisencing terms must be negotiated with the author
+ * (Karl Stenerud).
  *
  * The latest version of this code can be obtained at:
- * http://milliways.scas.bcit.bc.ca/~karl/musashi
+ * http://kstenerud.cjb.net
  */
 
+/* ======================================================================== */
+/* ============================= CONFIGURATION ============================ */
+/* ======================================================================== */
 
-/* ======================================================================== */
-/* ============================= INSTRUCTIONS ============================= */
-/* ======================================================================== */
-/* 1. edit m68kconf.h and modify according to your needs.
- * 2. Implement in your host program the functions defined in
- *    "FUNCTIONS CALLED BY THE CPU" located later in this file.
- * 3. You must call m68k_pulse_reset() first to initialize the emulation.
- * 4. If you don't call m68k_set_cpu_mode(), it will default to 68000 behavior.
- *
- * Requirements:
- * - All operations in this core are done using a default size which must be
- *   at least 32 bits wide.
- * - Because of signed/unsigned operations required for CPU emulation, this
- *   core will only work on a 2's complement machine.  I'm not about to add
- *   2's complement emulation =).  If you don't know what 2's complement is,
- *   you most likely have it.
- *
- * Notes:
- *
- * You must at least implement the m68k_read_memory_xx() and
- * m68k_write_memory_xx() functions in order to use the emulation core.
- * Unless you plan to implement more direct access to memory for immediate
- * reads and instruction fetches, you can just #define the
- * m68k_read_immediate_xx() and m68k_read_instruction() functions to
- * the m68k_read_memory_xx() functions.
- *
- * In order to use the emulation, you will need to call m68k_input_reset()
- * and m68k_execute().  All the other functions are just to let you poke
- * about with the internals of the CPU.
- */
+/* Import the configuration for this build */
+#include "m68kconf.h"
 
 
 /* ======================================================================== */
 /* ============================ GENERAL DEFINES =========================== */
+
 /* ======================================================================== */
 
-/* There are 7 levels of interrupt to the 68000.  Level 7 cannot me masked */
+/* There are 7 levels of interrupt to the 68K.
+ * A transition from < 7 to 7 will cause a non-maskable interrupt (NMI).
+ */
+#define M68K_IRQ_NONE 0
 #define M68K_IRQ_1    1
 #define M68K_IRQ_2    2
 #define M68K_IRQ_3    3
@@ -75,53 +54,91 @@
  */
 
 /* Causes an interrupt autovector (0x18 + interrupt level) to be taken.
- * This happens in a real 68000 if VPA or AVEC is asserted during an interrupt
+ * This happens in a real 68K if VPA or AVEC is asserted during an interrupt
  * acknowledge cycle instead of DTACK.
  */
-#define M68K_INT_ACK_AUTOVECTOR    -1
+#define M68K_INT_ACK_AUTOVECTOR    0xffffffff
 
 /* Causes the spurious interrupt vector (0x18) to be taken
- * This happens in a real 68000 if BERR is asserted during the interrupt
+ * This happens in a real 68K if BERR is asserted during the interrupt
  * acknowledge cycle (i.e. no devices responded to the acknowledge).
  */
-#define M68K_INT_ACK_SPURIOUS      -2
+#define M68K_INT_ACK_SPURIOUS      0xfffffffe
 
 
 /* CPU types for use in m68k_set_cpu_type() */
-#define M68K_CPU_MODE_68000 1
-#define M68K_CPU_MODE_68010 2
-#define M68K_CPU_MODE_68020 4
-
-
-/* ======================================================================== */
-/* ============================== STRUCTURES ============================== */
-/* ======================================================================== */
-
-typedef struct                 /* CPU Context */
+enum
 {
-   unsigned int  mode;         /* CPU Operation Mode (68000, 68010, or 68020) */
-   unsigned int  sr;           /* Status Register */
-   unsigned int  ppc;		   /* Previous program counter */
-   unsigned int  pc;           /* Program Counter */
-   unsigned int  d[8];         /* Data Registers */
-   unsigned int  a[8];         /* Address Registers */
-   unsigned int  usp;          /* User Stack Pointer */
-   unsigned int  isp;          /* Interrupt Stack Pointer */
-   unsigned int  msp;          /* Master Stack Pointer */
-   unsigned int  vbr;          /* Vector Base Register.  Used in 68010+ */
-   unsigned int  sfc;          /* Source Function Code.  Used in 68010+ */
-   unsigned int  dfc;          /* Destination Function Code.  Used in 68010+ */
-   unsigned int  stopped;      /* Stopped state: only interrupt can restart */
-   unsigned int  halted;       /* Halted state: only reset can restart */
-   unsigned int  int_state;	   /* Current interrupt line states -- ASG: changed from ints_pending */
-   unsigned int  int_cycles;   /* Extra cycles taken due to interrupts -- ASG: added */
-   int  (*int_ack_callback)(int int_level); /* Interrupt Acknowledge */
-   void (*bkpt_ack_callback)(int data);     /* Breakpoint Acknowledge */
-   void (*reset_instr_callback)(void);      /* Called when a RESET instruction is encountered */
-   void (*pc_changed_callback)(int new_pc); /* Called when the PC changes by a large amount */
-   void (*set_fc_callback)(int new_fc);     /* Called when the CPU function code changes */
-   void (*instr_hook_callback)(void);       /* Called every instruction cycle prior to execution */
-} m68k_cpu_context;
+	M68K_CPU_TYPE_INVALID,
+	M68K_CPU_TYPE_68000,
+	M68K_CPU_TYPE_68008,
+	M68K_CPU_TYPE_68010,
+	M68K_CPU_TYPE_68EC020,
+	M68K_CPU_TYPE_68020,
+	M68K_CPU_TYPE_68030,	/* Supported by disassembler ONLY */
+	M68K_CPU_TYPE_68040		/* Supported by disassembler ONLY */
+};
+
+/* Registers used by m68k_get_reg() and m68k_set_reg() */
+typedef enum
+{
+	/* Real registers */
+	M68K_REG_D0,		/* Data registers */
+	M68K_REG_D1,
+	M68K_REG_D2,
+	M68K_REG_D3,
+	M68K_REG_D4,
+	M68K_REG_D5,
+	M68K_REG_D6,
+	M68K_REG_D7,
+	M68K_REG_A0,		/* Address registers */
+	M68K_REG_A1,
+	M68K_REG_A2,
+	M68K_REG_A3,
+	M68K_REG_A4,
+	M68K_REG_A5,
+	M68K_REG_A6,
+	M68K_REG_A7,
+	M68K_REG_PC,		/* Program Counter */
+	M68K_REG_SR,		/* Status Register */
+	M68K_REG_SP,		/* The current Stack Pointer (located in A7) */
+	M68K_REG_USP,		/* User Stack Pointer */
+	M68K_REG_ISP,		/* Interrupt Stack Pointer */
+	M68K_REG_MSP,		/* Master Stack Pointer */
+	M68K_REG_SFC,		/* Source Function Code */
+	M68K_REG_DFC,		/* Destination Function Code */
+	M68K_REG_VBR,		/* Vector Base Register */
+	M68K_REG_CACR,		/* Cache Control Register */
+	M68K_REG_CAAR,		/* Cache Address Register */
+
+	/* Assumed registers */
+	/* These are cheat registers which emulate the 1-longword prefetch
+     * present in the 68000 and 68010.
+     */
+	M68K_REG_PREF_ADDR,	/* Last prefetch address */
+	M68K_REG_PREF_DATA,	/* Last prefetch data */
+
+	/* Convenience registers */
+	M68K_REG_PPC,		/* Previous value in the program counter */
+	M68K_REG_IR,		/* Instruction register */
+	M68K_REG_CPU_TYPE	/* Type of CPU being run */
+} m68k_register_t;
+
+typedef struct
+{
+	/* If any of the R/W/X bits is disabled, call the associated
+	 * m68k_(read|write)_*() function instead of accessing it
+	 * directly.
+	 */
+	unsigned int r:1;    /* Read */
+	unsigned int w:1;    /* Write */
+	unsigned int x:1;    /* Execute (PC) */
+	unsigned int swab:1; /* Swap bytes during access */
+	unsigned int addr;   /* First address in M68K memory */
+	unsigned int size;   /* Size of this region in M68K memory */
+	unsigned int mask;   /* Mask addresses with mask before accessing mem */
+	void *mem;           /* First address in program memory */
+} m68k_mem_t;
 
 /* ======================================================================== */
 /* ====================== FUNCTIONS CALLED BY THE CPU ===================== */
@@ -133,27 +150,60 @@ typedef struct                 /* CPU Context */
  * while values used are 32 bits, only the appropriate number
  * of bits are relevant (i.e. in write_memory_8, only the lower 8 bits
  * of value should be written to memory).
- * address will be a 24-bit value.
+ *
+ * NOTE: I have separated the immediate and PC-relative memory fetches
+ *       from the other memory fetches because some systems require
+ *       differentiation between PROGRAM and DATA fetches (usually
+ *       for security setups such as encryption).
+ *       This separation can either be achieved by setting
+ *       M68K_SEPARATE_READS in m68kconf.h and defining
+ *       the read functions, or by setting M68K_EMULATE_FC and
+ *       making a function code callback function.
+ *       Using the callback offers better emulation coverage
+ *       because you can also monitor whether the CPU is in SYSTEM or
+ *       USER mode, but it is also slower.
  */
 
 /* Read from anywhere */
-int  m68k_read_memory_8(int address);
-int  m68k_read_memory_16(int address);
-int  m68k_read_memory_32(int address);
+unsigned int  m68k_read_memory_8(unsigned int address);
+unsigned int  m68k_read_memory_16(unsigned int address);
+unsigned int  m68k_read_memory_32(unsigned int address);
 
 /* Read data immediately following the PC */
-int  m68k_read_immediate_8(int address);
-int  m68k_read_immediate_16(int address);
-int  m68k_read_immediate_32(int address);
+unsigned int  m68k_read_immediate_16(unsigned int address);
+unsigned int  m68k_read_immediate_32(unsigned int address);
 
-/* Read an instruction (16-bit word immeditately after PC) */
-int  m68k_read_instruction(int address);
+/* Read data relative to the PC */
+unsigned int  m68k_read_pcrelative_8(unsigned int address);
+unsigned int  m68k_read_pcrelative_16(unsigned int address);
+unsigned int  m68k_read_pcrelative_32(unsigned int address);
+
+/* Memory access for the disassembler */
+unsigned int m68k_read_memory_8  (unsigned int address);
+unsigned int m68k_read_memory_16 (unsigned int address);
+unsigned int m68k_read_memory_32 (unsigned int address);
 
 /* Write to anywhere */
-void m68k_write_memory_8(int address, int value);
-void m68k_write_memory_16(int address, int value);
-void m68k_write_memory_32(int address, int value);
+void m68k_write_memory_8(unsigned int address, unsigned int value);
+void m68k_write_memory_16(unsigned int address, unsigned int value);
+void m68k_write_memory_32(unsigned int address, unsigned int value);
 
+/* Special call to simulate undocumented 68k behavior when move.l with a
+ * predecrement destination mode is executed.
+ * To simulate real 68k behavior, first write the high word to
+ * [address+2], and then write the low word to [address].
+ *
+ * Enable this functionality with M68K_SIMULATE_PD_WRITES in m68kconf.h.
+ */
+void m68k_write_memory_32_pd(unsigned int address, unsigned int value);
+
+/* Register an array of memory regions directly accessible from Musashi
+ * for faster direct access without having to use the above functions.
+ * See m68k_mem_t definition.
+ *
+ * Enable this functionality with M68K_REGISTER_MEMORY in m68kconf.h.
+ */
+void m68k_register_memory(m68k_mem_t memory[], unsigned int len);
 
 
 /* ======================================================================== */
@@ -169,60 +219,87 @@ void m68k_write_memory_32(int address, int value);
  */
 
 /* Set the callback for an interrupt acknowledge.
- * You must enable M68K_INT_ACK in m68kconf.h.
+ * You must enable M68K_EMULATE_INT_ACK in m68kconf.h.
  * The CPU will call the callback with the interrupt level being acknowledged.
  * The host program must return either a vector from 0x02-0xff, or one of the
  * special interrupt acknowledge values specified earlier in this header.
  * If this is not implemented, the CPU will always assume an autovectored
- * interrupt.
+ * interrupt, and will automatically clear the interrupt request when it
+ * services the interrupt.
  * Default behavior: return M68K_INT_ACK_AUTOVECTOR.
  */
 void m68k_set_int_ack_callback(int  (*callback)(int int_level));
 
 
 /* Set the callback for a breakpoint acknowledge (68010+).
- * You must enable M68K_BKPT_ACK in m68kconf.h.
+ * You must enable M68K_EMULATE_BKPT_ACK in m68kconf.h.
  * The CPU will call the callback with whatever was in the data field of the
  * BKPT instruction for 68020+, or 0 for 68010.
  * Default behavior: do nothing.
  */
-void m68k_set_bkpt_ack_callback(void (*callback)(int data));
+void m68k_set_bkpt_ack_callback(void (*callback)(unsigned int data));
 
 
 /* Set the callback for the RESET instruction.
- * You must enable M68K_OUTPUT_RESET in m68kconf.h.
+ * You must enable M68K_EMULATE_RESET in m68kconf.h.
  * The CPU calls this callback every time it encounters a RESET instruction.
  * Default behavior: do nothing.
  */
 void m68k_set_reset_instr_callback(void  (*callback)(void));
 
 
+/* Set the callback for the CMPI.L #v, Dn instruction.
+ * You must enable M68K_CMPILD_HAS_CALLBACK in m68kconf.h.
+ * The CPU calls this callback every time it encounters a CMPI.L #v, Dn instruction.
+ * Default behavior: do nothing.
+ */
+void m68k_set_cmpild_instr_callback(void  (*callback)(unsigned int val, int reg));
+
+
+/* Set the callback for the RTE instruction.
+ * You must enable M68K_RTE_HAS_CALLBACK in m68kconf.h.
+ * The CPU calls this callback every time it encounters a RTE instruction.
+ * Default behavior: do nothing.
+ */
+void m68k_set_rte_instr_callback(void  (*callback)(void));
+
+/* Set the callback for the TAS instruction.
+ * You must enable M68K_TAS_HAS_CALLBACK in m68kconf.h.
+ * The CPU calls this callback every time it encounters a TAS instruction.
+ * Default behavior: return 1, allow writeback.
+ */
+void m68k_set_tas_instr_callback(int  (*callback)(void));
+
+
+
 /* Set the callback for informing of a large PC change.
- * You must enable M68K_PC_CHANGED in m68kconf.h.
+ * You must enable M68K_MONITOR_PC in m68kconf.h.
  * The CPU calls this callback with the new PC value every time the PC changes
  * by a large value (currently set for changes by longwords).
  * Default behavior: do nothing.
  */
-void m68k_set_pc_changed_callback(void  (*callback)(int new_pc));
+void m68k_set_pc_changed_callback(void  (*callback)(unsigned int new_pc));
 
 
 /* Set the callback for CPU function code changes.
- * You must enable M68K_SET_FC in m68kconf.h.
+ * You must enable M68K_EMULATE_FC in m68kconf.h.
  * The CPU calls this callback with the function code before every memory
  * access to set the CPU's function code according to what kind of memory
  * access it is (supervisor/user, program/data and such).
  * Default behavior: do nothing.
  */
-void m68k_set_fc_callback(void  (*callback)(int new_fc));
+void m68k_set_fc_callback(void  (*callback)(unsigned int new_fc));
 
 
 /* Set a callback for the instruction cycle of the CPU.
- * You must enable M68K_INSTR_HOOK in m68kconf.h.
+ * You must enable M68K_INSTRUCTION_HOOK in m68kconf.h.
  * The CPU calls this callback just before fetching the opcode in the
  * instruction cycle.
+ * If this callback returns a nonzero value, the instruction isn't processed
+ * and m68k_execute() returns.
  * Default behavior: do nothing.
  */
-void m68k_set_instr_hook_callback(void  (*callback)(void));
+void m68k_set_instr_hook_callback(int  (*callback)(void));
 
 
 
@@ -230,87 +307,94 @@ void m68k_set_instr_hook_callback(void  (*callback)(void));
 /* ====================== FUNCTIONS TO ACCESS THE CPU ===================== */
 /* ======================================================================== */
 
-/* Use this function to set the CPU type ypu want to emulate.
- * Currently supported types are: M68K_CPU_MODE_68000, M68K_CPU_MODE_68010,
- * and M68K_CPU_MODE_68020.
+/* Use this function to set the CPU type you want to emulate.
+ * Currently supported types are: M68K_CPU_TYPE_68000, M68K_CPU_TYPE_68008,
+ * M68K_CPU_TYPE_68010, M68K_CPU_TYPE_EC020, and M68K_CPU_TYPE_68020.
  */
-void m68k_set_cpu_mode(int cpu_mode);
+void m68k_set_cpu_type(unsigned int cpu_type);
 
-/* Reset the CPU as if you asserted RESET */
-/* You *MUST* call this at least once to initialize the emulation */
-void m68k_pulse_reset(void *param);
-
-/* execute num_clks worth of instructions.  returns number of clks used */
-int m68k_execute(int num_clks);
-
-/* The following 2 functions simulate an interrupt controller attached to the
- * CPU since the 68000 needs an interrupt controller attached to work
- * properly.  Valid interrupt lines are 1, 2, 3, 4, 5, 6, and 7 (7 is a non-
- * maskable interrupt)
+/* Do whatever initialisations the core requires.  Should be called
+ * at least once at init time.
  */
-void m68k_assert_irq(int int_line);
-void m68k_clear_irq(int int_line);
+void m68k_init(void);
 
-/* Halt the CPU as if you asserted the HALT pin */
+/* Pulse the RESET pin on the CPU.
+ * You *MUST* reset the CPU at least once to initialize the emulation
+ * Note: If you didn't call m68k_set_cpu_type() before resetting
+ *       the CPU for the first time, the CPU will be set to
+ *       M68K_CPU_TYPE_68000.
+ */
+void m68k_pulse_reset(void);
+
+/* execute num_cycles worth of instructions.  returns number of cycles used */
+int m68k_execute(int num_cycles);
+
+/* These functions let you read/write/modify the number of cycles left to run
+ * while m68k_execute() is running.
+ * These are useful if the 68k accesses a memory-mapped port on another device
+ * that requires immediate processing by another CPU.
+ */
+int m68k_cycles_run(void);              /* Number of cycles run so far */
+int m68k_cycles_remaining(void);        /* Number of cycles left */
+void m68k_modify_timeslice(int cycles); /* Modify cycles left */
+void m68k_end_timeslice(void);          /* End timeslice now */
+
+/* Set the IPL0-IPL2 pins on the CPU (IRQ).
+ * A transition from < 7 to 7 will cause a non-maskable interrupt (NMI).
+ * Setting IRQ to 0 will clear an interrupt request.
+ */
+void m68k_set_irq(unsigned int int_level);
+
+
+/* Halt the CPU as if you pulsed the HALT pin. */
 void m68k_pulse_halt(void);
 
-/* look at the internals of the CPU */
-int m68k_peek_dr(int reg_num);
-int m68k_peek_ar(int reg_num);
-unsigned int m68k_peek_pc(void);
-unsigned int m68k_peek_ppc(void);
-int m68k_peek_sr(void);
-int m68k_peek_ir(void);
-int m68k_peek_t1_flag(void);
-int m68k_peek_t0_flag(void);
-int m68k_peek_s_flag(void);
-int m68k_peek_m_flag(void);
-int m68k_peek_int_mask(void);
-int m68k_peek_x_flag(void);
-int m68k_peek_n_flag(void);
-int m68k_peek_z_flag(void);
-int m68k_peek_v_flag(void);
-int m68k_peek_c_flag(void);
-int m68k_peek_usp(void);
-int m68k_peek_isp(void);
-int m68k_peek_msp(void);
 
-/* poke values into the internals of the CPU */
-void m68k_poke_dr(int reg_num, int value);
-void m68k_poke_ar(int reg_num, int value);
-void m68k_poke_pc(unsigned int value);
-void m68k_poke_sr(int value);
-void m68k_poke_ir(int value);
-void m68k_poke_t1_flag(int value);
-void m68k_poke_t0_flag(int value);
-void m68k_poke_s_flag(int value);
-void m68k_poke_m_flag(int value);
-void m68k_poke_int_mask(int value);
-void m68k_poke_x_flag(int value);
-void m68k_poke_n_flag(int value);
-void m68k_poke_z_flag(int value);
-void m68k_poke_v_flag(int value);
-void m68k_poke_c_flag(int value);
-void m68k_poke_usp(int value);
-void m68k_poke_isp(int value);
-void m68k_poke_msp(int value);
+/* Context switching to allow multiple CPUs */
 
-/* context switching to allow multiple CPUs */
-unsigned m68k_get_context(void* dst);
+/* Get the size of the cpu context in bytes */
+unsigned int m68k_context_size(void);
+
+/* Get a cpu context */
+unsigned int m68k_get_context(void* dst);
+
+/* set the current cpu context */
 void m68k_set_context(void* dst);
 
-/* check if an instruction is valid for the specified CPU mode */
-int m68k_is_valid_instruction(int instruction, int cpu_mode);
+/* Register the CPU state information */
+void m68k_state_register(const char *type, int index);
 
+
+/* Peek at the internals of a CPU context.  This can either be a context
+ * retrieved using m68k_get_context() or the currently running context.
+ * If context is NULL, the currently running CPU context will be used.
+ */
+unsigned int m68k_get_reg(void* context, m68k_register_t reg);
+
+/* Poke values into the internals of the currently running CPU context */
+void m68k_set_reg(m68k_register_t reg, unsigned int value);
+
+/* Check if an instruction is valid for the specified CPU type */
+unsigned int m68k_is_valid_instruction(unsigned int instruction, unsigned int cpu_type);
+
+/* Disassemble 1 instruction using the epecified CPU type at pc.  Stores
+ * disassembly in str_buff and returns the size of the instruction in bytes.
+ */
+unsigned int m68k_disassemble(char* str_buff, unsigned int pc, unsigned int cpu_type);
+
+/* Same as above but accepts raw opcode data directly rather than fetching
+ * via the read/write interfaces.
+ */
+unsigned int m68k_disassemble_raw(char* str_buff, unsigned int pc, const unsigned char* opdata, const unsigned char* argdata, unsigned int cpu_type);
 
 
 /* ======================================================================== */
-/* ============================= CONFIGURATION ============================ */
+/* ============================== MAME STUFF ============================== */
 /* ======================================================================== */
 
-/* Import the configuration for this build */
-#include "m68kconf.h"
-
+#if M68K_COMPILE_FOR_MAME == OPT_ON
+#include "m68kmame.h"
+#endif /* M68K_COMPILE_FOR_MAME */
 
 
 /* ======================================================================== */
