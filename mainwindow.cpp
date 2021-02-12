@@ -55,7 +55,8 @@ MainWindow::~MainWindow()
 void MainWindow::start_nesThread(QString file_name)
 {
     close_triggered();
-    this->setWindowTitle(file_name);
+    QFileInfo fileinfo = QFileInfo(file_name);
+    this->setWindowTitle(fileinfo.fileName());
     nesThread = new NESThread(this, buff, file_name);
     nesThread->setMute(ui->action_mute->isChecked());
     nesThread->start();
@@ -64,7 +65,8 @@ void MainWindow::start_nesThread(QString file_name)
 void MainWindow::start_dgenThread(QString file_name)
 {
     close_triggered();
-    this->setWindowTitle(file_name);
+    QFileInfo fileinfo = QFileInfo(file_name);
+    this->setWindowTitle(fileinfo.fileName());
     dgenThread = new DGENThread(this, buff, file_name);
     dgenThread->setMute(ui->action_mute->isChecked());
     dgenThread->start();
@@ -102,12 +104,34 @@ void MainWindow::sample_5_triggered()
 
 void MainWindow::open_triggered()
 {
-    QString file_name = QFileDialog::getOpenFileName(this, tr("选择文件"), "", "nes rom(*.nes)");
+    QString file_name = QFileDialog::getOpenFileName(this, tr("选择文件"), "", "NES ROM(*.nes);;MD ROM(*.smd);;Bin file(*.bin);;All file(*)");
     if (file_name.isEmpty())
     {
         return;
     }
-    start_nesThread(file_name);
+
+    QFileInfo fileinfo = QFileInfo(file_name);
+    QString file_suffix = fileinfo.suffix();
+    if(file_suffix == "nes")
+    {
+        start_nesThread(file_name);
+    }
+    else if(file_suffix == "smd")
+    {
+        start_dgenThread(file_name);
+    }
+    else if(file_suffix == "bin")
+    {
+        int format = QMessageBox::question(this, "提示", "请选择文件格式:","NES","MD");
+        if(format == 0)
+        {
+            start_nesThread(file_name);
+        }
+        else if(format == 1)
+        {
+            start_dgenThread(file_name);
+        }
+    }
 }
 
 void MainWindow::close_triggered()
