@@ -34,6 +34,7 @@ SOURCES += \
     md/src/save.cpp \
     md/src/decode.cpp \
     md/src/romload.cpp \
+    game_box_misc.cpp \
     main.cpp \
     mainwindow.cpp \
     keysetting.cpp
@@ -59,6 +60,7 @@ HEADERS += \
     md/src/rc-vars.h \
     md/src/romload.h \
     md/src/sn76496.h \
+    game_box_misc.h \
     mainwindow.h \
     keysetting.h
 

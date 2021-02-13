@@ -22,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
     qImg = new QImage(buff, MAX_WIDTH, MAX_HEIGHT, QImage::Format_RGB555);
     memset(buff, 0x0, MAX_WIDTH * MAX_HEIGHT * 2);
     this->setWindowTitle("GameBox");
-    timer->start(33);
+    timer->start(17);
 
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(timer_repaint()));
     QObject::connect(ui->action_open, SIGNAL(triggered()), this, SLOT(open_triggered()));
@@ -579,15 +579,9 @@ void NESThread::InfoNES_CloseRom(void)
     }
 }
 
-void NESThread::InfoNES_Wait(void)
+void NESThread::InfoNES_Wait(uint32_t us)
 {
-#if 1
-    this->usleep(1);
-#else
-    for (volatile int i = 0; i < 20; i++)
-        for (volatile int j = 0; j < 1000; j++)
-            ;
-#endif
+    this->usleep(us);
 }
 
 void NESThread::InfoNES_LoadFrame(uint16_t *frame,uint32_t size)

@@ -595,9 +595,6 @@ void InfoNES_Cycle() {
 
         // A function in H-Sync
         if (InfoNES_HSync() == -1) return;  // To the menu screen
-
-        // HSYNC Wait
-        InfoNES_Wait();
     }
 }
 
@@ -643,6 +640,9 @@ int InfoNES_HSync() {
     /*-------------------------------------------------------------------*/
     switch (PPU_Scanline) {
         case SCAN_TOP_OFF_SCREEN:
+            // HSYNC Wait
+            InfoNES_Wait();
+
             // Reset a PPU status
             PPU_R2 = 0;
 

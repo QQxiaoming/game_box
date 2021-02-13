@@ -10,8 +10,10 @@
 #include "InfoNES_pAPU.h"
 #include "InfoNES_K6502.h"
 #include "mainwindow.h"
+#include "game_box_misc.h"
 
 static NESThread *g_nesThread;
+static struct timeval tpstart;
 
 void InfoNES_start(NESThread *nesThread,const char *pszFileName)
 {
@@ -22,6 +24,8 @@ void InfoNES_start(NESThread *nesThread,const char *pszFileName)
     if (0 != InfoNES_Load(pszFileName)) {
         return;
     }
+
+    gettimeofday(&tpstart,nullptr);
 
     InfoNES_Main();
 
@@ -189,14 +193,28 @@ void InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2, uint8_t *w
                          uint8_t *wave4, uint8_t *wave5) {
     g_nesThread->InfoNES_SoundOutput(samples,wave1,wave2,wave3,wave4,wave5);
 }
-
+#include <QDateTime>
 /*===================================================================*/
 /*                                                                   */
 /*            InfoNES_Wait() : Wait Emulation if required            */
 /*                                                                   */
 /*===================================================================*/
 void InfoNES_Wait(void) {
-    g_nesThread->InfoNES_Wait();
+    const unsigned int usec_frame = (1000000UL / 60);
+    struct timeval tpend;
+    long timeuse;
+
+    gettimeofday(&tpend,nullptr);
+    timeuse=(1000000*(tpend.tv_sec-tpstart.tv_sec) + tpend.tv_usec-tpstart.tv_usec);
+    unsigned int tmp = (usec_frame - (unsigned int)timeuse);
+    if(tmp > 1000)
+    {
+        if (tmp > (1000000 / 50))
+            tmp = (1000000 / 50);
+        tmp -= 1000;
+        g_nesThread->InfoNES_Wait(tmp);
+    }
+    gettimeofday(&tpstart,nullptr);
 }
 
 /*===================================================================*/

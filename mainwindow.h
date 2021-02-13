@@ -28,7 +28,7 @@ public:
     int InfoNES_OpenRom(const char *pszFileName);
     int InfoNES_ReadRom(void *buf, unsigned int len);
     void InfoNES_CloseRom(void);
-    void InfoNES_Wait(void);
+    void InfoNES_Wait(uint32_t us);
     void InfoNES_LoadFrame(uint16_t *frame,uint32_t size);
     void InfoNES_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t *pdwSystem);
     void InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2, uint8_t *wave3,

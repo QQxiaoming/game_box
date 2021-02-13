@@ -1,5 +1,5 @@
 #include "mainwindow.h"
-#include <sys/time.h>
+#include "game_box_misc.h"
 #include <QDebug>
 
 
