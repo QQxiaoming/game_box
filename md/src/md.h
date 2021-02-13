@@ -16,7 +16,7 @@
 
 #include "sn76496.h"
 
-#include "md_port.h"
+#include "dgen_system.h"
 
 // Debugging macros and support functions. They look like this because C++98
 // lacks support for variadic macros. Not my fault.

@@ -12,7 +12,7 @@
 #include "InfoNES_System.h"
 #include "InfoNES_pAPU.h"
 
-#include "K6502.h"
+#include "InfoNES_K6502.h"
 
 /*-------------------------------------------------------------------*/
 /*   APU Event resources                                             */

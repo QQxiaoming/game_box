@@ -455,8 +455,9 @@ void NESThread::InfoNES_Wait(void)
 #endif
 }
 
-void NESThread::InfoNES_LoadFrame(void)
+void NESThread::InfoNES_LoadFrame(uint16_t *frame,uint32_t size)
 {
+    memcpy(workFrame,frame,size);
 }
 
 void NESThread::InfoNES_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t *pdwSystem)
@@ -619,8 +620,9 @@ void DGENThread::DGEN_Wait(void)
 #endif
 }
 
-void DGENThread::DGEN_LoadFrame(void)
+void DGENThread::DGEN_LoadFrame(uint8_t *frame,uint32_t size)
 {
+    memcpy(workFrame,frame,size);
 }
 
 void DGENThread::DGEN_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t *pdwSystem)

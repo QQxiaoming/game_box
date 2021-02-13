@@ -14,10 +14,11 @@ INCLUDEPATH += \
 
 SOURCES += \
     nes/port/InfoNES_System.cpp \
+    nes/src/InfoNES_K6502.cpp \
     nes/src/InfoNES_Mapper.cpp \
     nes/src/InfoNES_pAPU.cpp \
     nes/src/InfoNES.cpp \
-    nes/src/K6502.cpp \
+    md/port/dgen_system.cpp \
     md/src/musa/m68kcpu.cpp \
     md/src/musa/m68kdasm.cpp \
     md/src/musa/m68kops.cpp \
@@ -33,19 +34,31 @@ SOURCES += \
     md/src/save.cpp \
     md/src/decode.cpp \
     md/src/romload.cpp \
-    md/port/md_port.cpp \
     main.cpp \
     mainwindow.cpp \
     keysetting.cpp
     
 HEADERS += \
     nes/port/InfoNES_System.h \
+    nes/src/InfoNES_K6502.h \
     nes/src/InfoNES_Mapper.h \
     nes/src/InfoNES_pAPU.h \
     nes/src/InfoNES.h \
-    nes/src/K6502.h \
-    md/src/md.h \
+    md/port/dgen_system.h \
+    md/src/musa/m68k.h \
+    md/src/musa/m68kconf.h \
+    md/src/musa/m68kcpu.h \
+    md/src/musa/m68kops.h \
+    md/src/decode.h \
     md/src/fm.h \
+    md/src/md.h \
+    md/src/mem.h \
+    md/src/pd.h \
+    md/src/ras-drawplane.h \
+    md/src/rc.h \
+    md/src/rc-vars.h \
+    md/src/romload.h \
+    md/src/sn76496.h \
     mainwindow.h \
     keysetting.h
 

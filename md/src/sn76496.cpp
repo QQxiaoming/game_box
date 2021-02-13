@@ -15,7 +15,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "sn76496.h"
-#include "md_port.h"
+#include "dgen_system.h"
 
 
 #define MAX_OUTPUT 0x7fff

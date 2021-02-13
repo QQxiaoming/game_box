@@ -22,8 +22,8 @@
  *   InfoNES_System.h
  *
  * [CPU]
- *   K6502.cpp
- *   K6502.h
+ *   InfoNES_K6502.cpp
+ *   InfoNES_K6502.h
  *
  --------------------------------------------------------------------*/
 
@@ -36,7 +36,7 @@
 #include "InfoNES_Mapper.h"
 #include "InfoNES_System.h"
 #include "InfoNES_pAPU.h"
-#include "K6502.h"
+#include "InfoNES_K6502.h"
 
 /*-------------------------------------------------------------------*/
 /*  NES resources                                                    */

@@ -18,7 +18,8 @@ void DGEN_start(DGENThread *dgenThread,const char *pszFileName)
     char dgen_region = 0;
 
     g_dgenThread = dgenThread;
-    mdscr.data = (unsigned char *)g_dgenThread->workFrame;
+    mdscr.data = new unsigned char[336*256*2];
+    memset(mdscr.data,0x0,336*256*2);
     mdscr.h = 256;
     mdscr.w = 336;
     mdscr.bpp = 15;
@@ -46,15 +47,15 @@ void DGEN_start(DGENThread *dgenThread,const char *pszFileName)
         int hz;
         int pal;
 
-        md::region_info(c, &pal, &hz, 0, 0, 0);
+        md::region_info(c, &pal, &hz, nullptr, nullptr, nullptr);
         if ((hz != dgen_hz) || (pal != dgen_pal) ||
             (c != megad.region)) {
-            megad.region = c;
+            megad.region = (int8_t)c;
             dgen_hz = hz;
             dgen_pal = pal;
             printf("main: reconfiguring for region \"%c\": "
                    "%dHz (%s)\n", c, hz, (pal ? "PAL" : "NTSC"));
-            megad.pal = pal;
+            megad.pal = (unsigned int)pal;
             megad.init_pal();
             megad.init_sound();
         }
@@ -65,6 +66,7 @@ void DGEN_start(DGENThread *dgenThread,const char *pszFileName)
     {
         g_dgenThread->DGEN_PadState(&pdwPad1, &pdwPad2, &pdwSystem);
         megad.one_frame(&mdscr, mdpal, nullptr);
+        g_dgenThread->DGEN_LoadFrame(mdscr.data,336*256*2);
         g_dgenThread->DGEN_Wait();
     }
 
@@ -73,6 +75,7 @@ void DGEN_start(DGENThread *dgenThread,const char *pszFileName)
     YM2612Shutdown();
 
     delete [] mdpal;
+    delete [] mdscr.data;
 }
 
 
@@ -96,7 +99,7 @@ void unload(uint8_t *data)
     }
 }
 
-void dump_z80ram(  unsigned char *z80ram, int size )
+void dump_z80ram(unsigned char *z80ram, int size )
 {
     Q_UNUSED(z80ram);
     Q_UNUSED(size);

@@ -1,5 +1,5 @@
-#ifndef MD_PORT_H
-#define MD_PORT_H
+#ifndef DGEN_SYSTEM_H
+#define DGEN_SYSTEM_H
 
 #include <stddef.h>
 #include <stdio.h>

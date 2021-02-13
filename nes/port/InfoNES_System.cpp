@@ -8,7 +8,7 @@
 #include "InfoNES_Mapper.h"
 #include "InfoNES_System.h"
 #include "InfoNES_pAPU.h"
-#include "K6502.h"
+#include "InfoNES_K6502.h"
 #include "mainwindow.h"
 
 static NESThread *g_nesThread;
@@ -16,13 +16,16 @@ static NESThread *g_nesThread;
 void InfoNES_start(NESThread *nesThread,const char *pszFileName)
 {
     g_nesThread = nesThread;
-    WorkFrame = g_nesThread->workFrame;
+    WorkFrame = new unsigned short[256*240*2];
+    memset(WorkFrame,0x0,256*240*2);
 
     if (0 != InfoNES_Load(pszFileName)) {
         return;
     }
 
     InfoNES_Main();
+
+    delete [] WorkFrame;
 }
 
 // Palette data
@@ -117,7 +120,7 @@ void InfoNES_ReleaseRom(void) {
 /*                                                                   */
 /*===================================================================*/
 void InfoNES_LoadFrame(void) {
-    g_nesThread->InfoNES_LoadFrame();
+    g_nesThread->InfoNES_LoadFrame(WorkFrame,256*240*2);
 }
 
 
@@ -136,7 +139,7 @@ void InfoNES_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t *pdwSystem)
 /*                                                                   */
 /*===================================================================*/
 void *InfoNES_MemoryCopy(void *dest, const void *src, int count) {
-    memcpy(dest, src, count);
+    memcpy(dest, src, (size_t)count);
     return dest;
 }
 
@@ -146,7 +149,7 @@ void *InfoNES_MemoryCopy(void *dest, const void *src, int count) {
 /*                                                                   */
 /*===================================================================*/
 void *InfoNES_MemorySet(void *dest, int c, int count) {
-    memset(dest, c, count);
+    memset(dest, c, (size_t)count);
     return dest;
 }
 

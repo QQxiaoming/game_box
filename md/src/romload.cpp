@@ -9,7 +9,7 @@
 #include <string.h>
 #include <errno.h>
 #include "romload.h"
-#include "md_port.h"
+#include "dgen_system.h"
 
 static const char *rom_path = "roms";
 

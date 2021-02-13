@@ -1,13 +1,13 @@
 /*===================================================================*/
 /*                                                                   */
-/*  K6502.h : Header file for K6502                                  */
+/*  InfoNES_K6502.h : Header file for K6502                                  */
 /*                                                                   */
 /*  2000/05/29  InfoNES Project ( based on pNesX )                   */
 /*                                                                   */
 /*===================================================================*/
 
-#ifndef K6502_H_INCLUDED
-#define K6502_H_INCLUDED
+#ifndef InfoNES_K6502_H_INCLUDED
+#define InfoNES_K6502_H_INCLUDED
 
 #include <stdint.h>
 
@@ -63,4 +63,4 @@ extern uint8_t NMI_State;
 // The number of the clocks that it passed
 extern uint16_t g_wPassedClocks;
 
-#endif /* !K6502_H_INCLUDED */
+#endif /* !InfoNES_K6502_H_INCLUDED */
