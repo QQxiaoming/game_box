@@ -69,7 +69,7 @@ public:
     int DGEN_OpenRom(const char *pszFileName);
     int DGEN_ReadRom(void *buf, unsigned int len);
     void DGEN_CloseRom(void);
-    void DGEN_Wait(void);
+    void DGEN_Wait(uint32_t us);
     void DGEN_LoadFrame(uint8_t *frame,uint32_t size);
     void DGEN_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t *pdwSystem);
     void DGEN_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2, uint8_t *wave3,

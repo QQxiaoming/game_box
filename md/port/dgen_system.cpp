@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include <sys/time.h>
 #include <QDebug>
 
 
@@ -18,6 +19,8 @@ void DGEN_start(DGENThread *dgenThread,const char *pszFileName)
     char dgen_region = 0;
 
     g_dgenThread = dgenThread;
+    g_dgenThread->pdwPad1 = 0xf303f;
+    g_dgenThread->pdwPad2 = 0xf303f;
     mdscr.data = new unsigned char[336*256*2];
     memset(mdscr.data,0x0,336*256*2);
     mdscr.h = 256;
@@ -61,13 +64,28 @@ void DGEN_start(DGENThread *dgenThread,const char *pszFileName)
         }
     }
 
-    uint32_t pdwPad1=0,pdwPad2=0,pdwSystem=0;
+    uint32_t pdwSystem=0;
     while(!pdwSystem)
     {
-        g_dgenThread->DGEN_PadState(&pdwPad1, &pdwPad2, &pdwSystem);
+        const unsigned int usec_frame = (1000000 / dgen_hz);
+
+        struct timeval tpstart,tpend;
+        float timeuse;
+        gettimeofday(&tpstart,nullptr);
+
+        g_dgenThread->DGEN_PadState(&megad.pad[0], &megad.pad[1], &pdwSystem);
         megad.one_frame(&mdscr, mdpal, nullptr);
         g_dgenThread->DGEN_LoadFrame(mdscr.data,336*256*2);
-        g_dgenThread->DGEN_Wait();
+
+        gettimeofday(&tpend,nullptr);
+        timeuse=(1000000*(tpend.tv_sec-tpstart.tv_sec) + tpend.tv_usec-tpstart.tv_usec)/1000000.0;
+        unsigned int tmp = (usec_frame - (unsigned int)timeuse);
+        if(tmp > 1000)
+        {
+            if (tmp > (1000000 / 50))
+                tmp = (1000000 / 50);
+            g_dgenThread->DGEN_Wait(tmp);
+        }
     }
 
     // Cleanup
