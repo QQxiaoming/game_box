@@ -25,16 +25,17 @@ MainWindow::MainWindow(QWidget *parent)
     timer->start(17);
 
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(timer_repaint()));
-    QObject::connect(ui->action_open, SIGNAL(triggered()), this, SLOT(open_triggered()));
-    QObject::connect(ui->action_close, SIGNAL(triggered()), this, SLOT(close_triggered()));
-    QObject::connect(ui->action_about, SIGNAL(triggered()), this, SLOT(about_triggered()));
     QObject::connect(ui->action_sample_1, SIGNAL(triggered()), this, SLOT(sample_1_triggered()));
     QObject::connect(ui->action_sample_2, SIGNAL(triggered()), this, SLOT(sample_2_triggered()));
     QObject::connect(ui->action_sample_3, SIGNAL(triggered()), this, SLOT(sample_3_triggered()));
     QObject::connect(ui->action_sample_4, SIGNAL(triggered()), this, SLOT(sample_4_triggered()));
     QObject::connect(ui->action_sample_5, SIGNAL(triggered()), this, SLOT(sample_5_triggered()));
+    QObject::connect(ui->action_open, SIGNAL(triggered()), this, SLOT(open_triggered()));
+    QObject::connect(ui->action_close, SIGNAL(triggered()), this, SLOT(close_triggered()));
     QObject::connect(ui->action_mute, SIGNAL(triggered()), this, SLOT(mute_triggered()));
     QObject::connect(ui->action_key_setting, SIGNAL(triggered()), this, SLOT(key_setting_triggered()));
+    QObject::connect(ui->action_about, SIGNAL(triggered()), this, SLOT(about_triggered()));
+    QObject::connect(ui->action_about_qt, SIGNAL(triggered()), this, SLOT(about_qt_triggered()));
 }
 
 MainWindow::~MainWindow()
@@ -176,7 +177,12 @@ void MainWindow::key_setting_triggered()
 
 void MainWindow::about_triggered()
 {
-    QMessageBox::about(this, "About", "版本 \n " + VERSION + "\n作者\n qiaoqm@aliyun.com");
+    QMessageBox::about(this, "About GameBox", "版本 \n " + VERSION + "\n作者\n qiaoqm@aliyun.com");
+}
+
+void MainWindow::about_qt_triggered()
+{
+    QMessageBox::aboutQt(this);
 }
 
 void MainWindow::paintEvent(QPaintEvent *event)

@@ -112,16 +112,17 @@ protected:
 
 private slots:
     void timer_repaint();
-    void open_triggered();
-    void close_triggered();
-    void mute_triggered();
-    void key_setting_triggered();
-    void about_triggered();
     void sample_1_triggered();
     void sample_2_triggered();
     void sample_3_triggered();
     void sample_4_triggered();
     void sample_5_triggered();
+    void open_triggered();
+    void close_triggered();
+    void mute_triggered();
+    void key_setting_triggered();
+    void about_triggered();
+    void about_qt_triggered();
 
 private:
     Ui::MainWindow *ui;

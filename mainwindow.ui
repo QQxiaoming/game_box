@@ -47,6 +47,7 @@
      <string>帮助</string>
     </property>
     <addaction name="action_about"/>
+    <addaction name="action_about_qt"/>
    </widget>
    <widget class="QMenu" name="menu_setting">
     <property name="title">
@@ -71,32 +72,37 @@
   </action>
   <action name="action_sample_1">
    <property name="text">
-    <string>超级玛丽</string>
+    <string>超级玛丽.nes</string>
    </property>
   </action>
   <action name="action_sample_2">
    <property name="text">
-    <string>猫和老鼠</string>
+    <string>猫和老鼠.nes</string>
    </property>
   </action>
   <action name="action_sample_3">
    <property name="text">
-    <string>坦克大战</string>
+    <string>坦克大战.nes</string>
    </property>
   </action>
   <action name="action_sample_4">
    <property name="text">
-    <string>超时空要塞</string>
+    <string>超时空要塞.nes</string>
    </property>
   </action>
   <action name="action_sample_5">
    <property name="text">
-    <string>水浒传</string>
+    <string>水浒传.smd</string>
    </property>
   </action>
   <action name="action_about">
    <property name="text">
-    <string>关于</string>
+    <string>关于GameBox</string>
+   </property>
+  </action>
+  <action name="action_about_qt">
+   <property name="text">
+    <string>关于Qt</string>
    </property>
   </action>
   <action name="action_mute">
