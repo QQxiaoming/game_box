@@ -11,6 +11,7 @@
 
 
 static DGENThread *g_dgenThread = nullptr;
+static struct sndinfo mdsndi;
 struct bmap mdscr;
 unsigned char *mdpal;
 void DGEN_start(DGENThread *dgenThread,const char *pszFileName)
@@ -28,6 +29,8 @@ void DGEN_start(DGENThread *dgenThread,const char *pszFileName)
     mdscr.bpp = 15;
     mdscr.pitch = mdscr.w * 2;
     mdpal = new unsigned char[256];
+    mdsndi.len = (44100 / 60);
+    mdsndi.lr = new int16_t[mdsndi.len*2];
 
     md megad(dgen_pal,dgen_region);
     if(!megad.okay())
@@ -60,40 +63,45 @@ void DGEN_start(DGENThread *dgenThread,const char *pszFileName)
                    "%dHz (%s)\n", c, hz, (pal ? "PAL" : "NTSC"));
             megad.pal = (unsigned int)pal;
             megad.init_pal();
-            megad.init_sound();
         }
     }
+    megad.init_sound();
+    g_dgenThread->DGEN_SoundInit();
+    g_dgenThread->DGEN_SoundOpen(mdsndi.len,44100);
 
     uint32_t pdwSystem=0;
     while(!pdwSystem)
     {
-        const unsigned int usec_frame = (1000000 / dgen_hz);
+        const unsigned int usec_frame = (1000000UL / (uint32_t)dgen_hz);
 
         struct timeval tpstart,tpend;
-        float timeuse;
+        long timeuse;
         gettimeofday(&tpstart,nullptr);
 
         g_dgenThread->DGEN_PadState(&megad.pad[0], &megad.pad[1], &pdwSystem);
-        megad.one_frame(&mdscr, mdpal, nullptr);
-        g_dgenThread->DGEN_LoadFrame(mdscr.data,336*256*2);
+        megad.one_frame(&mdscr, mdpal, &mdsndi);
+        g_dgenThread->DGEN_LoadFrame(mdscr.data);
+        g_dgenThread->DGEN_SoundOutput(mdsndi.len,mdsndi.lr);
 
         gettimeofday(&tpend,nullptr);
-        timeuse=(1000000*(tpend.tv_sec-tpstart.tv_sec) + tpend.tv_usec-tpstart.tv_usec)/1000000.0;
+        timeuse=(1000000*(tpend.tv_sec-tpstart.tv_sec) + tpend.tv_usec-tpstart.tv_usec);
         unsigned int tmp = (usec_frame - (unsigned int)timeuse);
         if(tmp > 1000)
         {
             if (tmp > (1000000 / 50))
                 tmp = (1000000 / 50);
+            tmp -= 1000;
             g_dgenThread->DGEN_Wait(tmp);
         }
     }
 
-    // Cleanup
     megad.unplug();
     YM2612Shutdown();
+    g_dgenThread->DGEN_SoundClose();
 
     delete [] mdpal;
     delete [] mdscr.data;
+    delete [] mdsndi.lr;
 }
 
 

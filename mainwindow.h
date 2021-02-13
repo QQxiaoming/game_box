@@ -41,6 +41,7 @@ public:
     uint32_t pdwPad1 = 0;
     uint32_t pdwPad2 = 0;
     uint32_t pdwSystem = 0;
+    QImage *qImg;
 
 protected:
     void run();
@@ -70,10 +71,9 @@ public:
     int DGEN_ReadRom(void *buf, unsigned int len);
     void DGEN_CloseRom(void);
     void DGEN_Wait(uint32_t us);
-    void DGEN_LoadFrame(uint8_t *frame,uint32_t size);
+    void DGEN_LoadFrame(uint8_t *frame);
     void DGEN_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t *pdwSystem);
-    void DGEN_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2, uint8_t *wave3,
-                             uint8_t *wave4, uint8_t *wave5);
+    void DGEN_SoundOutput(int samples, int16_t *wave);
     void DGEN_SoundClose(void);
     int DGEN_SoundOpen(int samples_per_sync, int sample_rate);
     void DGEN_SoundInit(void);
@@ -82,6 +82,7 @@ public:
     uint32_t pdwPad1 = 0;
     uint32_t pdwPad2 = 0;
     uint32_t pdwSystem = 0;
+    QImage *qImg;
 
 protected:
     void run();
@@ -91,7 +92,7 @@ private:
     QByteArray *fileName = nullptr;
     QAudioOutput *audio = nullptr;
     QAudioFormat *audioFormat = nullptr;
-    uchar *audio_buff = nullptr;
+    short *audio_buff = nullptr;
     QIODevice *audio_dev = nullptr;
     bool m_mute = false;
 };
@@ -124,8 +125,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    QImage *qImgNES;
-    QImage *qImgDGEN;
+    QImage *qImg;
     uchar* buff;
     NESThread *nesThread = nullptr;
     DGENThread *dgenThread = nullptr;

@@ -18,15 +18,15 @@ struct rc_str {
 };
 
 #ifdef IS_MAIN_CPP
-#define RCVAR(name, def) intptr_t name = def
+#define RCVAR(name, def) int name = def
 #define RCSTR(name, def) struct rc_str name = { def, NULL, NULL }
 #define RCCTL(name, defk, defj, defm) \
-	intptr_t name[RCB_NUM] = { defk, defj, defm }
+    int name[RCB_NUM] = { defk, defj, defm }
 #else
-#define RCVAR(name, def) extern intptr_t name
+#define RCVAR(name, def) extern int name
 #define RCSTR(name, def) extern struct rc_str name
 #define RCCTL(name, defk, defj, defm) \
-	extern intptr_t name[RCB_NUM]
+    extern int name[RCB_NUM]
 #endif
 
 /*RCCTL(pad1_up, PDK_UP, JS_AXIS(0, 1, JS_AXIS_NEGATIVE), 0);

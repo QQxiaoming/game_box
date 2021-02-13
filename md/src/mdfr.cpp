@@ -509,7 +509,6 @@ inline int md::may_want_to_get_pic(struct bmap *bm,unsigned char retpal[256],int
 
 int md::may_want_to_get_sound(struct sndinfo *sndi)
 {
-  extern intptr_t dgen_volume;
   unsigned int i, len = sndi->len;
 
   // Get the PSG

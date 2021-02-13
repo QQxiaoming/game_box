@@ -3,7 +3,7 @@ QT       += multimedia
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 CONFIG += c++11
 DEFINES += QT_DEPRECATED_WARNINGS
-DEFINES += APP_VERSION="\\\"V0.0.1\\\""
+DEFINES += APP_VERSION="\\\"V0.0.2\\\""
 
 INCLUDEPATH += \
         -I ./nes/port \
@@ -86,7 +86,7 @@ UI_DIR      = $$build_type/ui
 win32:{
     QMAKE_LFLAGS += -Wl,--large-address-aware
 
-    VERSION = 0.0.1.0
+    VERSION = 0.0.2.0
     RC_LANG = 0x0004
     RC_ICONS = "img\icon.ico"
 
