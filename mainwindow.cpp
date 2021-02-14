@@ -209,155 +209,11 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 {
     if (nesThread != nullptr)
     {
-        switch (event->key())
-        {
-            case Qt::Key_Period:
-            {
-                nesThread->pdwPad1 |= (1UL << 0);
-                break;
-            }
-            case Qt::Key_Slash:
-            {
-                nesThread->pdwPad1 |= (1UL << 1);
-                break;
-            }
-            case Qt::Key_Control:
-            {
-                nesThread->pdwPad1 |= (1UL << 2);
-                break;
-            }
-            case Qt::Key_Return:
-            {
-                nesThread->pdwPad1 |= (1UL << 3);
-                break;
-            }
-            case Qt::Key_W:
-            {
-                nesThread->pdwPad1 |= (1UL << 4);
-                break;
-            }
-            case Qt::Key_S:
-            {
-                nesThread->pdwPad1 |= (1UL << 5);
-                break;
-            }
-            case Qt::Key_A:
-            {
-                nesThread->pdwPad1 |= (1UL << 6);
-                break;
-            }
-            case Qt::Key_D:
-            {
-                nesThread->pdwPad1 |= (1UL << 7);
-                break;
-            }
-            case Qt::Key_1:
-            {
-                nesThread->pdwPad2 |= (1UL << 0);
-                break;
-            }
-            case Qt::Key_2:
-            {
-                nesThread->pdwPad2 |= (1UL << 1);
-                break;
-            }
-            case Qt::Key_Plus:
-            {
-                nesThread->pdwPad2 |= (1UL << 2);
-                break;
-            }
-            case Qt::Key_Enter:
-            {
-                nesThread->pdwPad2 |= (1UL << 3);
-                break;
-            }
-            case Qt::Key_Up:
-            {
-                nesThread->pdwPad2 |= (1UL << 4);
-                break;
-            }
-            case Qt::Key_Down:
-            {
-                nesThread->pdwPad2 |= (1UL << 5);
-                break;
-            }
-            case Qt::Key_Left:
-            {
-                nesThread->pdwPad2 |= (1UL << 6);
-                break;
-            }
-            case Qt::Key_Right:
-            {
-                nesThread->pdwPad2 |= (1UL << 7);
-                break;
-            }
-        }
+        nesThread->processQtKeyEvent(static_cast<Qt::Key>(event->key()),true);
     }
     else if (dgenThread != nullptr)
     {
-        switch (event->key())
-        {
-            case Qt::Key_W:
-            {
-                dgenThread->pdwPad1 &= ~(1UL << 0);
-                break;
-            }
-            case Qt::Key_S:
-            {
-                dgenThread->pdwPad1 &= ~(1UL << 1);
-                break;
-            }
-            case Qt::Key_A:
-            {
-                dgenThread->pdwPad1 &= ~(1UL << 2);
-                break;
-            }
-            case Qt::Key_D:
-            {
-                dgenThread->pdwPad1 &= ~(1UL << 3);
-                break;
-            }
-            case Qt::Key_Period:
-            {
-                dgenThread->pdwPad1 &= ~(1UL << 4);
-                break;
-            }
-            case Qt::Key_Slash:
-            {
-                dgenThread->pdwPad1 &= ~(1UL << 5);
-                break;
-            }
-            case Qt::Key_Comma:
-            {
-                dgenThread->pdwPad1 &= ~(1UL << 12);
-                break;
-            }
-            case Qt::Key_Return:
-            {
-                dgenThread->pdwPad1 &= ~(1UL << 13);
-                break;
-            }
-            case Qt::Key_Apostrophe:
-            {
-                dgenThread->pdwPad1 &= ~(1UL << 16);
-                break;
-            }
-            case Qt::Key_Semicolon:
-            {
-                dgenThread->pdwPad1 &= ~(1UL << 17);
-                break;
-            }
-            case Qt::Key_L:
-            {
-                dgenThread->pdwPad1 &= ~(1UL << 18);
-                break;
-            }
-            case Qt::Key_Control:
-            {
-                dgenThread->pdwPad1 &= ~(1UL << 19);
-                break;
-            }
-        }
+        dgenThread->processQtKeyEvent(static_cast<Qt::Key>(event->key()),true);
     }
 }
 
@@ -365,155 +221,11 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 {
     if (nesThread != nullptr)
     {
-        switch (event->key())
-        {
-            case Qt::Key_Period:
-            {
-                nesThread->pdwPad1 &= ~(1UL << 0);
-                break;
-            }
-            case Qt::Key_Slash:
-            {
-                nesThread->pdwPad1 &= ~(1UL << 1);
-                break;
-            }
-            case Qt::Key_Control:
-            {
-                nesThread->pdwPad1 &= ~(1UL << 2);
-                break;
-            }
-            case Qt::Key_Return:
-            {
-                nesThread->pdwPad1 &= ~(1UL << 3);
-                break;
-            }
-            case Qt::Key_W:
-            {
-                nesThread->pdwPad1 &= ~(1UL << 4);
-                break;
-            }
-            case Qt::Key_S:
-            {
-                nesThread->pdwPad1 &= ~(1UL << 5);
-                break;
-            }
-            case Qt::Key_A:
-            {
-                nesThread->pdwPad1 &= ~(1UL << 6);
-                break;
-            }
-            case Qt::Key_D:
-            {
-                nesThread->pdwPad1 &= ~(1UL << 7);
-                break;
-            }
-            case Qt::Key_1:
-            {
-                nesThread->pdwPad2 &= ~(1UL << 0);
-                break;
-            }
-            case Qt::Key_2:
-            {
-                nesThread->pdwPad2 &= ~(1UL << 1);
-                break;
-            }
-            case Qt::Key_Plus:
-            {
-                nesThread->pdwPad2 &= ~(1UL << 2);
-                break;
-            }
-            case Qt::Key_Enter:
-            {
-                nesThread->pdwPad2 &= ~(1UL << 3);
-                break;
-            }
-            case Qt::Key_Up:
-            {
-                nesThread->pdwPad2 &= ~(1UL << 4);
-                break;
-            }
-            case Qt::Key_Down:
-            {
-                nesThread->pdwPad2 &= ~(1UL << 5);
-                break;
-            }
-            case Qt::Key_Left:
-            {
-                nesThread->pdwPad2 &= ~(1UL << 6);
-                break;
-            }
-            case Qt::Key_Right:
-            {
-                nesThread->pdwPad2 &= ~(1UL << 7);
-                break;
-            }
-        }
+        nesThread->processQtKeyEvent(static_cast<Qt::Key>(event->key()),false);
     }
     else if (dgenThread != nullptr)
     {
-        switch (event->key())
-        {
-            case Qt::Key_W:
-            {
-                dgenThread->pdwPad1 |= (1UL << 0);
-                break;
-            }
-            case Qt::Key_S:
-            {
-                dgenThread->pdwPad1 |= (1UL << 1);
-                break;
-            }
-            case Qt::Key_A:
-            {
-                dgenThread->pdwPad1 |= (1UL << 2);
-                break;
-            }
-            case Qt::Key_D:
-            {
-                dgenThread->pdwPad1 |= (1UL << 3);
-                break;
-            }
-            case Qt::Key_Period:
-            {
-                dgenThread->pdwPad1 |= (1UL << 4);
-                break;
-            }
-            case Qt::Key_Slash:
-            {
-                dgenThread->pdwPad1 |= (1UL << 5);
-                break;
-            }
-            case Qt::Key_Comma:
-            {
-                dgenThread->pdwPad1 |= (1UL << 12);
-                break;
-            }
-            case Qt::Key_Return:
-            {
-                dgenThread->pdwPad1 |= (1UL << 13);
-                break;
-            }
-            case Qt::Key_Apostrophe:
-            {
-                dgenThread->pdwPad1 |= (1UL << 16);
-                break;
-            }
-            case Qt::Key_Semicolon:
-            {
-                dgenThread->pdwPad1 |= (1UL << 17);
-                break;
-            }
-            case Qt::Key_L:
-            {
-                dgenThread->pdwPad1 |= (1UL << 18);
-                break;
-            }
-            case Qt::Key_Control:
-            {
-                dgenThread->pdwPad1 |= (1UL << 19);
-                break;
-            }
-        }
+        dgenThread->processQtKeyEvent(static_cast<Qt::Key>(event->key()),false);
     }
 }
 
@@ -544,6 +256,56 @@ void NESThread::run()
 {
     extern void InfoNES_start(NESThread * nesThread, const char *pszFileName);
     InfoNES_start(this, fileName->data());
+}
+
+void NESThread::processQtKeyEvent(Qt::Key key,bool press)
+{
+    uint8_t keyVale1 = 0xff;
+    uint8_t keyVale2 = 0xff;
+    switch (key)
+    {
+        case Qt::Key_Period:  keyVale1 = 0; break;
+        case Qt::Key_Slash:   keyVale1 = 1; break;
+        case Qt::Key_Control: keyVale1 = 2; break;
+        case Qt::Key_Return:  keyVale1 = 3; break;
+        case Qt::Key_W:       keyVale1 = 4; break;
+        case Qt::Key_S:       keyVale1 = 5; break;
+        case Qt::Key_A:       keyVale1 = 6; break;
+        case Qt::Key_D:       keyVale1 = 7; break;
+
+        case Qt::Key_1:       keyVale2 = 0; break;
+        case Qt::Key_2:       keyVale2 = 1; break;
+        case Qt::Key_Plus:    keyVale2 = 2; break;
+        case Qt::Key_Enter:   keyVale2 = 3; break;
+        case Qt::Key_Up:      keyVale2 = 4; break;
+        case Qt::Key_Down:    keyVale2 = 5; break;
+        case Qt::Key_Left:    keyVale2 = 6; break;
+        case Qt::Key_Right:   keyVale2 = 7; break;
+
+        default:                            break;
+    }
+    if(keyVale1 != 0xff)
+    {
+        if(press)
+        {
+            this->pdwPad1 |= (0x1UL << keyVale1);
+        }
+        else
+        {
+            this->pdwPad1 &= ~(0x1UL << keyVale1);
+        }
+    }
+    if(keyVale2 != 0xff)
+    {
+        if(press)
+        {
+            this->pdwPad2 |= (0x1UL << keyVale2);
+        }
+        else
+        {
+            this->pdwPad2 &= ~(0x1UL << keyVale2);
+        }
+    }
 }
 
 void NESThread::setMute(bool mute)
@@ -705,6 +467,64 @@ void DGENThread::run()
 {
     extern void DGEN_start(DGENThread * dgenThread, const char *pszFileName);
     DGEN_start(this, fileName->data());
+}
+
+void DGENThread::processQtKeyEvent(Qt::Key key,bool press)
+{
+    uint8_t keyVale1 = 0xff;
+    uint8_t keyVale2 = 0xff;
+    switch (key)
+    {
+        case Qt::Key_W:          keyVale1 = 0;  break;
+        case Qt::Key_S:          keyVale1 = 1;  break;
+        case Qt::Key_A:          keyVale1 = 2;  break;
+        case Qt::Key_D:          keyVale1 = 3;  break;
+        case Qt::Key_Period:     keyVale1 = 4;  break;
+        case Qt::Key_Slash:      keyVale1 = 5;  break;
+        case Qt::Key_Comma:      keyVale1 = 12; break;
+        case Qt::Key_Return:     keyVale1 = 13; break;
+        case Qt::Key_Apostrophe: keyVale1 = 16; break;
+        case Qt::Key_Semicolon:  keyVale1 = 17; break;
+        case Qt::Key_L:          keyVale1 = 18; break;
+        case Qt::Key_Control:    keyVale1 = 19; break;
+
+        case Qt::Key_Up:         keyVale2 = 0;  break;
+        case Qt::Key_Down:       keyVale2 = 1;  break;
+        case Qt::Key_Left:       keyVale2 = 2;  break;
+        case Qt::Key_Right:      keyVale2 = 3;  break;
+        case Qt::Key_3:          keyVale2 = 4;  break;
+        case Qt::Key_2:          keyVale2 = 5;  break;
+        case Qt::Key_1:          keyVale2 = 12; break;
+        case Qt::Key_Enter:      keyVale2 = 13; break;
+        case Qt::Key_6:          keyVale2 = 16; break;
+        case Qt::Key_5:          keyVale2 = 17; break;
+        case Qt::Key_4:          keyVale2 = 18; break;
+        case Qt::Key_Plus:       keyVale2 = 19; break;
+
+        default:                                break;
+    }
+    if(keyVale1 != 0xff)
+    {
+        if(!press)
+        {
+            this->pdwPad1 |= (0x1UL << keyVale1);
+        }
+        else
+        {
+            this->pdwPad1 &= ~(0x1UL << keyVale1);
+        }
+    }
+    if(keyVale2 != 0xff)
+    {
+        if(!press)
+        {
+            this->pdwPad2 |= (0x1UL << keyVale2);
+        }
+        else
+        {
+            this->pdwPad2 &= ~(0x1UL << keyVale2);
+        }
+    }
 }
 
 void DGENThread::setMute(bool mute)
