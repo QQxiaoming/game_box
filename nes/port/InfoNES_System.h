@@ -61,6 +61,6 @@ void InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2, uint8_t *w
                          uint8_t *wave4, uint8_t *wave5);
 
 /* Print system message */
-void InfoNES_MessageBox(char *pszMsg, ...);
+void InfoNES_MessageBox(const char *pszMsg, ...);
 
 #endif /* !InfoNES_SYSTEM_H_INCLUDED */

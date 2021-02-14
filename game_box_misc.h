@@ -5,7 +5,7 @@
 
 #if defined(Q_OS_WIN)
 #include <windows.h>
-int gettimeofday( struct timeval *tv, struct timezone *tz );
+int gettimeofday(struct timeval *tv, struct timezone *tz);
 #endif
 
 #if defined(Q_OS_LINUX)
@@ -13,8 +13,8 @@ int gettimeofday( struct timeval *tv, struct timezone *tz );
 #endif
 
 #if defined(Q_OS_MACOS)
-#  include <mach/mach.h>
-#  include <mach/mach_time.h>
+#include <mach/mach.h>
+#include <mach/mach_time.h>
 #endif
 
 #endif /* GAME_BOX_MISC */

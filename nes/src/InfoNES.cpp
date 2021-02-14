@@ -405,7 +405,7 @@ int InfoNES_Reset() {
 
     if (MapperTable[nIdx].nMapperNo == -1) {
         // Non support mapper
-        InfoNES_MessageBox((char*)"Mapper #%d is unsupported.\n", MapperNo);
+        InfoNES_MessageBox("Mapper #%d is unsupported.\n", MapperNo);
         return -1;
     }
 

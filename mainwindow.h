@@ -12,7 +12,10 @@
 #include "keysetting.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
+namespace Ui
+{
+    class MainWindow;
+}
 QT_END_NAMESPACE
 
 class NESThread : public QThread
@@ -20,7 +23,7 @@ class NESThread : public QThread
     Q_OBJECT
 
 public:
-    explicit NESThread(QObject *parent = nullptr,void* buff = nullptr,QString pszFileName = "");
+    explicit NESThread(QObject *parent = nullptr, void *buff = nullptr, QString pszFileName = "");
     ~NESThread();
 
     void setMute(bool mute);
@@ -29,7 +32,7 @@ public:
     int InfoNES_ReadRom(void *buf, unsigned int len);
     void InfoNES_CloseRom(void);
     void InfoNES_Wait(uint32_t us);
-    void InfoNES_LoadFrame(uint16_t *frame,uint32_t size);
+    void InfoNES_LoadFrame(uint16_t *frame, uint32_t size);
     void InfoNES_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t *pdwSystem);
     void InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2, uint8_t *wave3,
                              uint8_t *wave4, uint8_t *wave5);
@@ -37,7 +40,7 @@ public:
     int InfoNES_SoundOpen(int samples_per_sync, int sample_rate);
     void InfoNES_SoundInit(void);
     void InfoNES_MessageBox(char *buf);
-    uint16_t* workFrame;
+    uint16_t *workFrame;
     uint32_t pdwPad1 = 0;
     uint32_t pdwPad2 = 0;
     uint32_t pdwSystem = 0;
@@ -56,13 +59,12 @@ private:
     bool m_mute = false;
 };
 
-
 class DGENThread : public QThread
 {
     Q_OBJECT
 
 public:
-    explicit DGENThread(QObject *parent = nullptr,void* buff = nullptr,QString pszFileName = "");
+    explicit DGENThread(QObject *parent = nullptr, void *buff = nullptr, QString pszFileName = "");
     ~DGENThread();
 
     void setMute(bool mute);
@@ -78,7 +80,7 @@ public:
     int DGEN_SoundOpen(int samples_per_sync, int sample_rate);
     void DGEN_SoundInit(void);
     void DGEN_MessageBox(char *buf);
-    uint16_t* workFrame;
+    uint16_t *workFrame;
     uint32_t pdwPad1 = 0;
     uint32_t pdwPad2 = 0;
     uint32_t pdwSystem = 0;
@@ -107,8 +109,8 @@ public:
 
 protected:
     void paintEvent(QPaintEvent *event);
-    void keyPressEvent(QKeyEvent * event);
-    void keyReleaseEvent(QKeyEvent * event);
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 
 private slots:
     void timer_repaint();
@@ -127,7 +129,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QImage *qImg;
-    uchar* buff;
+    uchar *buff;
     NESThread *nesThread = nullptr;
     DGENThread *dgenThread = nullptr;
     QTimer *timer;
@@ -135,6 +137,5 @@ private:
     void start_nesThread(QString file_name);
     void start_dgenThread(QString file_name);
 };
-
 
 #endif // MAINWINDOW_H

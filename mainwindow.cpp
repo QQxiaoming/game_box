@@ -7,7 +7,7 @@
 #include "ui_mainwindow.h"
 
 #define SOUND_NUM_FARME 2
-#define MAX_WIDTH  320
+#define MAX_WIDTH 320
 #define MAX_HEIGHT 240
 
 const QString VERSION = APP_VERSION;
@@ -117,22 +117,22 @@ void MainWindow::open_triggered()
 
     QFileInfo fileinfo = QFileInfo(file_name);
     QString file_suffix = fileinfo.suffix();
-    if(file_suffix == "nes")
+    if (file_suffix == "nes")
     {
         start_nesThread(file_name);
     }
-    else if(file_suffix == "smd")
+    else if (file_suffix == "smd")
     {
         start_dgenThread(file_name);
     }
-    else if(file_suffix == "bin")
+    else if (file_suffix == "bin")
     {
-        int format = QMessageBox::question(this, "提示", "请选择文件格式:","NES","MD");
-        if(format == 0)
+        int format = QMessageBox::question(this, "提示", "请选择文件格式:", "NES", "MD");
+        if (format == 0)
         {
             start_nesThread(file_name);
         }
-        else if(format == 1)
+        else if (format == 1)
         {
             start_dgenThread(file_name);
         }
@@ -189,11 +189,11 @@ void MainWindow::paintEvent(QPaintEvent *event)
 {
     QPainter painter;
     QImage *qImg = this->qImg;
-    if(nesThread != nullptr)
+    if (nesThread != nullptr)
     {
         qImg = nesThread->qImg;
     }
-    else if(dgenThread != nullptr)
+    else if (dgenThread != nullptr)
     {
         qImg = dgenThread->qImg;
     }
@@ -522,7 +522,8 @@ void MainWindow::timer_repaint()
     this->repaint();
 }
 
-NESThread::NESThread(QObject *parent, void *buff, QString pszFileName) : QThread(parent)
+NESThread::NESThread(QObject *parent, void *buff, QString pszFileName) 
+    : QThread(parent)
 {
     qImg = new QImage(static_cast<uchar *>(buff), 256, 240, QImage::Format_RGB555);
     workFrame = static_cast<uint16_t *>(buff);
@@ -590,9 +591,9 @@ void NESThread::InfoNES_Wait(uint32_t us)
     this->usleep(us);
 }
 
-void NESThread::InfoNES_LoadFrame(uint16_t *frame,uint32_t size)
+void NESThread::InfoNES_LoadFrame(uint16_t *frame, uint32_t size)
 {
-    memcpy(workFrame,frame,size);
+    memcpy(workFrame, frame, size);
 }
 
 void NESThread::InfoNES_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t *pdwSystem)
@@ -642,7 +643,7 @@ void NESThread::InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2,
         Q_UNUSED(wave3);
         Q_UNUSED(wave4);
         Q_UNUSED(wave5);
-        if(m_mute)
+        if (m_mute)
         {
             audio_buff[i + index * samples] = 0;
         }
@@ -660,7 +661,7 @@ void NESThread::InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2,
         int len = 0;
         forever
         {
-            void *temp = static_cast<void *>(audio_buff+len);
+            void *temp = static_cast<void *>(audio_buff + len);
             int n = static_cast<int>(audio_dev->write(static_cast<char *>(temp), static_cast<qint64>(samples * SOUND_NUM_FARME - len)));
             if (n == -1)
             {
@@ -682,8 +683,8 @@ void NESThread::InfoNES_MessageBox(char *buf)
     qDebug() << buf;
 }
 
-
-DGENThread::DGENThread(QObject *parent, void *buff, QString pszFileName) : QThread(parent)
+DGENThread::DGENThread(QObject *parent, void *buff, QString pszFileName) 
+    : QThread(parent)
 {
     qImg = new QImage(static_cast<uchar *>(buff), 304, 224, QImage::Format_RGB555);
     workFrame = static_cast<uint16_t *>(buff);
@@ -753,8 +754,9 @@ void DGENThread::DGEN_Wait(uint32_t us)
 
 void DGENThread::DGEN_LoadFrame(uint8_t *frame)
 {
-    for (int i=0;i<224;i++) {
-        memcpy(workFrame+i*304,frame+(i+8)*2*336+(16)*2,304*2);
+    for (int i = 0; i < 224; i++)
+    {
+        memcpy(workFrame + i * 304, frame + (i + 8) * 2 * 336 + (16) * 2, 304 * 2);
     }
 }
 
@@ -779,9 +781,9 @@ int DGENThread::DGEN_SoundOpen(int samples_per_sync, int sample_rate)
 {
     audioFormat->setSampleRate(sample_rate);
     audio = new QAudioOutput(*audioFormat, nullptr);
-    audio_buff = new short[2*samples_per_sync * SOUND_NUM_FARME];
-    memset(audio_buff, 0x0, static_cast<size_t>(2*2*samples_per_sync * SOUND_NUM_FARME));
-    audio->setBufferSize(2*2*samples_per_sync*10);
+    audio_buff = new short[2 * samples_per_sync * SOUND_NUM_FARME];
+    memset(audio_buff, 0x0, static_cast<size_t>(2 * 2 * samples_per_sync * SOUND_NUM_FARME));
+    audio->setBufferSize(2 * 2 * samples_per_sync * 10);
     audio_dev = audio->start();
     return 0;
 }
@@ -796,15 +798,15 @@ void DGENThread::DGEN_SoundClose(void)
 void DGENThread::DGEN_SoundOutput(int samples, int16_t *wave)
 {
     static int index = 0;
-    for (int i = 0; i < 2*samples; i++)
+    for (int i = 0; i < 2 * samples; i++)
     {
-        if(m_mute)
+        if (m_mute)
         {
-            audio_buff[i + index * 2*samples] = 0;
+            audio_buff[i + index * 2 * samples] = 0;
         }
         else
         {
-            audio_buff[i + index * 2*samples] = wave[i];
+            audio_buff[i + index * 2 * samples] = wave[i];
         }
     }
     if (index < SOUND_NUM_FARME - 1)
@@ -816,9 +818,9 @@ void DGENThread::DGEN_SoundOutput(int samples, int16_t *wave)
         int len = 0;
         forever
         {
-            void *temp = static_cast<void *>(audio_buff) ;
+            void *temp = static_cast<void *>(audio_buff);
             char *temp1 = static_cast<char *>(temp);
-            int n = static_cast<int>(audio_dev->write(temp1 + len, static_cast<qint64>(2*2*samples * SOUND_NUM_FARME - len)));
+            int n = static_cast<int>(audio_dev->write(temp1 + len, static_cast<qint64>(2 * 2 * samples * SOUND_NUM_FARME - len)));
             if (n == -1)
             {
                 break;
@@ -826,7 +828,7 @@ void DGENThread::DGEN_SoundOutput(int samples, int16_t *wave)
             else
             {
                 len += n;
-                if (2*2*samples * SOUND_NUM_FARME == len)
+                if (2 * 2 * samples * SOUND_NUM_FARME == len)
                     break;
             }
         }

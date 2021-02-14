@@ -5,8 +5,9 @@
 #include <QImage>
 #include <QEvent>
 
-namespace Ui {
-class KeySetting;
+namespace Ui
+{
+    class KeySetting;
 }
 
 class KeySetting : public QWidget
@@ -19,8 +20,8 @@ public:
 
 protected:
     void paintEvent(QPaintEvent *event);
-    void keyPressEvent(QKeyEvent * event);
-    void keyReleaseEvent(QKeyEvent * event);
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 
 private:
     Ui::KeySetting *ui;
