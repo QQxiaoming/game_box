@@ -363,7 +363,7 @@ int InfoNES_Reset() {
     /*-------------------------------------------------------------------*/
 
     // Clear RAM
-    InfoNES_MemorySet(RAM, 0, sizeof RAM);
+    InfoNES_MemorySet(RAM, 0x0, sizeof(RAM));
 
     // Reset frame skip and frame count
     FrameSkip = 0;
@@ -373,10 +373,10 @@ int InfoNES_Reset() {
     ChrBufUpdate = 0xff;
 
     // Reset palette table
-    InfoNES_MemorySet(PalTable, 0, sizeof PalTable);
+    InfoNES_MemorySet(PalTable, 0, sizeof(PalTable));
 
     // Reset APU register
-    InfoNES_MemorySet(APU_Reg, 0, sizeof APU_Reg);
+    InfoNES_MemorySet(APU_Reg, 0, sizeof(APU_Reg));
 
     // Reset joypad
     PAD1_Latch = PAD2_Latch = PAD_System = 0;

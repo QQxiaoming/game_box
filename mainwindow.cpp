@@ -399,12 +399,14 @@ void NESThread::InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2,
     static int index = 0;
     for (int i = 0; i < samples; i++)
     {
-        //TODO: wave1 wave2 通道声音正确
-        //      其余3通道 Triangle, Noise, DPCM输出不正常
-        uint32_t wav = (static_cast<uint32_t>(wave1[i]) + static_cast<uint32_t>(wave2[i])) / 2UL;
+        uint32_t wav = (static_cast<uint32_t>(wave1[i]) +
+                        static_cast<uint32_t>(wave2[i]) +
+                        //static_cast<uint32_t>(wave3[i]) + //TODO:音频输出不正确
+                        //static_cast<uint32_t>(wave4[i]) + //TODO:音频输出不正确
+                        static_cast<uint32_t>(wave5[i]) +
+                        0) / 5UL;
         Q_UNUSED(wave3);
         Q_UNUSED(wave4);
-        Q_UNUSED(wave5);
         if (m_mute)
         {
             audio_buff[i + index * samples] = 0;

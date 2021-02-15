@@ -77,6 +77,7 @@ uint8_t wave_buffers[5][735]; /* 44100 / 60 = 735 samples per sync */
 
 uint8_t ApuCtrl;
 uint8_t ApuCtrlNew;
+uint32_t ApuCntRate;
 
 /*-------------------------------------------------------------------*/
 /*   APU Quality resources                                           */
@@ -265,10 +266,11 @@ int ApuWriteWave1(int cycles, int event) {
 
                 case 2:
                     ApuC1c = ApuEventQueue[event].data;
-                    ApuC1Freq = ((((uint16_t)ApuC1d & 0x07) << 8) + ApuC1c);
-                    ApuC1Atl = ApuAtl[(ApuC1d & 0xf8) >> 3];
+                    ApuC1Freq &= 0xFF00;
+                    ApuC1Freq |= (uint16_t)(ApuC1c);
+                    //ApuC1Atl = ApuAtl[(ApuC1d >> 3)&0x1f];
 
-                    if (ApuC1Freq) {
+                    if (ApuC1Freq / 2) {
                         ApuC1Skip = ApuPulseMagic / (ApuC1Freq / 2);
                     } else {
                         ApuC1Skip = 0;
@@ -277,10 +279,10 @@ int ApuWriteWave1(int cycles, int event) {
 
                 case 3:
                     ApuC1d = ApuEventQueue[event].data;
-                    ApuC1Freq = ((((uint16_t)ApuC1d & 0x07) << 8) + ApuC1c);
-                    ApuC1Atl = ApuAtl[(ApuC1d & 0xf8) >> 3];
+                    ApuC1Freq = (ApuC1Freq & 0xff)|(((uint16_t)(ApuC1d & 0x07)) << 8);
+                    ApuC1Atl = ApuAtl[(ApuC1d >> 3)&0x1f];
 
-                    if (ApuC1Freq) {
+                    if (ApuC1Freq / 2) {
                         ApuC1Skip = ApuPulseMagic / (ApuC1Freq / 2);
                     } else {
                         ApuC1Skip = 0;
@@ -400,10 +402,11 @@ int ApuWriteWave2(int cycles, int event) {
 
                 case 2:
                     ApuC2c = ApuEventQueue[event].data;
-                    ApuC2Freq = ((((uint16_t)ApuC2d & 0x07) << 8) + ApuC2c);
-                    ApuC2Atl = ApuAtl[(ApuC2d & 0xf8) >> 3];
+                    ApuC2Freq &= 0xFF00;
+                    ApuC2Freq |= (uint16_t)(ApuC2c);
+                    //ApuC2Atl = ApuAtl[(ApuC1d >> 3)&0x1f]<<1;
 
-                    if (ApuC2Freq) {
+                    if (ApuC2Freq / 2) {
                         ApuC2Skip = ApuPulseMagic / (ApuC2Freq / 2);
                     } else {
                         ApuC2Skip = 0;
@@ -412,10 +415,10 @@ int ApuWriteWave2(int cycles, int event) {
 
                 case 3:
                     ApuC2d = ApuEventQueue[event].data;
-                    ApuC2Freq = ((((uint16_t)ApuC2d & 0x07) << 8) + ApuC2c);
-                    ApuC2Atl = ApuAtl[(ApuC2d & 0xf8) >> 3];
+                    ApuC2Freq = (ApuC2Freq & 0xff)|(((uint16_t)(ApuC2d & 0x07)) << 8);
+                    ApuC2Atl = ApuAtl[(ApuC2d >> 3)&0x1f]<<1;
 
-                    if (ApuC2Freq) {
+                    if (ApuC2Freq / 2) {
                         ApuC2Skip = ApuPulseMagic / (ApuC2Freq / 2);
                     } else {
                         ApuC2Skip = 0;
@@ -886,6 +889,7 @@ void InfoNES_pAPUInit(void) {
     /* Initialize Rectangular, Noise Wave's Regs                         */
     /*-------------------------------------------------------------------*/
     ApuCtrl = ApuCtrlNew = 0;
+    ApuCntRate = 5;
     ApuC1Wave = pulse_50;
     ApuC2Wave = pulse_50;
 

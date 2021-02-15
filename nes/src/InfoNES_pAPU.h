@@ -23,7 +23,7 @@
 /* Reg0: 0-3=Volume, 4=Envelope, 5=Hold, 6-7=Duty Cycle              */
 /* Reg1: 0-2=sweep shifts, 3=sweep inc, 4-6=sweep length, 7=sweep on */
 /* Reg2: 8 bits of freq                                              */
-/* Reg3: 0-2=high freq, 7-4=vbl length counter                       */
+/* Reg3: 0-2=high freq, 7-3=vbl length counter                       */
 /*-------------------------------------------------------------------*/
 #define ApuC1Vol (ApuC1a & 0x0f)
 #define ApuC1Env (ApuC1a & 0x10)
@@ -43,7 +43,7 @@
 /* Reg0: 0-3=Volume, 4=Envelope, 5=Hold, 6-7=Duty Cycle              */
 /* Reg1: 0-2=sweep shifts, 3=sweep inc, 4-6=sweep length, 7=sweep on */
 /* Reg2: 8 bits of freq                                              */
-/* Reg3: 0-2=high freq, 7-4=vbl length counter                       */
+/* Reg3: 0-2=high freq, 7-3=vbl length counter                       */
 /*-------------------------------------------------------------------*/
 #define ApuC2Vol (ApuC2a & 0x0f)
 #define ApuC2Env (ApuC2a & 0x10)
@@ -62,12 +62,12 @@
 /* Triangle Wave                                                     */
 /* Reg0: 7=Holdnote, 6-0=Linear Length Counter                       */
 /* Reg2: 8 bits of freq                                              */
-/* Reg3: 0-2=high freq, 7-4=vbl length counter                       */
+/* Reg3: 0-2=high freq, 7-3=vbl length counter                       */
 /*-------------------------------------------------------------------*/
 #define ApuC3Holdnote (ApuC3a & 0x80)
 #define ApuC3LinearLength (((uint16_t)ApuC3a & 0x7f) << 6)
-#define ApuC3LengthCounter (ApuAtl[((ApuC3d & 0xf8) >> 3)])
-#define ApuC3Freq ((((uint16_t)ApuC3d & 0x07) << 8) + ApuC3c)
+#define ApuC3LengthCounter (ApuAtl[(ApuC3d >> 3)&0x1f] << 1)
+#define ApuC3Freq ((((uint16_t)ApuC3d & 0x07) << 8) + (uint16_t)ApuC3c)
 
 /*-------------------------------------------------------------------*/
 /* White Noise Channel                                               */
@@ -83,8 +83,7 @@
 #define ApuC4Hold (ApuC4a & 0x20)
 #define ApuC4Freq (ApuNoiseFreq[(ApuC4c & 0x0f)])
 #define ApuC4Small (ApuC4c & 0x80)
-//#define ApuC4LengthCounter  ( ApuAtl[ ( ( ApuC4d & 0xf8 ) >> 3 ) ] )
-#define ApuC4LengthCounter (ApuAtl[(ApuC4d >> 3)] << 1)
+#define ApuC4LengthCounter (ApuAtl[(ApuC4d >> 3)&0x1f] << 1)
 
 /*-------------------------------------------------------------------*/
 /* DPCM Channel                                                      */
@@ -195,6 +194,8 @@ extern uint32_t ApuC3Llc; /* Linear Length Counter */
 /*-------------------------------------------------------------------*/
 
 extern uint8_t ApuC4Atl;
+
+extern uint32_t ApuCntRate;
 
 #endif /* InfoNES_PAPU_H_INCLUDED */
 

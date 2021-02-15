@@ -1747,10 +1747,15 @@ void K6502_Write(uint16_t wAddr, uint8_t byData) {
                 case 0x17: /* 0x4017 */
                     // Frame IRQ
                     FrameStep = 0;
-                    if (!(byData & 0xc0)) {
+                    if (!(byData & 0x40)) {
                         FrameIRQ_Enable = 1;
                     } else {
                         FrameIRQ_Enable = 0;
+                    }
+                    if (!(byData & 0x80)) {
+                        ApuCntRate = 5;
+                    } else {
+                        ApuCntRate = 4;
                     }
                     break;
             }
