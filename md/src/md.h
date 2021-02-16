@@ -3,8 +3,6 @@
 #ifndef MD_H__
 #define MD_H__
 
-#define VER "1.33"
-
 #include <stdint.h>
 
 #ifndef M68K__HEADER

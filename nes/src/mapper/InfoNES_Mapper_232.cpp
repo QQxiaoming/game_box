@@ -62,7 +62,7 @@ void Map232_Write( uint16_t wAddr, uint8_t byData )
 {
   if( wAddr == 0x9000 ) {
     Map232_Regs[0] = (byData & 0x18)>>1;
-  } else if( wAddr >= 0xA000 ) {
+  } else if ( 0xA000 <= wAddr ) {
     Map232_Regs[1] = byData & 0x03;
   }
   

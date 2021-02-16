@@ -207,7 +207,18 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    if (nesThread != nullptr)
+    if(event->key() == Qt::Key_F1)
+    {
+        if (nesThread != nullptr)
+        {
+            QMessageBox::about(this, "About Emulators", "当前模拟器版本：\n  " + nesThread->libVersion);
+        }
+        else if (dgenThread != nullptr)
+        {
+            QMessageBox::about(this, "About Emulators", "当前模拟器版本：\n  " + dgenThread->libVersion);
+        }
+    }
+    else if (nesThread != nullptr)
     {
         nesThread->processQtKeyEvent(static_cast<Qt::Key>(event->key()),true);
     }

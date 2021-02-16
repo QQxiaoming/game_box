@@ -551,9 +551,10 @@ void InfoNES_Cycle() {
      *  The loop of emulation
      *
      */
-
+#if 0
     // Set the PPU adress to the buffered value
     if ((PPU_R1 & R1_SHOW_SP) || (PPU_R1 & R1_SHOW_SCR)) PPU_Addr = PPU_Temp;
+#endif
 
     // Emulation loop
     for (;;) {

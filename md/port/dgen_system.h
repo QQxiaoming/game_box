@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#define DGEN_VER "dgen-sdl-1.33"
+
 uint8_t *load(size_t *file_size, const char *name, size_t max_size);
 void unload(uint8_t *data);
 void dump_z80ram(unsigned char *z80ram, int size);

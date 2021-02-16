@@ -45,6 +45,7 @@ public:
     uint32_t pdwPad2 = 0;
     uint32_t pdwSystem = 0;
     QImage *qImg;
+    QString libVersion;
     void processQtKeyEvent(Qt::Key key,bool press);
 
 protected:
@@ -86,6 +87,7 @@ public:
     uint32_t pdwPad2 = 0;
     uint32_t pdwSystem = 0;
     QImage *qImg;
+    QString libVersion;
     void processQtKeyEvent(Qt::Key key,bool press);
 
 protected:

@@ -265,16 +265,19 @@ uint16_t AA_ABS2_func(void)
     wA0 = AA_ABS2; \
     PUSHW(PC);     \
     PC = wA0;
-#define BRA(a)                                      \
-    if (a) {                                        \
-        wA0 = PC;                                   \
-        PC += (char)K6502_Read(PC);                 \
-        CLK(3 + ((wA0 & 0x0100) != (PC & 0x0100))); \
-        ++PC;                                       \
-    } else {                                        \
-        ++PC;                                       \
-        CLK(2);                                     \
-    }
+#define BRA(a) {                                                          \
+    if ( a )                                                              \
+    {                                                                     \
+        wA0 = PC;                                                         \
+        byD0 = K6502_Read( PC );                                          \
+        PC += ( ( byD0 & 0x80 ) ? ( 0xFF00 | (uint16_t)byD0 ) : (uint16_t)byD0 ); \
+        CLK( 3 + ( ( wA0 & 0x0100 ) != ( PC & 0x0100 ) ) );               \
+        ++PC;                                                             \
+    } else {                                                              \
+        ++PC;                                                             \
+        CLK( 2 );                                                         \
+    }                                                                     \
+}
 #define JMP(a) PC = a;
 
 
@@ -1407,14 +1410,13 @@ uint8_t K6502_Read(uint16_t wAddr) {
         case 0x2000:                  /* PPU */
             if ((wAddr & 0x7) == 0x7) /* PPU Memory */
             {
-                uint16_t addr = PPU_Addr;
+                uint16_t addr = PPU_Addr & 0x3fff;
+
+                // Set return value;
+	            byRet = PPU_R7;
 
                 // Increment PPU Address
                 PPU_Addr += PPU_Increment;
-                addr &= 0x3fff;
-
-                // Set return value;
-                byRet = PPU_R7;
 
                 // Read PPU Memory
                 PPU_R7 = PPUBANK[addr >> 10][addr & 0x3ff];
@@ -1427,10 +1429,10 @@ uint8_t K6502_Read(uint16_t wAddr) {
             {
                 // Set return value
                 byRet = PPU_R2;
-
+#if 0
                 // Reset a V-Blank flag
                 PPU_R2 &= ~R2_IN_VBLANK;
-
+#endif
                 // Reset address latch
                 PPU_Latch_Flag = 0;
 
@@ -1441,11 +1443,19 @@ uint8_t K6502_Read(uint16_t wAddr) {
                     PPU_NameTableBank = NAME_TABLE0;
                 }
                 return byRet;
+            }      
+            else /* $2000, $2001, $2003, $2005, $2006 */
+            {
+                return PPU_R7;
             }
             break;
 
         case 0x4000: /* Sound */
-            if (wAddr == 0x4015) {
+            if ( wAddr == 0x4014 ) 
+            {
+                return wAddr & 0xff;
+            }
+            else if (wAddr == 0x4015) {
                 // APU control
                 byRet = APU_Reg[0x15];
                 if (ApuC1Atl > 0) byRet |= (1 << 0);
@@ -1553,7 +1563,7 @@ void K6502_Write(uint16_t wAddr, uint8_t byData) {
                     break;
 
                 case 2: /* 0x2002 */
-                #if 1 
+                #if 0
                     PPU_R2 = byData;     // 0x2002 is not writable
                 #endif
                     break;
@@ -1572,15 +1582,14 @@ void K6502_Write(uint16_t wAddr, uint8_t byData) {
                     // Set Scroll Register
                     if (PPU_Latch_Flag) {
                         // V-Scroll Register
-                        PPU_Scr_V_Next = (byData > 239) ? 0 : byData;
+                        PPU_Scr_V_Next = ( byData > 239 ) ? byData - 240 : byData;	    
+	                    if ( byData > 239 ) PPU_NameTableBank ^= NAME_TABLE_V_MASK; 
                         PPU_Scr_V_Byte_Next = PPU_Scr_V_Next >> 3;
                         PPU_Scr_V_Bit_Next = PPU_Scr_V_Next & 7;
 
                         // Added : more Loopy Stuff
-                        PPU_Temp = (PPU_Temp & 0xFC1F) |
-                                   ((((uint16_t)byData) & 0xF8) << 2);
-                        PPU_Temp = (PPU_Temp & 0x8FFF) |
-                                   ((((uint16_t)byData) & 0x07) << 12);
+	                    PPU_Temp = ( PPU_Temp & 0xFC1F ) | ( ( ( (uint16_t)byData ) & 0xF8 ) << 2);
+	                    PPU_Temp = ( PPU_Temp & 0x8FFF ) | ( ( ( (uint16_t)byData ) & 0x07 ) << 12);
                     } else {
                         // H-Scroll Register
                         PPU_Scr_H_Next = byData;
@@ -1598,17 +1607,19 @@ void K6502_Write(uint16_t wAddr, uint8_t byData) {
                     // Set PPU Address
                     if (PPU_Latch_Flag) {
                         /* Low */
-                    #if 1
+                    #if 0
                         PPU_Addr = ( PPU_Addr & 0xff00 ) | ( (uint16_t)byData );
                     #else
                         PPU_Temp =
                             (PPU_Temp & 0xFF00) | (((uint16_t)byData) & 0x00FF);
                         PPU_Addr = PPU_Temp;
                     #endif
-                        InfoNES_SetupScr();
+                        if ( !( PPU_R2 & R2_IN_VBLANK ) ) {
+                            InfoNES_SetupScr();
+                        }
                     } else {
                         /* High */
-                    #if 1
+                    #if 0
                         PPU_Addr = ( PPU_Addr & 0x00ff ) | ( (uint16_t)( byData & 0x3f ) << 8 );
                         InfoNES_SetupScr();
                     #else

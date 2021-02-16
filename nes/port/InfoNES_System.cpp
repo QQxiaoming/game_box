@@ -17,6 +17,7 @@ static NESThread *g_nesThread;
 void InfoNES_start(NESThread *nesThread, const char *pszFileName)
 {
     g_nesThread = nesThread;
+    g_nesThread->libVersion = INFONES_VER;
     WorkFrame = new unsigned short[256 * 240 * 2];
     memset(WorkFrame, 0x0, 256 * 240 * 2);
 

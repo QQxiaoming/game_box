@@ -270,8 +270,8 @@ int ApuWriteWave1(int cycles, int event) {
                     ApuC1Freq |= (uint16_t)(ApuC1c);
                     //ApuC1Atl = ApuAtl[(ApuC1d >> 3)&0x1f];
 
-                    if (ApuC1Freq / 2) {
-                        ApuC1Skip = ApuPulseMagic / (ApuC1Freq / 2);
+                    if (ApuC1Freq) {
+                        ApuC1Skip = ( ApuPulseMagic << 1 ) / ApuC1Freq;
                     } else {
                         ApuC1Skip = 0;
                     }
@@ -282,8 +282,9 @@ int ApuWriteWave1(int cycles, int event) {
                     ApuC1Freq = (ApuC1Freq & 0xff)|(((uint16_t)(ApuC1d & 0x07)) << 8);
                     ApuC1Atl = ApuAtl[(ApuC1d >> 3)&0x1f];
 
-                    if (ApuC1Freq / 2) {
-                        ApuC1Skip = ApuPulseMagic / (ApuC1Freq / 2);
+                    if (ApuC1Freq) 
+                    {
+                        ApuC1Skip = ( ApuPulseMagic << 1 ) / ApuC1Freq;
                     } else {
                         ApuC1Skip = 0;
                     }
@@ -353,7 +354,9 @@ void ApuRenderingWave1(void) {
                     ApuC1Freq += (ApuC1Freq >> ApuC1SweepShifts);
                 }
             }
-            ApuC1Skip = ApuPulseMagic / (ApuC1Freq / 2);
+            if ( ApuC1Freq ) {
+                ApuC1Skip = ( ApuPulseMagic << 1 ) / ApuC1Freq;
+            }
         }
 
         /* Wave Rendering */
@@ -406,8 +409,8 @@ int ApuWriteWave2(int cycles, int event) {
                     ApuC2Freq |= (uint16_t)(ApuC2c);
                     //ApuC2Atl = ApuAtl[(ApuC1d >> 3)&0x1f]<<1;
 
-                    if (ApuC2Freq / 2) {
-                        ApuC2Skip = ApuPulseMagic / (ApuC2Freq / 2);
+               	    if (ApuC2Freq) {
+	                    ApuC2Skip = ( ApuPulseMagic << 1 ) / ApuC2Freq;
                     } else {
                         ApuC2Skip = 0;
                     }
@@ -418,8 +421,8 @@ int ApuWriteWave2(int cycles, int event) {
                     ApuC2Freq = (ApuC2Freq & 0xff)|(((uint16_t)(ApuC2d & 0x07)) << 8);
                     ApuC2Atl = ApuAtl[(ApuC2d >> 3)&0x1f]<<1;
 
-                    if (ApuC2Freq / 2) {
-                        ApuC2Skip = ApuPulseMagic / (ApuC2Freq / 2);
+                 	if (ApuC2Freq) {
+                        ApuC2Skip = ( ApuPulseMagic << 1 ) / ApuC2Freq;
                     } else {
                         ApuC2Skip = 0;
                     }
@@ -489,7 +492,9 @@ void ApuRenderingWave2(void) {
                     ApuC2Freq += (ApuC2Freq >> ApuC2SweepShifts);
                 }
             }
-            ApuC2Skip = ApuPulseMagic / (ApuC2Freq / 2);
+            if ( ApuC2Freq ) {
+                ApuC2Skip = ( ApuPulseMagic << 1 ) / ApuC2Freq;
+            }
         }
 
         /* Wave Rendering */

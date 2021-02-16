@@ -29,6 +29,7 @@ void DGEN_start(DGENThread *dgenThread, const char *pszFileName)
     uint32_t pdwSystem = 0;
 
     g_dgenThread = dgenThread;
+    g_dgenThread->libVersion = DGEN_VER;
     g_dgenThread->pdwPad1 = 0xf303f;
     g_dgenThread->pdwPad2 = 0xf303f;
     mdscr.data = new unsigned char[336 * 256 * 2];

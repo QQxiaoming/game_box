@@ -94,7 +94,7 @@ void Map69_Write( uint16_t wAddr, uint8_t byData )
           break;
 
         /* Set ROM Banks */
-#if 1
+#if 0
         case 0x08:
           if ( !( byData & 0x40 ) )
           {
