@@ -67,7 +67,7 @@
 #define ApuC3Holdnote (ApuC3a & 0x80)
 #define ApuC3LinearLength (((uint16_t)ApuC3a & 0x7f) << 6)
 #define ApuC3LengthCounter (ApuAtl[(ApuC3d >> 3)&0x1f] << 1)
-#define ApuC3Freq ((((uint16_t)ApuC3d & 0x07) << 8) + (uint16_t)ApuC3c)
+//#define ApuC3Freq ((((uint16_t)ApuC3d & 0x07) << 8) + (uint16_t)ApuC3c)
 
 /*-------------------------------------------------------------------*/
 /* White Noise Channel                                               */

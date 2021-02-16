@@ -118,7 +118,7 @@ uint32_t ApuC1Index;
 uint32_t ApuC1EnvPhase;
 uint8_t ApuC1EnvVol;
 uint8_t ApuC1Atl;
-uint32_t ApuC1SweepPhase;
+int32_t ApuC1SweepPhase;
 uint32_t ApuC1Freq;
 
 /*-------------------------------------------------------------------*/
@@ -132,7 +132,7 @@ uint32_t ApuC2Index;
 uint32_t ApuC2EnvPhase;
 uint8_t ApuC2EnvVol;
 uint8_t ApuC2Atl;
-uint32_t ApuC2SweepPhase;
+int32_t ApuC2SweepPhase;
 uint32_t ApuC2Freq;
 
 /*-------------------------------------------------------------------*/
@@ -146,6 +146,7 @@ uint8_t ApuC3Atl;
 uint32_t ApuC3Llc; /* Linear Length Counter */
 uint8_t ApuC3WriteLatency;
 uint8_t ApuC3CounterStarted;
+uint32_t ApuC3Freq;
 
 /*-------------------------------------------------------------------*/
 /*  Noise resources                                                  */
@@ -269,25 +270,12 @@ int ApuWriteWave1(int cycles, int event) {
                     ApuC1Freq &= 0xFF00;
                     ApuC1Freq |= (uint16_t)(ApuC1c);
                     //ApuC1Atl = ApuAtl[(ApuC1d >> 3)&0x1f];
-
-                    if (ApuC1Freq) {
-                        ApuC1Skip = ( ApuPulseMagic << 1 ) / ApuC1Freq;
-                    } else {
-                        ApuC1Skip = 0;
-                    }
                     break;
 
                 case 3:
                     ApuC1d = ApuEventQueue[event].data;
                     ApuC1Freq = (ApuC1Freq & 0xff)|(((uint16_t)(ApuC1d & 0x07)) << 8);
                     ApuC1Atl = ApuAtl[(ApuC1d >> 3)&0x1f];
-
-                    if (ApuC1Freq) 
-                    {
-                        ApuC1Skip = ( ApuPulseMagic << 1 ) / ApuC1Freq;
-                    } else {
-                        ApuC1Skip = 0;
-                    }
                     break;
             }
         } else if (ApuEventQueue[event].type == APUET_W_CTRL) {
@@ -340,11 +328,10 @@ void ApuRenderingWave1(void) {
         }
 
         /* Frequency sweeping at a rate of ( Sweep Delay + 1) / 120 secs */
-        if (ApuC1SweepOn && ApuC1SweepShifts) {
+        if (ApuC1SweepOn) {
             ApuC1SweepPhase -= 2; /* 120/60 */
             while (0) {
                 ApuC1SweepPhase += ApuC1SweepDelay;
-
                 if (ApuC1SweepIncDec) /* ramp up */
                 {
                     /* Rectangular #1 */
@@ -354,9 +341,12 @@ void ApuRenderingWave1(void) {
                     ApuC1Freq += (ApuC1Freq >> ApuC1SweepShifts);
                 }
             }
-            if ( ApuC1Freq ) {
-                ApuC1Skip = ( ApuPulseMagic << 1 ) / ApuC1Freq;
-            }
+        }
+        if (ApuC1Freq) 
+        {
+            ApuC1Skip = ( ApuPulseMagic << 1 ) / ApuC1Freq;
+        } else {
+            ApuC1Skip = 0;
         }
 
         /* Wave Rendering */
@@ -408,24 +398,12 @@ int ApuWriteWave2(int cycles, int event) {
                     ApuC2Freq &= 0xFF00;
                     ApuC2Freq |= (uint16_t)(ApuC2c);
                     //ApuC2Atl = ApuAtl[(ApuC1d >> 3)&0x1f]<<1;
-
-               	    if (ApuC2Freq) {
-	                    ApuC2Skip = ( ApuPulseMagic << 1 ) / ApuC2Freq;
-                    } else {
-                        ApuC2Skip = 0;
-                    }
                     break;
 
                 case 3:
                     ApuC2d = ApuEventQueue[event].data;
                     ApuC2Freq = (ApuC2Freq & 0xff)|(((uint16_t)(ApuC2d & 0x07)) << 8);
                     ApuC2Atl = ApuAtl[(ApuC2d >> 3)&0x1f]<<1;
-
-                 	if (ApuC2Freq) {
-                        ApuC2Skip = ( ApuPulseMagic << 1 ) / ApuC2Freq;
-                    } else {
-                        ApuC2Skip = 0;
-                    }
                     break;
             }
         } else if (ApuEventQueue[event].type == APUET_W_CTRL) {
@@ -478,11 +456,10 @@ void ApuRenderingWave2(void) {
         }
 
         /* Frequency sweeping at a rate of ( Sweep Delay + 1) / 120 secs */
-        if (ApuC2SweepOn && ApuC2SweepShifts) {
+        if (ApuC2SweepOn) {
             ApuC2SweepPhase -= 2; /* 120/60 */
             while (0) {
                 ApuC2SweepPhase += ApuC2SweepDelay;
-
                 if (ApuC2SweepIncDec) /* ramp up */
                 {
                     /* Rectangular #2 */
@@ -492,11 +469,12 @@ void ApuRenderingWave2(void) {
                     ApuC2Freq += (ApuC2Freq >> ApuC2SweepShifts);
                 }
             }
-            if ( ApuC2Freq ) {
-                ApuC2Skip = ( ApuPulseMagic << 1 ) / ApuC2Freq;
-            }
         }
-
+        if (ApuC2Freq) {
+            ApuC2Skip = ( ApuPulseMagic << 1 ) / ApuC2Freq;
+        } else {
+            ApuC2Skip = 0;
+        }
         /* Wave Rendering */
         if ((ApuCtrlNew & 0x02) && (ApuC2Atl || ApuC2Hold)) {
             ApuC2Index += ApuC2Skip;
@@ -543,21 +521,15 @@ int ApuWriteWave3(int cycles, int event) {
 
                 case 2:
                     ApuC3c = ApuEventQueue[event].data;
-                    if (ApuC3Freq) {
-                        ApuC3Skip = ApuTriangleMagic / ApuC3Freq;
-                    } else {
-                        ApuC3Skip = 0;
-                    }
+                    ApuC3Freq &= 0xFF00;
+                    ApuC3Freq |= (uint16_t)(ApuC3c);
                     break;
 
                 case 3:
                     ApuC3d = ApuEventQueue[event].data;
+                    ApuC3Freq = (ApuC3Freq & 0xff)|(((uint16_t)(ApuC3d & 0x07)) << 8);
                     ApuC3Atl = ApuC3LengthCounter;
-                    if (ApuC3Freq) {
-                        ApuC3Skip = ApuTriangleMagic / ApuC3Freq;
-                    } else {
-                        ApuC3Skip = 0;
-                    }
+                    break;
             }
         } else if (ApuEventQueue[event].type == APUET_W_CTRL) {
             ApuCtrlNew = ApuEventQueue[event].data;
@@ -607,6 +579,12 @@ void ApuRenderingWave3(void) {
             }
         }
 
+        if (ApuC3Freq) {
+            ApuC3Skip = ApuTriangleMagic / ApuC3Freq;
+        } else {
+            ApuC3Skip = 0;
+        }
+
         /* Wave Rendering */
         if ((ApuCtrlNew & 0x04) &&
             ((ApuC3Atl > 0 || ApuC3Holdnote) && ApuC3Llc > 0)) {
@@ -644,13 +622,6 @@ int ApuWriteWave4(int cycles, int event) {
 
                 case 2:
                     ApuC4c = ApuEventQueue[event].data;
-
-                    if (ApuC4Small) {
-                        ApuC4Sr = 0x001f;
-                    } else {
-                        ApuC4Sr = 0x01ff;
-                    }
-
                     /* Frequency */
                     if (ApuC4Freq) {
                         ApuC4Skip = ApuNoiseMagic / ApuC4Freq;
@@ -713,17 +684,20 @@ void ApuRenderingWave4(void) {
         if (ApuCtrlNew & 0x08) {
             ApuC4Index += ApuC4Skip;
             if (ApuC4Index > 0x1fffffff) {
-                if (ApuC4Small) /* FIXME: may be wrong */
+				int intNewBit0 = 0x0;
+                if (ApuC4Small)
                 {
-                    ApuC4Sr |= ((!(ApuC4Sr & 1)) ^ (!(ApuC4Sr & 4))) << 5;
+                    // 93 bit mode - new bit 0 is XOR of bits 2 and 8
+					intNewBit0 = ((ApuC4Sr & 0x0004) >> 2) ^ ((ApuC4Sr & 0x0100) >> 8);
                 } else {
-                    ApuC4Sr |= ((!(ApuC4Sr & 1)) ^ (!(ApuC4Sr & 16))) << 9;
+		            // 32k mode - new bit 0 is XOR of bits E and D
+					intNewBit0 = ((ApuC4Sr & 0x4000) >> 14) ^ ((ApuC4Sr & 0x2000) >> 13);
                 }
-                ApuC4Sr >>= 1;
+                ApuC4Sr = (ApuC4Sr << 1) | intNewBit0;
             }
             ApuC4Index &= 0x1fffffff;
 
-            if (ApuC4Atl && (ApuC4Sr & 1)) {
+            if (ApuC4Atl && (!((ApuC4Sr & 0x4000) >> 14))) {
                 if (!ApuC4Env) {
                     wave_buffers[3][i] = ApuC4Vol;
                 } else {
@@ -908,8 +882,9 @@ void InfoNES_pAPUInit(void) {
     ApuC1EnvVol = ApuC2EnvVol = ApuC4EnvVol = 0;
     ApuC1Atl = ApuC2Atl = ApuC4Atl = 0;
     ApuC1SweepPhase = ApuC2SweepPhase = 0;
-    ApuC1Freq = ApuC2Freq = ApuC4Freq = 0;
-    ApuC4Sr = ApuC4Fdc = 0;
+    ApuC1Freq = ApuC2Freq = ApuC3Freq = ApuC4Freq = 0;
+    ApuC4Fdc = 0;
+    ApuC4Sr = 1;
 
     /*-------------------------------------------------------------------*/
     /*   Initialize Triangle Wave's Regs                                 */
