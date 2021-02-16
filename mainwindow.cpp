@@ -125,9 +125,9 @@ void MainWindow::open_triggered()
     {
         start_dgenThread(file_name);
     }
-    else if (file_suffix == "bin")
+    else
     {
-        int format = QMessageBox::question(this, "提示", "请选择文件格式:", "NES", "MD");
+        int format = QMessageBox::question(this, "提示", "请选择文件格式:", "NES", "MD", "取消");
         if (format == 0)
         {
             start_nesThread(file_name);
