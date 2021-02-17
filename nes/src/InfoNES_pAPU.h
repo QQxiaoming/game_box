@@ -81,7 +81,7 @@
 #define ApuC4EnvDelay ((ApuC4a & 0x0f) + 1)
 #define ApuC4Env (ApuC4a & 0x10)
 #define ApuC4Hold (ApuC4a & 0x20)
-#define ApuC4Freq (ApuNoiseFreq[(ApuC4c & 0x0f)])
+#define ApuC4Freq (ApuNoiseFreqNTSC[(ApuC4c & 0x0f)])
 #define ApuC4Small (ApuC4c & 0x80)
 #define ApuC4LengthCounter (ApuAtl[(ApuC4d >> 3)&0x1f] << 1)
 
