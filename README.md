@@ -36,6 +36,7 @@ GameBox是一款游戏家用机模拟器，本项目基于Qt,可在windous\mac\l
 > 2021.02.14:一个人的情人节，没啥心情，早上简单优化了些代码写法，出去转转，晚上回来没写代码，查查资料，测试一下fceu。经过测试发现部分国产修改版rom无法正确工作的原因与模拟器RAM初值有关，由于ROM修改者错误修改导致未进行初值赋值操作因而依赖原本的RAM值，该问题已在fceu上测试确认该问题，经过分析目前基本决定基于fceu-0.98.12版本移植，并增加模拟器配置选项选择RAM初始化模式以兼容更多（低质量）ROM。<br>
 > 2021.02.15:不死心，又分析了一天InfoNES的APU移植代码，基本确认问题出在没有根据FrameAPU时钟计算音频sweep、hold等信息导致触发（事件）类的音频生成错误，可以参考这个地址说明：[Nesdev wiki](http://wiki.nesdev.com/w/index.php/APU#Noise_.28.24400C-400F.29)。尝试fceu移植，比较麻烦耦合的内容过多不是很好移植，目前考虑暂时搁置，看是否有可能修复InfoNES的问题。<br>
 > 2021.02.15:今天在这个网站：[nes emulators](https://patpend.net/ftp/emulators/nes/)找到了早年间NES的各种移植版本，合并了InfoNES097J版本，并且修改了部分APU相关代码，目前的效果有所改善，但还达不到fceu的程度。<br>
+> 2021.02.16:基本上确定了pulse通道的envelope generator和sweep unit未正确实现，triangle/noise/DPCM通道实现错误，修复了部分triangle/noise通道的频率计算错误问题，其他的暂时不好修复，需要修改实现框架，假期结束了，暂时就进行到这了，后面有空慢慢完善。<br>
 
 ## md
 

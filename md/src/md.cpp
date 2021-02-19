@@ -588,7 +588,7 @@ int md::patch(const char *list, unsigned int *errors,
   worklist = (char *)malloc(wl_sz);
   if (worklist == NULL)
     return -1;
-  strncpy(worklist, list, wl_sz);
+  memcpy(worklist, list, wl_sz);
 
   for(tok = strtok(worklist, delims); tok; tok = strtok(NULL, delims))
     {

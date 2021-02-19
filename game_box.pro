@@ -1,6 +1,11 @@
 QT       += core gui
 QT       += multimedia
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4) {
+    TARGET_ARCH=$${QT_ARCH}
+} else {
+    TARGET_ARCH=$${QMAKE_HOST.arch}
+}
 CONFIG += c++11
 DEFINES += QT_DEPRECATED_WARNINGS
 DEFINES += APP_VERSION="\\\"V0.0.2\\\""
@@ -86,15 +91,21 @@ RCC_DIR     = $$build_type/rcc
 UI_DIR      = $$build_type/ui
 
 win32:{
-    QMAKE_LFLAGS += -Wl,--large-address-aware
-
     VERSION = 0.0.2.0
     RC_LANG = 0x0004
     RC_ICONS = "img\icon.ico"
 
-    CONFIG(release, debug|release) {
-        AFTER_LINK_CMD_LINE = $$PWD/tools/upx307w/upx.exe --best -f $$DESTDIR/$${TARGET}.exe
-        QMAKE_POST_LINK += $$quote($$AFTER_LINK_CMD_LINE)
+    contains(TARGET_ARCH, x86_64) {
+        CONFIG(release, debug|release) {
+            AFTER_LINK_CMD_LINE = $$PWD/tools/upx-3.96-win64/upx.exe --best -f $$DESTDIR/$${TARGET}.exe
+            QMAKE_POST_LINK += $$quote($$AFTER_LINK_CMD_LINE)
+        }
+    } else {
+        QMAKE_LFLAGS += -Wl,--large-address-aware
+        CONFIG(release, debug|release) {
+            AFTER_LINK_CMD_LINE = $$PWD/tools/upx-3.96-win32/upx.exe --best -f $$DESTDIR/$${TARGET}.exe
+            QMAKE_POST_LINK += $$quote($$AFTER_LINK_CMD_LINE)
+        }
     }
 }
 
