@@ -410,14 +410,17 @@ void NESThread::InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2,
     static int index = 0;
     for (int i = 0; i < samples; i++)
     {
-        uint32_t wav = (static_cast<uint32_t>(wave1[i]) +
-                        static_cast<uint32_t>(wave2[i]) +
-                        static_cast<uint32_t>(wave3[i]) + //TODO:音频输出不正确
-                        static_cast<uint32_t>(wave4[i]) + //TODO:音频输出不正确
-                        static_cast<uint32_t>(wave5[i]) +
+        uint32_t wav = (static_cast<uint32_t>(wave1[i]) + //TODO: envelope generator和sweep unit未实现
+                        static_cast<uint32_t>(wave2[i]) + //TODO: envelope generator和sweep unit未实现
+                        //static_cast<uint32_t>(wave3[i]) + //TODO: 音频输出不正确
+                        static_cast<uint32_t>(wave4[i]) + //TODO: envelope generator未实现
+                        //static_cast<uint32_t>(wave5[i]) + //TODO: 音频输出不正确
                         0) / 5UL;
+        Q_UNUSED(wave1);
+        Q_UNUSED(wave2);
         Q_UNUSED(wave3);
         Q_UNUSED(wave4);
+        Q_UNUSED(wave5);
         if (m_mute)
         {
             audio_buff[i + index * samples] = 0;

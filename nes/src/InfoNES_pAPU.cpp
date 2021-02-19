@@ -102,12 +102,12 @@ struct ApuQualityData_t {
     unsigned int sample_rate;
     uint32_t cycle_rate;
 } ApuQual[] = {
-    {0xA25672A8, 0xA25672A8, 0x00044E80, 183, 164, 11025, 1062658},
-    {0x512B3954, 0x512B3954, 0x00089D00, 367, 82, 22050, 531329},
-    {0x28959CAA, 0x28959CAA, 0x00113A00, 735, 41, 44100, 265664},
+    {0xA25672A8, 0xA25672A8, 0x000EDC5B, 183, 164, 11025, 1062658},
+    {0x512B3954, 0x512B3954, 0x00076e2d, 367, 82, 22050, 531329},
+    {0x28959CAA, 0x28959CAA, 0x0003B716, 735, 41, 44100, 265664},
 };
 //pulse_magic = triangle_magic = (1789773x32x2^24)/(16*samplex2)
-//noise_magic = (2^8xsample/10)
+//noise_magic = (2^30x10/sample)
 
 /*-------------------------------------------------------------------*/
 /*  Rectangle Wave #1 resources                                      */
@@ -255,7 +255,6 @@ uint32_t ApuDpcmCycles[16] = {428, 380, 340, 320, 286, 254, 226, 214,
 /*-------------------------------------------------------------------*/
 /* Write registers of rectangular wave #1                            */
 /*-------------------------------------------------------------------*/
-#include <QDebug>
 int ApuWriteWave1(int cycles, int event) {
     /* APU Reg Write Event */
     while ((event < cur_event) && (ApuEventQueue[event].time < cycles)) {
@@ -312,7 +311,7 @@ void ApuRenderingWave1(void) {
         event = ApuWriteWave1(cycles, event);
 
         /* Envelope decay at a rate of ( Envelope Delay + 1 ) / 240 secs */
-        ApuC1EnvPhase -= 4;
+        ApuC1EnvPhase -= ApuCyclesPerSample/4;
         //while (ApuC1EnvPhase < 0) {
         while (0) {
             ApuC1EnvPhase += ApuC1EnvDelay;
@@ -323,6 +322,27 @@ void ApuRenderingWave1(void) {
             }
         }
 
+        /* Frequency sweeping at a rate of ( Sweep Delay + 1) / 120 secs */
+        if (ApuC1SweepOn) {
+            ApuC1SweepPhase -= ApuCyclesPerSample/2; /* 120/60 */
+            //while (ApuC1SweepPhase < 0) {
+            while (0) {
+                ApuC1SweepPhase += ApuC1SweepDelay;
+                if (ApuC1SweepIncDec) /* ramp up */
+                {
+                    /* Rectangular #1 */
+                    if (ApuC1Freq < 8)
+                        ApuC1Freq = 0;
+                    else 
+                        ApuC1Freq -= (ApuC1Freq >> ApuC1SweepShifts)-1;
+                } else {
+                    /* ramp down */
+                    ApuC1Freq += (ApuC1Freq >> ApuC1SweepShifts);
+                }
+            }
+        }
+
+        ApuC1Freq &= 0x7ff;
         /*
          * TODO: using a table of max frequencies is not technically
          * clean, but it is fast and (or should be) accurate
@@ -331,23 +351,6 @@ void ApuRenderingWave1(void) {
             (!ApuC1SweepIncDec && ApuC1Freq > ApuC1FreqLimit)) {
             wave_buffers[0][i] = 0;
             break;
-        }
-
-        /* Frequency sweeping at a rate of ( Sweep Delay + 1) / 120 secs */
-        if (ApuC1SweepOn) {
-            ApuC1SweepPhase -= 2; /* 120/60 */
-            //while (ApuC1SweepPhase < 0) {
-            while (0) {
-                ApuC1SweepPhase += ApuC1SweepDelay;
-                if (ApuC1SweepIncDec) /* ramp up */
-                {
-                    /* Rectangular #1 */
-                    ApuC1Freq -= (ApuC1Freq >> ApuC1SweepShifts)-1;
-                } else {
-                    /* ramp down */
-                    ApuC1Freq += (ApuC1Freq >> ApuC1SweepShifts);
-                }
-            }
         }
 
         ApuC1Skip = ( ApuPulseMagic << 1 ) / (ApuC1Freq+1);
@@ -438,7 +441,7 @@ void ApuRenderingWave2(void) {
         event = ApuWriteWave2(cycles, event);
 
         /* Envelope decay at a rate of ( Envelope Delay + 1 ) / 240 secs */
-        ApuC2EnvPhase -= 4;
+        ApuC2EnvPhase -= ApuCyclesPerSample/4;
         //while (ApuC2EnvPhase < 0) {
         while (0) {
             ApuC2EnvPhase += ApuC2EnvDelay;
@@ -447,16 +450,6 @@ void ApuRenderingWave2(void) {
                 ApuC2EnvVol--;
                 ApuC2EnvVol = ApuC2EnvVol & 0x0f;
             }
-        }
-
-        /*
-         * TODO: using a table of max frequencies is not technically
-         * clean, but it is fast and (or should be) accurate
-         */
-        if (ApuC2Freq < 8 ||
-            (!ApuC2SweepIncDec && ApuC2Freq > ApuC2FreqLimit)) {
-            wave_buffers[1][i] = 0;
-            break;
         }
 
         /* Frequency sweeping at a rate of ( Sweep Delay + 1) / 120 secs */
@@ -468,13 +461,29 @@ void ApuRenderingWave2(void) {
                 if (ApuC2SweepIncDec) /* ramp up */
                 {
                     /* Rectangular #2 */
-                    ApuC2Freq -= (ApuC2Freq >> ApuC2SweepShifts);
+                    if (ApuC2Freq < 8)
+                        ApuC2Freq = 0;
+                    else 
+                        ApuC2Freq -= (ApuC2Freq >> ApuC2SweepShifts);
                 } else {
                     /* ramp down */
                     ApuC2Freq += (ApuC2Freq >> ApuC2SweepShifts);
                 }
             }
         }
+
+        ApuC2Freq &= 0x7ff;
+
+        /*
+         * TODO: using a table of max frequencies is not technically
+         * clean, but it is fast and (or should be) accurate
+         */
+        if (ApuC2Freq < 8 ||
+            (!ApuC2SweepIncDec && ApuC2Freq > ApuC2FreqLimit)) {
+            wave_buffers[1][i] = 0;
+            break;
+        }
+
         ApuC2Skip = ( ApuPulseMagic << 1 ) / (ApuC2Freq+1);
 
         /* Wave Rendering */
@@ -568,7 +577,7 @@ void ApuRenderingWave3(void) {
         }
 
         /* Counter Control */
-        if (ApuC3CounterStarted) {
+        /*if (ApuC3CounterStarted) {
             if (ApuC3Atl > 0 && !ApuC3Holdnote) {
                 ApuC3Atl--;
             }
@@ -579,7 +588,7 @@ void ApuRenderingWave3(void) {
             if (--ApuC3WriteLatency == 0) {
                 ApuC3CounterStarted = 0x01;
             }
-        }
+        }*/
 
         ApuC3Skip = ( ApuTriangleMagic ) / (ApuC3Freq+1);
 
@@ -627,7 +636,7 @@ int ApuWriteWave4(int cycles, int event) {
 
                     /* Frequency */
                     if (ApuC4Freq) {
-                        ApuC4Skip = ApuNoiseMagic / ApuC4Freq;
+                        ApuC4Skip = ApuNoiseMagic * ApuC4Freq;
                     } else {
                         ApuC4Skip = 0;
                     }
@@ -672,24 +681,25 @@ void ApuRenderingWave4(void) {
             }
         }
 
+        ApuC4Index += ApuC4Skip;
+        if (ApuC4Index > 0x3fffffff) {
+            unsigned int intNewBit0 = 0x0;
+            if (ApuC4Small) {
+                // 93 bit mode - new bit 0 is XOR of bits E and 8
+                intNewBit0 =
+                    ((ApuC4Sr & 0x0004) >> 14) ^ ((ApuC4Sr & 0x0100) >> 8);
+            } else {
+                // 32k mode - new bit 0 is XOR of bits E and D
+                intNewBit0 =
+                    ((ApuC4Sr & 0x4000) >> 14) ^ ((ApuC4Sr & 0x2000) >> 13);
+            }
+            ApuC4Sr = (ApuC4Sr << 1) | intNewBit0;
+            ApuC4Sr &= 0x7fff;
+        }
+        ApuC4Index &= 0x3fffffff;
+
         /* Wave Rendering */
         if ((ApuCtrlNew & 0x08) && (ApuC4Atl || ApuC4Hold)) {
-            ApuC4Index += ApuC4Skip;
-            if (ApuC4Index > 0xff) {
-                unsigned int intNewBit0 = 0x0;
-                if (ApuC4Small)
-                {
-                    // 93 bit mode - new bit 0 is XOR of bits E and 8
-                    intNewBit0 = ((ApuC4Sr & 0x0004) >> 14) ^ ((ApuC4Sr & 0x0100) >> 8);
-                } else {
-		            // 32k mode - new bit 0 is XOR of bits E and D
-					intNewBit0 = ((ApuC4Sr & 0x4000) >> 14) ^ ((ApuC4Sr & 0x2000) >> 13);
-                }
-                ApuC4Sr = (ApuC4Sr << 1) | intNewBit0;
-                ApuC4Sr&=0x7fff;
-            }
-            ApuC4Index &= 0xff;
-
             if (ApuC4Atl && (!((ApuC4Sr & 0x4000) >> 14))) {
                 if (!ApuC4Env) {
                     wave_buffers[3][i] = 0x11*ApuC4Vol;
@@ -845,7 +855,7 @@ void InfoNES_pAPUInit(void) {
     /* Sound Hardware Init */
     InfoNES_SoundInit();
 
-    ApuQuality = pAPU_QUALITY - 1;  // 1: 22050, 2: 44100 [samples/sec]
+    ApuQuality = pAPU_QUALITY - 1;  // 0: 11015, 1: 22050, 2: 44100[samples/sec]
 
     ApuPulseMagic = ApuQual[ApuQuality].pulse_magic;
     ApuTriangleMagic = ApuQual[ApuQuality].triangle_magic;

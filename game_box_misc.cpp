@@ -23,6 +23,7 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
     // and here we get the current microsecond! \o/
     tv->tv_usec = (tick.QuadPart % tickPerSecond.QuadPart);
 
+    Q_UNUSED(tz);
     return 0;
 }
 #endif // _WIN32_
