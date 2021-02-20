@@ -177,7 +177,7 @@ void MainWindow::key_setting_triggered()
 
 void MainWindow::about_triggered()
 {
-    QMessageBox::about(this, "About GameBox", "版本 \n " + VERSION + "\n作者\n qiaoqm@aliyun.com");
+    QMessageBox::about(this, "关于GameBox", "版本 \n " + VERSION + "\n作者\n qiaoqm@aliyun.com");
 }
 
 void MainWindow::about_qt_triggered()
