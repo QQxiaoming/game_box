@@ -389,6 +389,13 @@ void NESThread::InfoNES_SoundInit(void)
 int NESThread::InfoNES_SoundOpen(int samples_per_sync, int sample_rate)
 {
     audioFormat->setSampleRate(sample_rate);
+    QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice()); //选择默认输出设备
+    if (!info.isFormatSupported(*audioFormat)) {
+        delete audioFormat;
+        audioFormat = nullptr;
+        return -1;
+    }
+ 
     audio = new QAudioOutput(*audioFormat, nullptr);
     audio_buff = new uchar[samples_per_sync * SOUND_NUM_FARME];
     memset(audio_buff, 0x0, static_cast<size_t>(samples_per_sync * SOUND_NUM_FARME));
@@ -399,14 +406,23 @@ int NESThread::InfoNES_SoundOpen(int samples_per_sync, int sample_rate)
 
 void NESThread::InfoNES_SoundClose(void)
 {
+    if(!audio) {
+        return;
+    }
     delete audio;
     delete audioFormat;
     delete[] audio_buff;
+    audio = nullptr;
+    audioFormat = nullptr;
+    audio_buff = nullptr;
 }
 
 void NESThread::InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2, uint8_t *wave3,
                                     uint8_t *wave4, uint8_t *wave5)
 {
+    if(!audio) {
+        return;
+    }
     static int index = 0;
     for (int i = 0; i < samples; i++)
     {
@@ -616,6 +632,13 @@ void DGENThread::DGEN_SoundInit(void)
 int DGENThread::DGEN_SoundOpen(int samples_per_sync, int sample_rate)
 {
     audioFormat->setSampleRate(sample_rate);
+    QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice()); //选择默认输出设备
+    if (!info.isFormatSupported(*audioFormat)) {
+        delete audioFormat;
+        audioFormat = nullptr;
+        return -1;
+    }
+
     audio = new QAudioOutput(*audioFormat, nullptr);
     audio_buff = new short[2 * samples_per_sync * SOUND_NUM_FARME];
     memset(audio_buff, 0x0, static_cast<size_t>(2 * 2 * samples_per_sync * SOUND_NUM_FARME));
@@ -626,13 +649,22 @@ int DGENThread::DGEN_SoundOpen(int samples_per_sync, int sample_rate)
 
 void DGENThread::DGEN_SoundClose(void)
 {
+    if(!audio) {
+        return;
+    }
     delete audio;
     delete audioFormat;
     delete[] audio_buff;
+    audio = nullptr;
+    audioFormat = nullptr;
+    audio_buff = nullptr;
 }
 
 void DGENThread::DGEN_SoundOutput(int samples, int16_t *wave)
 {
+    if(!audio) {
+        return;
+    }
     static int index = 0;
     for (int i = 0; i < 2 * samples; i++)
     {
