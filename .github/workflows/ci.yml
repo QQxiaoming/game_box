@@ -50,17 +50,22 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
+      
+      - name: MSVC Environment Setup
+        uses: ilammy/msvc-dev-cmd@v1
+        
       - name: Install Qt
         uses: jurplel/install-qt-action@v2.14.0
 
       - name: Build all
         run: |
           qmake -makefile
-          make
+          nmake
+          windeployqt.exe ./release/out/game_box.exe
+          
       - name: Upload build asserts
         uses: actions/upload-artifact@v2.2.4
         with:
           name: game_box
           path: |
-            ./release/out/game_box.exe
+            ./release/out
