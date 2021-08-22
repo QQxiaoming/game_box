@@ -56,11 +56,13 @@ jobs:
         
       - name: Install Qt
         uses: jurplel/install-qt-action@v2.14.0
-
+        with:
+          arch: win64_mingw81
+          
       - name: Build all
         run: |
           qmake -makefile
-          nmake
+          mingw32-make
           windeployqt.exe ./release/out/game_box.exe
           
       - name: Upload build asserts
