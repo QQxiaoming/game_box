@@ -61,10 +61,10 @@ jobs:
           qmake -makefile
           mingw32-make
           windeployqt.exe ./release/out/game_box.exe
-          
+          Copy-Item C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/x86_64-w64-mingw32/lib/*.dll ./release/out/
       - name: Upload build asserts
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: game_box_windous
+          name: game_box_windows
           path: |
             ./release/out
