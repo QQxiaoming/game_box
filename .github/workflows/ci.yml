@@ -18,7 +18,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  ubuntu:
     runs-on: ubuntu-20.04
 
     steps:
@@ -45,3 +45,22 @@ jobs:
           path: |
             ./release/out/game_box
       
+  windows:
+    runs-on: windows-2019
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2.14.0
+
+      - name: Build all
+        run: |
+          qmake -makefile
+          make
+      - name: Upload build asserts
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: game_box
+          path: |
+            ./release/out/game_box.exe
