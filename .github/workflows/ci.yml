@@ -41,18 +41,15 @@ jobs:
       - name: Upload build asserts
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: game_box
+          name: game_box_linux
           path: |
-            ./release/out/game_box
+            ./release/out
       
   windows:
     runs-on: windows-2019
 
     steps:
       - uses: actions/checkout@v2
-      
-      - name: MSVC Environment Setup
-        uses: ilammy/msvc-dev-cmd@v1
         
       - name: Install Qt
         uses: jurplel/install-qt-action@v2.14.0
@@ -68,6 +65,6 @@ jobs:
       - name: Upload build asserts
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: game_box
+          name: game_box_windous
           path: |
             ./release/out
