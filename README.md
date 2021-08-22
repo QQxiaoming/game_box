@@ -1,3 +1,5 @@
+[![CI](https://github.com/QQxiaoming/game_box/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/QQxiaoming/game_box/actions/workflows/ci.yml)
+
 # game box
 
 ## 概述
