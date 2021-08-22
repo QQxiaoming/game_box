@@ -30,10 +30,11 @@ jobs:
       - name: Install prerequisites
         run: |
           sudo apt update
-          sudo apt install -y make gcc
+          sudo apt install -y make gcc upx-ucl
 
       - name: Build all
         run: |
+          sed -i 's/$$PWD\/tools\/upx-3.91-amd64_linux\/upx/upx-ucl/g' game_box.pro
           qmake -makefile
           make
       
