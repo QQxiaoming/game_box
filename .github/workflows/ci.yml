@@ -34,7 +34,7 @@ jobs:
 
       - name: Build all
         run: |
-          sed -i 's/$$PWD\/tools\/upx-3.91-amd64_linux\/upx/upx-ucl/g' game_box.pro
+          sed -i 's/$$PWD\/tools\/upx-3.91-amd64_linux\/upx/cp game_box game_box_temp && upx-ucl/g' game_box.pro
           qmake -makefile
           make
           cd ./tools/build_deb
@@ -63,7 +63,7 @@ jobs:
 
       - name: Build all
         run: |
-          sed -i 's/$$PWD\/tools\/upx-3.91-amd64_linux\/upx/upx-ucl/g' game_box.pro
+          sed -i 's/$$PWD\/tools\/upx-3.91-amd64_linux\/upx/cp game_box game_box_temp && upx-ucl/g' game_box.pro
           qmake -makefile
           make
           cd ./tools/build_deb
