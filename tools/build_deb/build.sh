@@ -1,3 +1,3 @@
 #!/bin/sh
 
-./linuxdeployqt ./release/out/game_box -appimage
+./linuxdeployqt ../../release/out/game_box -appimage
