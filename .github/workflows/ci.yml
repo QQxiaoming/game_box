@@ -18,7 +18,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  ubuntu:
+  ubuntu-2004:
     runs-on: ubuntu-20.04
 
     steps:
@@ -37,11 +37,42 @@ jobs:
           sed -i 's/$$PWD\/tools\/upx-3.91-amd64_linux\/upx/upx-ucl/g' game_box.pro
           qmake -makefile
           make
+          cd ./tools/build_deb
+          ./build.sh
       
       - name: Upload build asserts
         uses: actions/upload-artifact@v2.2.4
         with:
-          name: game_box_linux
+          name: game_box_ubuntu2004
+          path: |
+            ./release/out
+
+  ubuntu-1804:
+    runs-on: ubuntu-18.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2.14.0
+
+      - name: Install prerequisites
+        run: |
+          sudo apt update
+          sudo apt install -y make gcc upx-ucl
+
+      - name: Build all
+        run: |
+          sed -i 's/$$PWD\/tools\/upx-3.91-amd64_linux\/upx/upx-ucl/g' game_box.pro
+          qmake -makefile
+          make
+          cd ./tools/build_deb
+          ./build.sh
+      
+      - name: Upload build asserts
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: game_box_ubuntu1804
           path: |
             ./release/out
       
