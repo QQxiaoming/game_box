@@ -36,7 +36,7 @@ jobs:
         run: |
           git fetch --tags --force
           git describe --always --long --dirty --abbrev=10 --tags | awk '{print "\""$0"\""}' > git_tag.inc
-          sed -i 's/git_tag.inc/git_tag.ci.inc/g' YUVviewer.pro
+          sed -i 's/git_tag.inc/git_tag.ci.inc/g' game_box.pro
           sed -i 's/$$PWD\/tools\/upx-3.91-amd64_linux\/upx/cp $$DESTDIR\/$$TARGET $$DESTDIR\/game_box_temp; upx-ucl/g' game_box.pro
           qmake -makefile
           make
@@ -68,7 +68,7 @@ jobs:
         run: |
           git fetch --tags --force
           git describe --always --long --dirty --abbrev=10 --tags | awk '{print "\""$0"\""}' > git_tag.inc
-          sed -i 's/git_tag.inc/git_tag.ci.inc/g' YUVviewer.pro
+          sed -i 's/git_tag.inc/git_tag.ci.inc/g' game_box.pro
           sed -i 's/$$PWD\/tools\/upx-3.91-amd64_linux\/upx/cp $$DESTDIR\/$$TARGET $$DESTDIR\/game_box_temp; upx-ucl/g' game_box.pro
           qmake -makefile
           make
@@ -97,7 +97,7 @@ jobs:
         run: |
           git fetch --tags --force
           git describe --always --long --dirty --abbrev=10 --tags | ./tools/awk/awk.exe '{print \"\\\"\"$0\"\\\"\"}'  > git_tag.inc
-          ./tools/sed/sed.exe -i "s/git_tag.inc/git_tag.ci.inc/g" YUVviewer.pro
+          ./tools/sed/sed.exe -i "s/git_tag.inc/git_tag.ci.inc/g" game_box.pro
           qmake -makefile
           mingw32-make
           windeployqt.exe ./release/out/game_box.exe

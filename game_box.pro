@@ -8,7 +8,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 }
 CONFIG += c++11
 DEFINES += QT_DEPRECATED_WARNINGS
-DEFINES += APP_VERSION="\\\"V0.0.3\\\""
+DEFINES += APP_VERSION="\\\"V0.0.4\\\""
 
 INCLUDEPATH += \
         -I ./nes/port \
