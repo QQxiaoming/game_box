@@ -11,6 +11,9 @@
 #define MAX_HEIGHT 240
 
 const QString VERSION = APP_VERSION;
+const QString GIT_TAG =
+#include <git_tag.inc>
+;
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow)
@@ -177,7 +180,7 @@ void MainWindow::key_setting_triggered()
 
 void MainWindow::about_triggered()
 {
-    QMessageBox::about(this, "关于GameBox", "版本 \n " + VERSION + "\n作者\n qiaoqm@aliyun.com");
+    QMessageBox::about(this, "关于GameBox", "版本 \n " + VERSION + "\n提交 \n " + GIT_TAG + "\n作者\n qiaoqm@aliyun.com");
 }
 
 void MainWindow::about_qt_triggered()

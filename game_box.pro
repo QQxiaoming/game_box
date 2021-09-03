@@ -8,7 +8,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 }
 CONFIG += c++11
 DEFINES += QT_DEPRECATED_WARNINGS
-DEFINES += APP_VERSION="\\\"V0.0.2\\\""
+DEFINES += APP_VERSION="\\\"V0.0.3\\\""
 
 INCLUDEPATH += \
         -I ./nes/port \
@@ -107,6 +107,8 @@ win32:{
             QMAKE_POST_LINK += $$quote($$AFTER_LINK_CMD_LINE)
         }
     }
+
+    git_tag.commands = $$quote("cd $$PWD && git describe --always --long --dirty --abbrev=10 --tags | $$PWD/tools/awk/awk.exe \'{print \"\\\"\"\$$0\"\\\"\"}\' > git_tag.inc")
 }
 
 unix:{
@@ -117,4 +119,11 @@ unix:{
         AFTER_LINK_CMD_LINE = $$PWD/tools/upx-3.91-amd64_linux/upx --best -f $$DESTDIR/$$TARGET
         QMAKE_POST_LINK += $$quote($$AFTER_LINK_CMD_LINE)
     }
+
+    git_tag.commands = $$quote("cd $$PWD && git describe --always --long --dirty --abbrev=10 --tags | awk \'{print \"\\\"\"\$$0\"\\\"\"}\' > git_tag.inc")
 }
+
+git_tag.target = $$PWD/git_tag.inc
+git_tag.depends = FORCE
+PRE_TARGETDEPS += $$PWD/git_tag.inc
+QMAKE_EXTRA_TARGETS += git_tag
