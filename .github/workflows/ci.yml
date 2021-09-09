@@ -2,14 +2,14 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev/ci ]
     paths-ignore:
       - 'doc/**'
       - 'games/**'
       - 'README.md'
       - '.readthedocs.yaml'
   pull_request:
-    branches: [ main ]
+    branches: [ main, dev/ci ]
     paths-ignore:
       - 'doc/**'
       - 'games/**'
@@ -108,3 +108,36 @@ jobs:
           name: game_box_windows
           path: |
             ./release/out
+
+
+  macos:
+    runs-on: macos-10.15
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2.14.0
+
+      - name: Install prerequisites
+        run: |
+          ruby - e  "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null  2 > /dev/null
+          brew install --build-from-source upx
+      
+      - name: Build all
+        run: |
+          git fetch --tags --force
+          git describe --always --long --dirty --abbrev=10 --tags | awk '{print "\""$0"\""}' > git_tag.inc
+          sed -i'.original' -e 's/git_tag.inc/git_tag.ci.inc/g' game_box.pro
+          sed -i'.original' -e 's/$$PWD\/tools\/upx-macos\/upx/cp $$DESTDIR\/$$TARGET $$DESTDIR\/game_box_temp; upx/g' game_box.pro
+          qmake -makefile
+          make
+          cd ./release/out
+          macdeployqt game_box.app -dmg -verbose=2
+
+      - name: Upload build asserts
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: game_box_macos
+          path: |
+            ./release/out/game_box.dmg
