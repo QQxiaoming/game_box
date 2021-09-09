@@ -132,7 +132,9 @@ jobs:
           sed -i'.original' -e 's/$$PWD\/tools\/upx-macos\/upx/cp $$DESTDIR\/$$TARGET $$DESTDIR\/game_box_temp; upx/g' game_box.pro
           qmake -makefile
           make
-      
+          cd ./release/out
+          macdeployqt game_box.app -dmg
+
       - name: Upload build asserts
         uses: actions/upload-artifact@v2.2.4
         with:
