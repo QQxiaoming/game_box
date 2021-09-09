@@ -133,11 +133,11 @@ jobs:
           qmake -makefile
           make
           cd ./release/out
-          macdeployqt game_box.app -dmg
+          macdeployqt game_box.app -dmg -qmldir=qml -verbose=2
 
       - name: Upload build asserts
         uses: actions/upload-artifact@v2.2.4
         with:
           name: game_box_macos
           path: |
-            ./release/out
+            ./release/out/game_box.dmg
