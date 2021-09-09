@@ -129,7 +129,7 @@ jobs:
           git fetch --tags --force
           git describe --always --long --dirty --abbrev=10 --tags | awk '{print "\""$0"\""}' > git_tag.inc
           sed -i'.original' -e 's/git_tag.inc/git_tag.ci.inc/g' game_box.pro
-          sed -i'.original' -e 's/$$PWD\/tools\/upx-3.91-amd64_linux\/upx/cp $$DESTDIR\/$$TARGET $$DESTDIR\/game_box_temp; upx/g' game_box.pro
+          sed -i'.original' -e 's/$$PWD\/tools\/upx-macos\/upx/cp $$DESTDIR\/$$TARGET $$DESTDIR\/game_box_temp; upx/g' game_box.pro
           qmake -makefile
           make
       
