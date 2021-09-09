@@ -119,10 +119,6 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2.14.0
 
-      - name: Install prerequisites
-        run: |
-          sudo brew install make gcc
-
       - name: Build all
         run: |
           git fetch --tags --force
