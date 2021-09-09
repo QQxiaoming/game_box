@@ -13,8 +13,7 @@ int gettimeofday(struct timeval *tv, struct timezone *tz);
 #endif
 
 #if defined(Q_OS_MACOS)
-#include <mach/mach.h>
-#include <mach/mach_time.h>
+#include <sys/time.h>
 #endif
 
 #endif /* GAME_BOX_MISC */
