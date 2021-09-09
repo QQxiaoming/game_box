@@ -2,14 +2,14 @@ name: CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev/ci ]
     paths-ignore:
       - 'doc/**'
       - 'games/**'
       - 'README.md'
       - '.readthedocs.yaml'
   pull_request:
-    branches: [ main ]
+    branches: [ main, dev/ci ]
     paths-ignore:
       - 'doc/**'
       - 'games/**'
@@ -106,5 +106,35 @@ jobs:
         uses: actions/upload-artifact@v2.2.4
         with:
           name: game_box_windows
+          path: |
+            ./release/out
+
+
+  macos:
+    runs-on: macos-10.15
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2.14.0
+
+      - name: Install prerequisites
+        run: |
+          sudo brew install make gcc
+
+      - name: Build all
+        run: |
+          git fetch --tags --force
+          git describe --always --long --dirty --abbrev=10 --tags | awk '{print "\""$0"\""}' > git_tag.inc
+          sed -i 's/git_tag.inc/git_tag.ci.inc/g' game_box.pro
+          sed -i 's/$$PWD\/tools\/upx-3.91-amd64_linux\/upx/cp $$DESTDIR\/$$TARGET $$DESTDIR\/game_box_temp; upx-ucl/g' game_box.pro
+          qmake -makefile
+          make
+      
+      - name: Upload build asserts
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: game_box_macos
           path: |
             ./release/out
