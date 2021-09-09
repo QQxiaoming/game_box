@@ -125,11 +125,7 @@ unix:!macx:{
 
 macx:{
     QMAKE_RPATHDIR=$ORIGIN
-
-    CONFIG(release, debug|release) {
-        AFTER_LINK_CMD_LINE = $$PWD/tools/upx-macos/upx --best -f $$DESTDIR/$$TARGET
-        QMAKE_POST_LINK += $$quote($$AFTER_LINK_CMD_LINE)
-    }
+    QMAKE_LFLAGS += -no-pie
 
     git_tag.commands = $$quote("cd $$PWD && git describe --always --long --dirty --abbrev=10 --tags | awk \'{print \"\\\"\"\$$0\"\\\"\"}\' > git_tag.inc")
 }
