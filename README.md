@@ -1,4 +1,6 @@
 [![CI](https://github.com/QQxiaoming/game_box/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/QQxiaoming/game_box/actions/workflows/ci.yml)
+[![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/QQxiaoming/game_box.svg)](https://github.com/QQxiaoming/game_box/releases)
+[![GitHub All Releases](https://img.shields.io/github/downloads/QQxiaoming/game_box/total.svg)](https://github.com/QQxiaoming/game_box/releases)
 
 # game box
 
