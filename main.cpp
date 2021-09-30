@@ -3,9 +3,22 @@
 #include <QApplication>
 #include <QTranslator>
 #include <QLibraryInfo>
+#include <QString>
+#include <iostream>
 
 int main(int argc, char *argv[])
 {
+    if(argc == 2) {
+        if((!strncmp(argv[1],"--version",9)) | (!strncmp(argv[1],"-v",2)) ) {
+            const QString VERSION = APP_VERSION;
+            const QString GIT_TAG =
+            #include <git_tag.inc>
+            ;
+            std::cout << "game_box " << VERSION.toStdString() << "\n" << GIT_TAG.toStdString() << "\n";
+            return 0;
+        }
+    }
+
     QTranslator sysTranslator;
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);

@@ -50,6 +50,10 @@ jobs:
           path: |
             ./release/out
 
+      - name: Run tests
+        run: |
+          ./release/out/game_box --version
+
   ubuntu-1804:
     runs-on: ubuntu-18.04
 
@@ -81,7 +85,11 @@ jobs:
           name: game_box_ubuntu1804
           path: |
             ./release/out
-      
+
+      - name: Run tests
+        run: |
+          ./release/out/game_box --version
+
   windows:
     runs-on: windows-2019
 
@@ -102,6 +110,7 @@ jobs:
           mingw32-make
           windeployqt.exe ./release/out/game_box.exe
           Copy-Item C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/x86_64-w64-mingw32/lib/*.dll ./release/out/
+      
       - name: Upload build asserts
         uses: actions/upload-artifact@v2.2.4
         with:
@@ -109,6 +118,9 @@ jobs:
           path: |
             ./release/out
 
+      - name: Run tests
+        run: |
+          ./release/out/game_box --version
 
   macos:
     runs-on: macos-10.15
@@ -141,3 +153,8 @@ jobs:
           name: game_box_macos
           path: |
             ./release/out/game_box.dmg
+      
+      - name: Run tests
+        run: |
+          sudo hdiutil attach ./release/out/game_box.dmg
+          /Volumes/game_box/game_box.app/Contents/MacOS/game_box --version
