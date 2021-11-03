@@ -42,7 +42,7 @@ jobs:
           make
           cd ./tools/build_deb
           ./build.sh
-      
+
       - name: Upload build asserts
         uses: actions/upload-artifact@v2.2.4
         with:
@@ -78,7 +78,7 @@ jobs:
           make
           cd ./tools/build_deb
           ./build.sh
-      
+
       - name: Upload build asserts
         uses: actions/upload-artifact@v2.2.4
         with:
@@ -95,12 +95,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        
+
       - name: Install Qt
         uses: jurplel/install-qt-action@v2.14.0
         with:
           arch: win64_mingw81
-          
+
       - name: Build all
         run: |
           git fetch --tags --force
@@ -110,7 +110,7 @@ jobs:
           mingw32-make
           windeployqt.exe ./release/out/game_box.exe
           Copy-Item C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/x86_64-w64-mingw32/lib/*.dll ./release/out/
-      
+
       - name: Upload build asserts
         uses: actions/upload-artifact@v2.2.4
         with:
@@ -135,7 +135,7 @@ jobs:
         run: |
           ruby - e  "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null  2 > /dev/null
           brew install --build-from-source upx
-      
+
       - name: Build all
         run: |
           git fetch --tags --force
@@ -153,7 +153,7 @@ jobs:
           name: game_box_macos
           path: |
             ./release/out/game_box.dmg
-      
+
       - name: Run tests
         run: |
           sudo hdiutil attach ./release/out/game_box.dmg

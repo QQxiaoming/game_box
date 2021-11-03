@@ -41,7 +41,6 @@ uint16_t NesPalette[64] = {
     0x0000, 0x0000, 0x0000, 0x7fff, 0x579f, 0x635f, 0x6b3f, 0x7f1f, 0x7f1b,
     0x7ef6, 0x7f75, 0x7f94, 0x73f4, 0x57d7, 0x5bf9, 0x4ffe, 0x0000, 0x0000,
     0x0000
-
 };
 
 /*===================================================================*/
@@ -64,7 +63,6 @@ int InfoNES_Menu(void)
 /*===================================================================*/
 int InfoNES_ReadRom(const char *pszFileName)
 {
-
     if (-1 == g_nesThread->InfoNES_OpenRom(pszFileName))
     {
         return -1;
@@ -243,7 +241,7 @@ void InfoNES_MessageBox(const char *pszMsg, ...)
     char buf[8192];
     va_list args;
     va_start(args, pszMsg);
-    vsprintf(buf, pszMsg, args);
+    vsnprintf(buf, 8192, pszMsg, args);
     va_end(args);
     g_nesThread->InfoNES_MessageBox(buf);
 }
