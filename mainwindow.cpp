@@ -274,29 +274,28 @@ void NESThread::run()
 
 void NESThread::processQtKeyEvent(Qt::Key key,bool press)
 {
+    const QList<QPair<Qt::Key, uint16_t>> nesKeyMap = {
+        {Qt::Key_Period,0},  {Qt::Key_Slash,1},
+        {Qt::Key_Control,2}, {Qt::Key_Return,3},
+        {Qt::Key_W,4},       {Qt::Key_S,5},
+        {Qt::Key_A,6},       {Qt::Key_D,7},
+        {Qt::Key_1,0<<8},    {Qt::Key_2,1<<8},
+        {Qt::Key_Plus,2<<8}, {Qt::Key_Enter,3<<8},
+        {Qt::Key_Up,4<<8},   {Qt::Key_Down,5<<8},
+        {Qt::Key_Left,6<<8}, {Qt::Key_Right,7<<8},
+    };
     uint8_t keyVale1 = 0xff;
     uint8_t keyVale2 = 0xff;
-    switch (key)
-    {
-        case Qt::Key_Period:  keyVale1 = 0; break;
-        case Qt::Key_Slash:   keyVale1 = 1; break;
-        case Qt::Key_Control: keyVale1 = 2; break;
-        case Qt::Key_Return:  keyVale1 = 3; break;
-        case Qt::Key_W:       keyVale1 = 4; break;
-        case Qt::Key_S:       keyVale1 = 5; break;
-        case Qt::Key_A:       keyVale1 = 6; break;
-        case Qt::Key_D:       keyVale1 = 7; break;
-
-        case Qt::Key_1:       keyVale2 = 0; break;
-        case Qt::Key_2:       keyVale2 = 1; break;
-        case Qt::Key_Plus:    keyVale2 = 2; break;
-        case Qt::Key_Enter:   keyVale2 = 3; break;
-        case Qt::Key_Up:      keyVale2 = 4; break;
-        case Qt::Key_Down:    keyVale2 = 5; break;
-        case Qt::Key_Left:    keyVale2 = 6; break;
-        case Qt::Key_Right:   keyVale2 = 7; break;
-
-        default:                            break;
+    QList<QPair<Qt::Key, uint16_t>>::const_iterator it = nesKeyMap.begin();
+    while (it != nesKeyMap.end()) {
+        if(it->first == key)
+        {
+            uint16_t value = it->second;
+            keyVale1 = value&0xff;
+            keyVale2 = (value>>8)&0xff;
+            break;
+        }
+        it++;
     }
     if(keyVale1 != 0xff)
     {
@@ -506,37 +505,32 @@ void DGENThread::run()
 
 void DGENThread::processQtKeyEvent(Qt::Key key,bool press)
 {
+    const QList<QPair<Qt::Key, uint16_t>> dgenKeyMap = {
+        {Qt::Key_W,0},            {Qt::Key_S,1},
+        {Qt::Key_A,2},            {Qt::Key_D,3},
+        {Qt::Key_Period,4},       {Qt::Key_Slash,5},
+        {Qt::Key_Comma,12},       {Qt::Key_Return,13},
+        {Qt::Key_Apostrophe,16},  {Qt::Key_Semicolon,17},
+        {Qt::Key_L,18},           {Qt::Key_Control,19},
+        {Qt::Key_Up,0<<8},       {Qt::Key_Down,1<<8},
+        {Qt::Key_Left,2<<8},     {Qt::Key_Right,3<<8},
+        {Qt::Key_3,4<<8},        {Qt::Key_2,5<<8},
+        {Qt::Key_1,12<<8},       {Qt::Key_Enter,13<<8},
+        {Qt::Key_6,16<<8},       {Qt::Key_5,17<<8},
+        {Qt::Key_4,18<<8},       {Qt::Key_Plus,19<<8},
+    };
     uint8_t keyVale1 = 0xff;
     uint8_t keyVale2 = 0xff;
-    switch (key)
-    {
-        case Qt::Key_W:          keyVale1 = 0;  break;
-        case Qt::Key_S:          keyVale1 = 1;  break;
-        case Qt::Key_A:          keyVale1 = 2;  break;
-        case Qt::Key_D:          keyVale1 = 3;  break;
-        case Qt::Key_Period:     keyVale1 = 4;  break;
-        case Qt::Key_Slash:      keyVale1 = 5;  break;
-        case Qt::Key_Comma:      keyVale1 = 12; break;
-        case Qt::Key_Return:     keyVale1 = 13; break;
-        case Qt::Key_Apostrophe: keyVale1 = 16; break;
-        case Qt::Key_Semicolon:  keyVale1 = 17; break;
-        case Qt::Key_L:          keyVale1 = 18; break;
-        case Qt::Key_Control:    keyVale1 = 19; break;
-
-        case Qt::Key_Up:         keyVale2 = 0;  break;
-        case Qt::Key_Down:       keyVale2 = 1;  break;
-        case Qt::Key_Left:       keyVale2 = 2;  break;
-        case Qt::Key_Right:      keyVale2 = 3;  break;
-        case Qt::Key_3:          keyVale2 = 4;  break;
-        case Qt::Key_2:          keyVale2 = 5;  break;
-        case Qt::Key_1:          keyVale2 = 12; break;
-        case Qt::Key_Enter:      keyVale2 = 13; break;
-        case Qt::Key_6:          keyVale2 = 16; break;
-        case Qt::Key_5:          keyVale2 = 17; break;
-        case Qt::Key_4:          keyVale2 = 18; break;
-        case Qt::Key_Plus:       keyVale2 = 19; break;
-
-        default:                                break;
+    QList<QPair<Qt::Key, uint16_t>>::const_iterator it = dgenKeyMap.begin();
+    while (it != dgenKeyMap.end()) {
+        if(it->first == key)
+        {
+            uint16_t value = it->second;
+            keyVale1 = value&0xff;
+            keyVale2 = (value>>8)&0xff;
+            break;
+        }
+        it++;
     }
     if(keyVale1 != 0xff)
     {
