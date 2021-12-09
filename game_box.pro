@@ -116,7 +116,7 @@ unix:!macx:{
     QMAKE_LFLAGS += -no-pie
 
     CONFIG(release, debug|release) {
-        AFTER_LINK_CMD_LINE = $$PWD/tools/upx-3.91-amd64_linux/upx --best -f $$DESTDIR/$$TARGET
+        AFTER_LINK_CMD_LINE = upx-ucl --best -f $$DESTDIR/$$TARGET
         QMAKE_POST_LINK += $$quote($$AFTER_LINK_CMD_LINE)
     }
 
