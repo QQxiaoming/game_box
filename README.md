@@ -10,7 +10,7 @@
 
 ## 概述
 
-GameBox是一款游戏家用机模拟器，本项目基于Qt,可在windous\mac\linux等多平台使用。由于本项目基于多种开源代码开发而成，强烈提醒注意license说明。
+GameBox是一款游戏家用机模拟器，本项目基于Qt,可在windows\linux\macos等多平台使用。由于本项目基于多种开源代码开发而成，强烈提醒注意license说明。
 
 ### 平台支持
 
