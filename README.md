@@ -5,6 +5,10 @@
 [![License](https://img.shields.io/github/license/qqxiaoming/game_box.svg?colorB=f48041&style=flat-square)](https://github.com/QQxiaoming/game_box)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/QQxiaoming/game_box.svg)](https://github.com/QQxiaoming/game_box/releases)
 [![GitHub All Releases](https://img.shields.io/github/downloads/QQxiaoming/game_box/total.svg)](https://github.com/QQxiaoming/game_box/releases)
+[![GitHub stars](https://img.shields.io/github/stars/QQxiaoming/game_box.svg)](https://github.com/QQxiaoming/game_box)
+[![GitHub forks](https://img.shields.io/github/forks/QQxiaoming/game_box.svg)](https://github.com/QQxiaoming/game_box)
+[![Gitee stars](https://gitee.com/QQxiaoming/game_box/badge/star.svg?theme=dark)](https://gitee.com/QQxiaoming/game_box)
+[![Gitee forks](https://gitee.com/QQxiaoming/game_box/badge/fork.svg?theme=dark)](https://gitee.com/QQxiaoming/game_box)
 
 # game box
 
