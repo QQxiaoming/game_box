@@ -1,4 +1,6 @@
-[![CI](https://github.com/QQxiaoming/game_box/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/QQxiaoming/game_box/actions/workflows/ci.yml)
+[![CI](https://img.shields.io/github/workflow/status/qqxiaoming/game_box/windows/dev.svg?style=flat-square&logo=windows)](https://github.com/QQxiaoming/game_box/actions/workflows/windows.yml)
+[![CI](https://img.shields.io/github/workflow/status/qqxiaoming/game_box/linux/dev.svg?style=flat-square&logo=linux)](https://github.com/QQxiaoming/game_box/actions/workflows/linux.yml)
+[![CI](https://img.shields.io/github/workflow/status/qqxiaoming/game_box/macos/dev.svg?style=flat-square&logo=apple)](https://github.com/QQxiaoming/game_box/actions/workflows/macos.yml)
 [![CodeFactor](https://www.codefactor.io/repository/github/qqxiaoming/game_box/badge)](https://www.codefactor.io/repository/github/qqxiaoming/game_box)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/QQxiaoming/game_box.svg)](https://github.com/QQxiaoming/game_box/releases)
 [![GitHub All Releases](https://img.shields.io/github/downloads/QQxiaoming/game_box/total.svg)](https://github.com/QQxiaoming/game_box/releases)

@@ -1,0 +1,51 @@
+name: windows
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'doc/**'
+      - 'games/**'
+      - 'README.md'
+      - '.readthedocs.yaml'
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - 'doc/**'
+      - 'games/**'
+      - 'README.md'
+      - '.readthedocs.yaml'
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-2022
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v2.14.0
+        with:
+          arch: win64_mingw81
+
+      - name: Build all
+        run: |
+          git fetch --tags --force
+          git describe --always --long --dirty --abbrev=10 --tags | ./tools/awk/awk.exe '{print \"\\\"\"$0\"\\\"\"}'  > git_tag.inc
+          ./tools/sed/sed.exe -i "s/git_tag.inc/git_tag.ci.inc/g" game_box.pro
+          qmake -makefile
+          mingw32-make
+          windeployqt.exe ./release/out/game_box.exe
+          Copy-Item C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/x86_64-w64-mingw32/lib/*.dll ./release/out/
+
+      - name: Upload build asserts
+        uses: actions/upload-artifact@v2.2.4
+        with:
+          name: game_box_windows
+          path: |
+            ./release/out
+
+      - name: Run tests
+        run: |
+          ./release/out/game_box --version
