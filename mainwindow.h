@@ -7,8 +7,10 @@
 #include <QTimer>
 #include <QThread>
 #include <QFile>
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
 #include <QAudioFormat>
 #include <QAudioOutput>
+#endif
 #include "keysetting.h"
 
 QT_BEGIN_NAMESPACE
@@ -54,8 +56,10 @@ protected:
 private:
     QFile *file = nullptr;
     QByteArray *fileName = nullptr;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QAudioOutput *audio = nullptr;
     QAudioFormat *audioFormat = nullptr;
+#endif
     uchar *audio_buff = nullptr;
     QIODevice *audio_dev = nullptr;
     bool m_mute = false;

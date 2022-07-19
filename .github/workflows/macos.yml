@@ -2,7 +2,7 @@ name: macos
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev/qt6 ]
     paths-ignore:
       - 'doc/**'
       - 'games/**'
@@ -26,6 +26,8 @@ jobs:
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2.14.0
+        with:
+          version: '6.2.0'
 
       - name: Install prerequisites
         run: |

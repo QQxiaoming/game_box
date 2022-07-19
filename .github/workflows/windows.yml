@@ -2,7 +2,7 @@ name: windows
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev/qt6 ]
     paths-ignore:
       - 'doc/**'
       - 'games/**'
@@ -28,6 +28,7 @@ jobs:
         uses: jurplel/install-qt-action@v2.14.0
         with:
           arch: win64_mingw81
+          version: '6.2.0'
 
       - name: Build all
         run: |

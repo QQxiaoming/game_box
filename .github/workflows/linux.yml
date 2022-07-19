@@ -2,7 +2,7 @@ name: linux
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev/qt6 ]
     paths-ignore:
       - 'doc/**'
       - 'games/**'
@@ -26,11 +26,13 @@ jobs:
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v2.14.0
+        with:
+          version: '6.2.0'
 
       - name: Install prerequisites
         run: |
           sudo apt update
-          sudo apt install -y make gcc upx-ucl
+          sudo apt install -y make gcc upx-ucl qt5-default
 
       - name: Build all
         run: |
@@ -47,42 +49,6 @@ jobs:
         uses: actions/upload-artifact@v2.2.4
         with:
           name: game_box_ubuntu2004
-          path: |
-            ./release/out
-
-      - name: Run tests
-        run: |
-          ./release/out/game_box --version
-
-  ubuntu-1804:
-    runs-on: ubuntu-18.04
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v2.14.0
-
-      - name: Install prerequisites
-        run: |
-          sudo apt update
-          sudo apt install -y make gcc upx-ucl
-
-      - name: Build all
-        run: |
-          git fetch --tags --force
-          git describe --always --long --dirty --abbrev=10 --tags | awk '{print "\""$0"\""}' > git_tag.inc
-          sed -i 's/git_tag.inc/git_tag.ci.inc/g' game_box.pro
-          sed -i 's/upx-ucl/cp $$DESTDIR\/$$TARGET $$DESTDIR\/game_box_temp; upx-ucl/g' game_box.pro
-          qmake -makefile
-          make
-          cd ./tools/build_deb
-          ./build.sh
-
-      - name: Upload build asserts
-        uses: actions/upload-artifact@v2.2.4
-        with:
-          name: game_box_ubuntu1804
           path: |
             ./release/out
 

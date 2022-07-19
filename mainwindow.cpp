@@ -380,16 +380,19 @@ void NESThread::InfoNES_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t 
 
 void NESThread::InfoNES_SoundInit(void)
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     audioFormat = new QAudioFormat();
     audioFormat->setChannelCount(1);
     audioFormat->setSampleSize(8);
     audioFormat->setCodec("audio/pcm");
     audioFormat->setByteOrder(QAudioFormat::LittleEndian);
     audioFormat->setSampleType(QAudioFormat::UnSignedInt);
+#endif
 }
 
 int NESThread::InfoNES_SoundOpen(int samples_per_sync, int sample_rate)
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     audioFormat->setSampleRate(sample_rate);
     QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice()); //选择默认输出设备
     if (!info.isFormatSupported(*audioFormat)) {
@@ -403,11 +406,13 @@ int NESThread::InfoNES_SoundOpen(int samples_per_sync, int sample_rate)
     memset(audio_buff, 0x0, static_cast<size_t>(samples_per_sync * SOUND_NUM_FARME));
     audio->setBufferSize(samples_per_sync * 10);
     audio_dev = audio->start();
+#endif
     return 0;
 }
 
 void NESThread::InfoNES_SoundClose(void)
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if(!audio) {
         return;
     }
@@ -417,11 +422,13 @@ void NESThread::InfoNES_SoundClose(void)
     audio = nullptr;
     audioFormat = nullptr;
     audio_buff = nullptr;
+#endif
 }
 
 void NESThread::InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2, uint8_t *wave3,
                                     uint8_t *wave4, uint8_t *wave5)
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if(!audio) {
         return;
     }
@@ -472,6 +479,7 @@ void NESThread::InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2,
         }
         index = 0;
     }
+#endif
 }
 
 void NESThread::InfoNES_MessageBox(char *buf)
@@ -618,16 +626,19 @@ void DGENThread::DGEN_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t *p
 
 void DGENThread::DGEN_SoundInit(void)
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     audioFormat = new QAudioFormat();
     audioFormat->setChannelCount(2);
     audioFormat->setSampleSize(16);
     audioFormat->setCodec("audio/pcm");
     audioFormat->setByteOrder(QAudioFormat::LittleEndian);
     audioFormat->setSampleType(QAudioFormat::SignedInt);
+#endif
 }
 
 int DGENThread::DGEN_SoundOpen(int samples_per_sync, int sample_rate)
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     audioFormat->setSampleRate(sample_rate);
     QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice()); //选择默认输出设备
     if (!info.isFormatSupported(*audioFormat)) {
@@ -641,11 +652,13 @@ int DGENThread::DGEN_SoundOpen(int samples_per_sync, int sample_rate)
     memset(audio_buff, 0x0, static_cast<size_t>(2 * 2 * samples_per_sync * SOUND_NUM_FARME));
     audio->setBufferSize(2 * 2 * samples_per_sync * 10);
     audio_dev = audio->start();
+#endif
     return 0;
 }
 
 void DGENThread::DGEN_SoundClose(void)
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if(!audio) {
         return;
     }
@@ -655,10 +668,12 @@ void DGENThread::DGEN_SoundClose(void)
     audio = nullptr;
     audioFormat = nullptr;
     audio_buff = nullptr;
+#endif
 }
 
 void DGENThread::DGEN_SoundOutput(int samples, int16_t *wave)
 {
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if(!audio) {
         return;
     }
@@ -699,6 +714,7 @@ void DGENThread::DGEN_SoundOutput(int samples, int16_t *wave)
         }
         index = 0;
     }
+#endif
 }
 
 void DGENThread::DGEN_MessageBox(char *buf)
