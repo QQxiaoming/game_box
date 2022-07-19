@@ -1,6 +1,5 @@
 QT       += core gui
-greaterThan(QT_MAJOR_VERSION, 5): QT += multimedia
-greaterThan(QT_MAJOR_VERSION, 4): QT += multimedia
+lessThan(QT_MAJOR_VERSION, 6): QT += multimedia
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 greaterThan(QT_MAJOR_VERSION, 4) {
     TARGET_ARCH=$${QT_ARCH}

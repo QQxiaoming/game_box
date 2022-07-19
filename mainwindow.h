@@ -100,8 +100,10 @@ protected:
 private:
     QFile *file = nullptr;
     QByteArray *fileName = nullptr;
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QAudioOutput *audio = nullptr;
     QAudioFormat *audioFormat = nullptr;
+#endif
     short *audio_buff = nullptr;
     QIODevice *audio_dev = nullptr;
     bool m_mute = false;
