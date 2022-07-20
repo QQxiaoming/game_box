@@ -5,13 +5,11 @@
 #include <QImage>
 #include <QEvent>
 
-namespace Ui
-{
+namespace Ui {
     class KeySetting;
 }
 
-class KeySetting : public QWidget
-{
+class KeySetting : public QWidget {
     Q_OBJECT
 
 public:

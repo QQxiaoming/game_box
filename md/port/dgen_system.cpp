@@ -22,8 +22,7 @@ static unsigned char mdpal[256]={0};
 // signed format, regardless of the actual audio format.
 static struct sndinfo mdsndi;
 
-void DGEN_start(DGENThread *dgenThread, const char *pszFileName)
-{
+void DGEN_start(DGENThread *dgenThread, const char *pszFileName) {
     bool dgen_pal = false;
     char dgen_region = 0;
     uint32_t pdwSystem = 0;
@@ -42,12 +41,10 @@ void DGEN_start(DGENThread *dgenThread, const char *pszFileName)
     mdsndi.lr = new int16_t[mdsndi.len * 2];
 
     md megad(dgen_pal, dgen_region);
-    if (!megad.okay())
-    {
+    if (!megad.okay()) {
         return;
     }
-    if (megad.load(pszFileName))
-    {
+    if (megad.load(pszFileName)) {
         return;
     }
 
@@ -57,15 +54,13 @@ void DGEN_start(DGENThread *dgenThread, const char *pszFileName)
 
     // Reset
     megad.reset();
-    if (!dgen_region)
-    {
+    if (!dgen_region) {
         uint8_t c = megad.region_guess();
         int hz;
         int pal;
 
         md::region_info(c, &pal, &hz, nullptr, nullptr, nullptr);
-        if ((hz != dgen_hz) || (pal != dgen_pal) || (c != megad.region))
-        {
+        if ((hz != dgen_hz) || (pal != dgen_pal) || (c != megad.region)) {
             megad.region = static_cast<int8_t>(c);
             dgen_hz = hz;
             dgen_pal = pal;
@@ -77,8 +72,7 @@ void DGEN_start(DGENThread *dgenThread, const char *pszFileName)
     g_dgenThread->DGEN_SoundInit();
     g_dgenThread->DGEN_SoundOpen(static_cast<int>(mdsndi.len), 44100);
 
-    while (!pdwSystem)
-    {
+    while (!pdwSystem) {
         DGEN_Wait();
         g_dgenThread->DGEN_PadState(&megad.pad[0], &megad.pad[1], &pdwSystem);
         megad.one_frame(&mdscr, mdpal, &mdsndi);
@@ -93,8 +87,7 @@ void DGEN_start(DGENThread *dgenThread, const char *pszFileName)
     delete[] mdsndi.lr;
 }
 
-void DGEN_Wait(void)
-{
+void DGEN_Wait(void) {
     const unsigned int usec_frame = (1000000UL / 60);
     struct timeval tpend;
     long timeuse;
@@ -103,8 +96,7 @@ void DGEN_Wait(void)
     gettimeofday(&tpend, nullptr);
     timeuse = (1000000 * (tpend.tv_sec - tpstart.tv_sec) + tpend.tv_usec - tpstart.tv_usec);
     unsigned int tmp = (usec_frame - static_cast<unsigned int>(timeuse));
-    if (tmp > 1000)
-    {
+    if (tmp > 1000) {
         if (tmp > (1000000 / 50))
             tmp = (1000000 / 50);
         tmp -= 1000;
@@ -113,8 +105,7 @@ void DGEN_Wait(void)
     gettimeofday(&tpstart, nullptr);
 }
 
-uint8_t *load(size_t *file_size, const char *name, size_t max_size)
-{
+uint8_t *load(size_t *file_size, const char *name, size_t max_size) {
     int size = g_dgenThread->DGEN_OpenRom(name);
     if (size == -1 || size > static_cast<int>(max_size))
         return nullptr;
@@ -125,16 +116,13 @@ uint8_t *load(size_t *file_size, const char *name, size_t max_size)
     return rom;
 }
 
-void unload(uint8_t *data)
-{
-    if (data != nullptr)
-    {
+void unload(uint8_t *data) {
+    if (data != nullptr) {
         delete[] data;
     }
 }
 
-void dump_z80ram(unsigned char *z80ram, int size)
-{
+void dump_z80ram(unsigned char *z80ram, int size) {
     Q_UNUSED(z80ram);
     Q_UNUSED(size);
 }

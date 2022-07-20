@@ -2,8 +2,7 @@
 
 #if defined(Q_OS_WIN)
 
-int gettimeofday(struct timeval *tv, struct timezone *tz)
-{
+int gettimeofday(struct timeval *tv, struct timezone *tz) {
     time_t rawtime;
 
     time(&rawtime);

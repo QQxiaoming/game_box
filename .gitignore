@@ -49,3 +49,4 @@ CMakeLists.txt.user*
 
 git_tag.inc
 git_tag.ci.inc
+release/out/game_box
