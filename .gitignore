@@ -27,6 +27,7 @@ Makefile*
 *build-*
 .qmake.stash
 *_resource.rc
+.qtc_clangd
 
 # QtCreator
 
@@ -48,3 +49,4 @@ CMakeLists.txt.user*
 
 git_tag.inc
 git_tag.ci.inc
+release/out/game_box
