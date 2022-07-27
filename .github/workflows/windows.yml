@@ -2,11 +2,12 @@ name: windows
 
 on:
   push:
-    branches: [ main, dev/qt6 ]
+    branches: [ main ]
     paths-ignore:
       - 'doc/**'
       - 'games/**'
       - 'README.md'
+      - 'README_zh_CN.md'
       - '.readthedocs.yaml'
   pull_request:
     branches: [ main ]
@@ -14,6 +15,7 @@ on:
       - 'doc/**'
       - 'games/**'
       - 'README.md'
+      - 'README_zh_CN.md'
       - '.readthedocs.yaml'
   workflow_dispatch:
 
