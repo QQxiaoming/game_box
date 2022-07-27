@@ -330,6 +330,11 @@ void NESThread::InfoNES_SoundInit(void) {
 }
 
 int NESThread::InfoNES_SoundOpen(int samples_per_sync, int sample_rate) {
+#if 1 //TODO: fix audio
+    delete audioFormat;
+    audioFormat = nullptr;
+    return -1;
+#else
     audioFormat->setSampleRate(sample_rate);
     QAudioDevice info(QMediaDevices::defaultAudioOutput()); //选择默认输出设备
     if (!info.isFormatSupported(*audioFormat)) {
@@ -344,6 +349,7 @@ int NESThread::InfoNES_SoundOpen(int samples_per_sync, int sample_rate) {
     audio->setBufferSize(samples_per_sync * 10);
     audio_dev = audio->start();
     return 0;
+#endif
 }
 
 void NESThread::InfoNES_SoundClose(void) {
