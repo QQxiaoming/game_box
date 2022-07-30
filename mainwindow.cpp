@@ -325,16 +325,11 @@ void NESThread::InfoNES_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t 
 
 void NESThread::InfoNES_SoundInit(void) {
     audioFormat = new QAudioFormat();
-    audioFormat->setChannelCount(1);
-    audioFormat->setSampleFormat(QAudioFormat::UInt8);
+    audioFormat->setChannelCount(2);
+    audioFormat->setSampleFormat(QAudioFormat::Int16);
 }
 
 int NESThread::InfoNES_SoundOpen(int samples_per_sync, int sample_rate) {
-#if 1 //TODO: fix audio
-    delete audioFormat;
-    audioFormat = nullptr;
-    return -1;
-#else
     audioFormat->setSampleRate(sample_rate);
     QAudioDevice info(QMediaDevices::defaultAudioOutput()); //选择默认输出设备
     if (!info.isFormatSupported(*audioFormat)) {
@@ -344,12 +339,11 @@ int NESThread::InfoNES_SoundOpen(int samples_per_sync, int sample_rate) {
     }
 
     audio = new QAudioSink(*audioFormat, nullptr);
-    audio_buff = new uchar[samples_per_sync * SOUND_NUM_FARME];
-    memset(audio_buff, 0x0, static_cast<size_t>(samples_per_sync * SOUND_NUM_FARME));
-    audio->setBufferSize(samples_per_sync * 10);
+    audio_buff = new short[2 * samples_per_sync * SOUND_NUM_FARME];
+    memset(audio_buff, 0x0, static_cast<size_t>(2 * 2 * samples_per_sync * SOUND_NUM_FARME));
+    audio->setBufferSize(2 * 2 * samples_per_sync * 10);
     audio_dev = audio->start();
     return 0;
-#endif
 }
 
 void NESThread::InfoNES_SoundClose(void) {
@@ -374,7 +368,7 @@ void NESThread::InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2,
         uint32_t wav = (static_cast<uint32_t>(wave1[i]) + //TODO: envelope generator和sweep unit未实现
                         static_cast<uint32_t>(wave2[i]) + //TODO: envelope generator和sweep unit未实现
                         //static_cast<uint32_t>(wave3[i]) + //TODO: 音频输出不正确
-                        static_cast<uint32_t>(wave4[i]) + //TODO: envelope generator未实现
+                        //static_cast<uint32_t>(wave4[i]) + //TODO: envelope generator未实现
                         //static_cast<uint32_t>(wave5[i]) + //TODO: 音频输出不正确
                         0) / 5UL;
         Q_UNUSED(wave1);
@@ -383,9 +377,11 @@ void NESThread::InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2,
         Q_UNUSED(wave4);
         Q_UNUSED(wave5);
         if (m_mute) {
-            audio_buff[i + index * samples] = 0;
+            audio_buff[i*2 + index * 2 * samples] = 0;
+            audio_buff[i*2+1 + index * 2 * samples] = 0;
         } else {
-            audio_buff[i + index * samples] = static_cast<uchar>(wav);
+            audio_buff[i*2 + index * 2 * samples] = wav*128;
+            audio_buff[i*2+1 + index * 2 * samples] = wav*128;
         }
     }
     if (index < SOUND_NUM_FARME - 1) {
@@ -393,15 +389,16 @@ void NESThread::InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2,
     } else {
         int len = 0;
         forever {
-            void *temp = static_cast<void *>(audio_buff + len);
+            void *temp = static_cast<void *>(audio_buff);
+            char *temp1 = static_cast<char *>(temp);
             int n = static_cast<int>(audio_dev->write(
-                                static_cast<char *>(temp),
-                                static_cast<qint64>(samples * SOUND_NUM_FARME - len)));
+                            temp1 + len, 
+                            static_cast<qint64>(2 * 2 * samples * SOUND_NUM_FARME - len)));
             if (n == -1) {
                 break;
             } else {
                 len += n;
-                if (samples * SOUND_NUM_FARME == len)
+                if (2 * 2 * samples * SOUND_NUM_FARME == len)
                     break;
             }
         }

@@ -56,7 +56,7 @@ private:
     QByteArray *fileName = nullptr;
     QAudioSink *audio = nullptr;
     QAudioFormat *audioFormat = nullptr;
-    uchar *audio_buff = nullptr;
+    short *audio_buff = nullptr;
     QIODevice *audio_dev = nullptr;
     bool m_mute = false;
 };
