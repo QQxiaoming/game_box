@@ -321,7 +321,6 @@ cleanup:
         (void)0;
     free(ctx_musa);
     free(mem);
-    memset(this, 0, sizeof(*this));
     lock = false;
 }
 
@@ -341,7 +340,6 @@ md::~md()
     if (ok_sn76496)
         (void)0;
     ok=0;
-    memset(this, 0, sizeof(*this));
     lock = false;
 }
 

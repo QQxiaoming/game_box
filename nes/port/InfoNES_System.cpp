@@ -14,15 +14,13 @@
 
 static NESThread *g_nesThread;
 
-void InfoNES_start(NESThread *nesThread, const char *pszFileName)
-{
+void InfoNES_start(NESThread *nesThread, const char *pszFileName) {
     g_nesThread = nesThread;
     g_nesThread->libVersion = INFONES_VER;
     WorkFrame = new unsigned short[256 * 240 * 2];
     memset(WorkFrame, 0x0, 256 * 240 * 2);
 
-    if (0 != InfoNES_Load(pszFileName))
-    {
+    if (0 != InfoNES_Load(pszFileName)) {
         return;
     }
 
@@ -48,8 +46,7 @@ uint16_t NesPalette[64] = {
 /*                  InfoNES_Menu() : Menu screen                     */
 /*                                                                   */
 /*===================================================================*/
-int InfoNES_Menu(void)
-{
+int InfoNES_Menu(void) {
     if (PAD_PUSH(PAD_System, PAD_SYS_QUIT))
         return -1;
 
@@ -61,24 +58,20 @@ int InfoNES_Menu(void)
 /*               InfoNES_ReadRom() : Read ROM image file             */
 /*                                                                   */
 /*===================================================================*/
-int InfoNES_ReadRom(const char *pszFileName)
-{
-    if (-1 == g_nesThread->InfoNES_OpenRom(pszFileName))
-    {
+int InfoNES_ReadRom(const char *pszFileName) {
+    if (-1 == g_nesThread->InfoNES_OpenRom(pszFileName)) {
         return -1;
     }
     g_nesThread->InfoNES_ReadRom(&NesHeader, sizeof(NesHeader));
 
-    if (memcmp(NesHeader.byID, "NES\x1a", 4) != 0)
-    {
+    if (memcmp(NesHeader.byID, "NES\x1a", 4) != 0) {
         return -1;
     }
 
     /* Clear SRAM */
     memset(SRAM, 0, SRAM_SIZE);
 
-    if (NesHeader.byInfo1 & 4)
-    {
+    if (NesHeader.byInfo1 & 4) {
         g_nesThread->InfoNES_ReadRom(&SRAM[0x1000], 512);
     }
 
@@ -88,8 +81,7 @@ int InfoNES_ReadRom(const char *pszFileName)
     /* Read ROM Image */
     g_nesThread->InfoNES_ReadRom(ROM, 0x4000 * NesHeader.byRomSize);
 
-    if (NesHeader.byVRomSize > 0)
-    {
+    if (NesHeader.byVRomSize > 0) {
         /* Allocate Memory for VROM Image */
         VROM = static_cast<uint8_t *>(malloc(NesHeader.byVRomSize * 0x2000));
 
@@ -107,16 +99,13 @@ int InfoNES_ReadRom(const char *pszFileName)
 /*           InfoNES_ReleaseRom() : Release a memory for ROM         */
 /*                                                                   */
 /*===================================================================*/
-void InfoNES_ReleaseRom(void)
-{
-    if (ROM)
-    {
+void InfoNES_ReleaseRom(void) {
+    if (ROM) {
         free(ROM);
         ROM = nullptr;
     }
 
-    if (VROM)
-    {
+    if (VROM) {
         free(VROM);
         VROM = nullptr;
     }
@@ -128,8 +117,7 @@ void InfoNES_ReleaseRom(void)
 /*           Transfer the contents of work frame on the screen       */
 /*                                                                   */
 /*===================================================================*/
-void InfoNES_LoadFrame(void)
-{
+void InfoNES_LoadFrame(void) {
     g_nesThread->InfoNES_LoadFrame(WorkFrame, 256 * 240 * 2);
 }
 
@@ -138,8 +126,7 @@ void InfoNES_LoadFrame(void)
 /*             InfoNES_PadState() : Get a joypad state               */
 /*                                                                   */
 /*===================================================================*/
-void InfoNES_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t *pdwSystem)
-{
+void InfoNES_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t *pdwSystem) {
     g_nesThread->InfoNES_PadState(pdwPad1, pdwPad2, pdwSystem);
 }
 
@@ -148,8 +135,7 @@ void InfoNES_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t *pdwSystem)
 /*             InfoNES_MemoryCopy() : memcpy                         */
 /*                                                                   */
 /*===================================================================*/
-void *InfoNES_MemoryCopy(void *dest, const void *src, int count)
-{
+void *InfoNES_MemoryCopy(void *dest, const void *src, int count) {
     memcpy(dest, src, static_cast<size_t>(count));
     return dest;
 }
@@ -159,8 +145,7 @@ void *InfoNES_MemoryCopy(void *dest, const void *src, int count)
 /*             InfoNES_MemorySet() : memset                          */
 /*                                                                   */
 /*===================================================================*/
-void *InfoNES_MemorySet(void *dest, int c, int count)
-{
+void *InfoNES_MemorySet(void *dest, int c, int count) {
     memset(dest, c, static_cast<size_t>(count));
     return dest;
 }
@@ -170,8 +155,7 @@ void *InfoNES_MemorySet(void *dest, int c, int count)
 /*        InfoNES_SoundInit() : Sound Emulation Initialize           */
 /*                                                                   */
 /*===================================================================*/
-void InfoNES_SoundInit(void)
-{
+void InfoNES_SoundInit(void) {
     g_nesThread->InfoNES_SoundInit();
 }
 
@@ -180,8 +164,7 @@ void InfoNES_SoundInit(void)
 /*        InfoNES_SoundOpen() : Sound Open                           */
 /*                                                                   */
 /*===================================================================*/
-int InfoNES_SoundOpen(int samples_per_sync, int sample_rate)
-{
+int InfoNES_SoundOpen(int samples_per_sync, int sample_rate) {
     return g_nesThread->InfoNES_SoundOpen(samples_per_sync, sample_rate);
 }
 
@@ -190,8 +173,7 @@ int InfoNES_SoundOpen(int samples_per_sync, int sample_rate)
 /*        InfoNES_SoundClose() : Sound Close                         */
 /*                                                                   */
 /*===================================================================*/
-void InfoNES_SoundClose(void)
-{
+void InfoNES_SoundClose(void) {
     g_nesThread->InfoNES_SoundClose();
 }
 
@@ -201,8 +183,7 @@ void InfoNES_SoundClose(void)
 /*                                                                   */
 /*===================================================================*/
 void InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2, uint8_t *wave3,
-                         uint8_t *wave4, uint8_t *wave5)
-{
+                         uint8_t *wave4, uint8_t *wave5) {
     g_nesThread->InfoNES_SoundOutput(samples, wave1, wave2, wave3, wave4, wave5);
 }
 
@@ -211,8 +192,7 @@ void InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2, uint8_t *w
 /*            InfoNES_Wait() : Wait Emulation if required            */
 /*                                                                   */
 /*===================================================================*/
-void InfoNES_Wait(void)
-{
+void InfoNES_Wait(void) {
     const unsigned int usec_frame = (1000000UL / 60);
     struct timeval tpend;
     long timeuse;
@@ -221,8 +201,7 @@ void InfoNES_Wait(void)
     gettimeofday(&tpend, nullptr);
     timeuse = (1000000 * (tpend.tv_sec - tpstart.tv_sec) + tpend.tv_usec - tpstart.tv_usec);
     unsigned int tmp = (usec_frame - static_cast<unsigned int>(timeuse));
-    if (tmp > 1000)
-    {
+    if (tmp > 1000) {
         if (tmp > (1000000 / 50))
             tmp = (1000000 / 50);
         tmp -= 1000;
@@ -236,8 +215,7 @@ void InfoNES_Wait(void)
 /*            InfoNES_MessageBox() : Print System Message            */
 /*                                                                   */
 /*===================================================================*/
-void InfoNES_MessageBox(const char *pszMsg, ...)
-{
+void InfoNES_MessageBox(const char *pszMsg, ...) {
     char buf[8192];
     va_list args;
     va_start(args, pszMsg);

@@ -24,12 +24,15 @@ jobs:
     runs-on: windows-2022
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2.14.0
+        uses: jurplel/install-qt-action@v2
         with:
           arch: win64_mingw81
+          version: '6.2.0'
+          modules: 'qtmultimedia'
+          aqtversion: ==2.1.0
 
       - name: Build all
         run: |

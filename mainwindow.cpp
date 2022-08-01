@@ -10,15 +10,21 @@
 #define MAX_WIDTH 320
 #define MAX_HEIGHT 240
 
-const QString VERSION = APP_VERSION;
-const QString GIT_TAG =
+const QString MainWindow::VERSION = APP_VERSION;
+const QString MainWindow::GIT_TAG =
 #include <git_tag.inc>
 ;
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), ui(new Ui::MainWindow)
-{
+    : QMainWindow(parent), ui(new Ui::MainWindow) {
     ui->setupUi(this);
+
+    QRect screen = QGuiApplication::screenAt(
+        this->mapToGlobal(QPoint(this->width()/2,0)))->geometry();
+    QRect size = this->geometry();
+    this->move((screen.width() - size.width()) / 2,
+                (screen.height() - size.height()) / 2);
+
     key_setting = new KeySetting();
     timer = new QTimer(this);
     buff = new uchar[MAX_WIDTH * MAX_HEIGHT * 2];
@@ -41,15 +47,12 @@ MainWindow::MainWindow(QWidget *parent)
     QObject::connect(ui->action_about_qt, SIGNAL(triggered()), this, SLOT(about_qt_triggered()));
 }
 
-MainWindow::~MainWindow()
-{
-    if (nesThread != nullptr)
-    {
+MainWindow::~MainWindow() {
+    if (nesThread != nullptr) {
         delete nesThread;
         nesThread = nullptr;
     }
-    if (dgenThread != nullptr)
-    {
+    if (dgenThread != nullptr) {
         delete dgenThread;
         dgenThread = nullptr;
     }
@@ -60,8 +63,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::start_nesThread(QString file_name)
-{
+void MainWindow::start_nesThread(QString file_name) {
     close_triggered();
     QFileInfo fileinfo = QFileInfo(file_name);
     this->setWindowTitle(fileinfo.fileName());
@@ -70,8 +72,7 @@ void MainWindow::start_nesThread(QString file_name)
     nesThread->start();
 }
 
-void MainWindow::start_dgenThread(QString file_name)
-{
+void MainWindow::start_dgenThread(QString file_name) {
     close_triggered();
     QFileInfo fileinfo = QFileInfo(file_name);
     this->setWindowTitle(fileinfo.fileName());
@@ -80,77 +81,65 @@ void MainWindow::start_dgenThread(QString file_name)
     dgenThread->start();
 }
 
-void MainWindow::sample_1_triggered()
-{
+void MainWindow::sample_1_triggered() {
     QString file_name = ":/game/games/SuperMario.nes";
     start_nesThread(file_name);
 }
 
-void MainWindow::sample_2_triggered()
-{
+void MainWindow::sample_2_triggered() {
     QString file_name = ":/game/games/CatAndMouse.nes";
     start_nesThread(file_name);
 }
 
-void MainWindow::sample_3_triggered()
-{
+void MainWindow::sample_3_triggered() {
     QString file_name = ":/game/games/Tanks.nes";
     start_nesThread(file_name);
 }
 
-void MainWindow::sample_4_triggered()
-{
+void MainWindow::sample_4_triggered() {
     QString file_name = ":/game/games/MacrossSeries.nes";
     start_nesThread(file_name);
 }
 
-void MainWindow::sample_5_triggered()
-{
+void MainWindow::sample_5_triggered() {
     QString file_name = ":/game/games/tiger_hunter_hero_novel_(chinese).smd";
     start_dgenThread(file_name);
 }
 
-void MainWindow::open_triggered()
-{
-    QString file_name = QFileDialog::getOpenFileName(this, tr("选择文件"), "", "NES ROM(*.nes);;MD ROM(*.smd);;Bin file(*.bin);;All file(*)");
-    if (file_name.isEmpty())
-    {
+void MainWindow::open_triggered() {
+    QString file_name = QFileDialog::getOpenFileName(
+        this, "选择文件", "", "NES ROM(*.nes);;MD ROM(*.smd);;Bin file(*.bin);;All file(*)");
+    if (file_name.isEmpty()) {
         return;
     }
 
     QFileInfo fileinfo = QFileInfo(file_name);
     QString file_suffix = fileinfo.suffix();
-    if (file_suffix == "nes")
-    {
+    if (file_suffix == "nes") {
         start_nesThread(file_name);
-    }
-    else if (file_suffix == "smd")
-    {
+    } else if (file_suffix == "smd") {
         start_dgenThread(file_name);
-    }
-    else
-    {
-        int format = QMessageBox::question(this, "提示", "请选择文件格式:", "NES", "MD", "取消");
-        if (format == 0)
-        {
+    } else {
+        QMessageBox messageBox(
+            QMessageBox::Question, "提示", "请选择文件格式:", QMessageBox::NoButton, this);
+        messageBox.addButton("NES", QMessageBox::ActionRole);
+        messageBox.addButton("MD", QMessageBox::ActionRole);
+        messageBox.addButton("取消", QMessageBox::ActionRole);
+        int format = messageBox.exec();
+        if (format == 0) {
             start_nesThread(file_name);
-        }
-        else if (format == 1)
-        {
+        } else if (format == 1) {
             start_dgenThread(file_name);
         }
     }
 }
 
-void MainWindow::close_triggered()
-{
-    if (nesThread != nullptr)
-    {
+void MainWindow::close_triggered() {
+    if (nesThread != nullptr) {
         delete nesThread;
         nesThread = nullptr;
     }
-    if (dgenThread != nullptr)
-    {
+    if (dgenThread != nullptr) {
         delete dgenThread;
         dgenThread = nullptr;
     }
@@ -158,106 +147,86 @@ void MainWindow::close_triggered()
     this->setWindowTitle("GameBox");
 }
 
-void MainWindow::mute_triggered()
-{
+void MainWindow::mute_triggered() {
     static bool mute = true;
     ui->action_mute->setChecked(mute);
-    if (nesThread != nullptr)
-    {
+    if (nesThread != nullptr) {
         nesThread->setMute(mute);
     }
-    if (dgenThread != nullptr)
-    {
+    if (dgenThread != nullptr) {
         dgenThread->setMute(mute);
     }
     mute = !mute;
 }
 
-void MainWindow::key_setting_triggered()
-{
+void MainWindow::key_setting_triggered() {
     key_setting->show();
 }
 
-void MainWindow::about_triggered()
-{
-    QMessageBox::about(this, "关于GameBox", "版本 \n " + VERSION + "\n提交 \n " + GIT_TAG + "\n作者\n qiaoqm@aliyun.com");
+void MainWindow::about_triggered() {
+    QMessageBox::about(this, "关于GameBox",
+        "版本 \n " + VERSION + "\n"
+        "提交 \n " + GIT_TAG + "\n"
+        "作者 \n qiaoqm@aliyun.com");
 }
 
-void MainWindow::about_qt_triggered()
-{
+void MainWindow::about_qt_triggered() {
     QMessageBox::aboutQt(this);
 }
 
-void MainWindow::paintEvent(QPaintEvent *event)
-{
+void MainWindow::paintEvent(QPaintEvent *event) {
     QPainter painter;
     QImage *qImg = this->qImg;
-    if (nesThread != nullptr)
-    {
+    if (nesThread != nullptr) {
         qImg = nesThread->qImg;
-    }
-    else if (dgenThread != nullptr)
-    {
+    } else if (dgenThread != nullptr) {
         qImg = dgenThread->qImg;
     }
 
     painter.begin(this);
-    painter.drawPixmap(QPoint(0, 25), QPixmap::fromImage(qImg->scaled(this->size() - QSize(0, 25))));
+    painter.drawPixmap(QPoint(0, 25), 
+                QPixmap::fromImage(qImg->scaled(this->size() - QSize(0, 25))));
     painter.end();
 
     Q_UNUSED(event);
 }
 
-void MainWindow::keyPressEvent(QKeyEvent *event)
-{
-    if(event->key() == Qt::Key_F1)
-    {
-        if (nesThread != nullptr)
-        {
-            QMessageBox::about(this, "About Emulators", "当前模拟器版本：\n  " + nesThread->libVersion);
+void MainWindow::keyPressEvent(QKeyEvent *event) {
+    if(event->key() == Qt::Key_F1) {
+        if (nesThread != nullptr) {
+            QMessageBox::about(
+                this, "About Emulators", "当前模拟器版本：\n  " + nesThread->libVersion);
+        } else if (dgenThread != nullptr) {
+            QMessageBox::about(
+                this, "About Emulators", "当前模拟器版本：\n  " + dgenThread->libVersion);
         }
-        else if (dgenThread != nullptr)
-        {
-            QMessageBox::about(this, "About Emulators", "当前模拟器版本：\n  " + dgenThread->libVersion);
-        }
-    }
-    else if (nesThread != nullptr)
-    {
+    } else if (nesThread != nullptr) {
         nesThread->processQtKeyEvent(static_cast<Qt::Key>(event->key()),true);
-    }
-    else if (dgenThread != nullptr)
-    {
+    } else if (dgenThread != nullptr) {
         dgenThread->processQtKeyEvent(static_cast<Qt::Key>(event->key()),true);
     }
 }
 
-void MainWindow::keyReleaseEvent(QKeyEvent *event)
-{
-    if (nesThread != nullptr)
-    {
+void MainWindow::keyReleaseEvent(QKeyEvent *event) {
+    if (nesThread != nullptr) {
         nesThread->processQtKeyEvent(static_cast<Qt::Key>(event->key()),false);
-    }
-    else if (dgenThread != nullptr)
-    {
+    } else if (dgenThread != nullptr) {
         dgenThread->processQtKeyEvent(static_cast<Qt::Key>(event->key()),false);
     }
 }
 
-void MainWindow::timer_repaint()
-{
+void MainWindow::timer_repaint() {
     this->repaint();
 }
 
 NESThread::NESThread(QObject *parent, void *buff, QString pszFileName) 
-    : QThread(parent)
-{
+    : QThread(parent) {
     qImg = new QImage(static_cast<uchar *>(buff), 256, 240, QImage::Format_RGB555);
     workFrame = static_cast<uint16_t *>(buff);
     fileName = new QByteArray(pszFileName.toUtf8().data(), pszFileName.toUtf8().size());
 }
 
-NESThread::~NESThread()
-{
+NESThread::~NESThread() {
     this->pdwSystem = 1;
     requestInterruption();
     quit();
@@ -266,14 +235,12 @@ NESThread::~NESThread()
     delete qImg;
 }
 
-void NESThread::run()
-{
+void NESThread::run() {
     extern void InfoNES_start(NESThread * nesThread, const char *pszFileName);
     InfoNES_start(this, fileName->data());
 }
 
-void NESThread::processQtKeyEvent(Qt::Key key,bool press)
-{
+void NESThread::processQtKeyEvent(Qt::Key key,bool press) {
     const QList<QPair<Qt::Key, uint16_t>> nesKeyMap = {
         {Qt::Key_Period,0},  {Qt::Key_Slash,1},
         {Qt::Key_Control,2}, {Qt::Key_Return,3},
@@ -288,8 +255,7 @@ void NESThread::processQtKeyEvent(Qt::Key key,bool press)
     uint8_t keyVale2 = 0xff;
     QList<QPair<Qt::Key, uint16_t>>::const_iterator it = nesKeyMap.begin();
     while (it != nesKeyMap.end()) {
-        if(it->first == key)
-        {
+        if(it->first == key) {
             uint16_t value = it->second;
             keyVale1 = value&0xff;
             keyVale2 = (value>>8)&0xff;
@@ -297,117 +263,90 @@ void NESThread::processQtKeyEvent(Qt::Key key,bool press)
         }
         it++;
     }
-    if(keyVale1 != 0xff)
-    {
-        if(press)
-        {
+    if(keyVale1 != 0xff) {
+        if(press) {
             this->pdwPad1 |= (0x1UL << keyVale1);
-        }
-        else
-        {
+        } else {
             this->pdwPad1 &= ~(0x1UL << keyVale1);
         }
     }
-    if(keyVale2 != 0xff)
-    {
-        if(press)
-        {
+    if(keyVale2 != 0xff) {
+        if(press) {
             this->pdwPad2 |= (0x1UL << keyVale2);
-        }
-        else
-        {
+        } else {
             this->pdwPad2 &= ~(0x1UL << keyVale2);
         }
     }
 }
 
-void NESThread::setMute(bool mute)
-{
+void NESThread::setMute(bool mute) {
     m_mute = mute;
 }
 
-int NESThread::InfoNES_OpenRom(const char *pszFileName)
-{
-    if (file != nullptr)
-    {
-        if (file->isOpen())
-        {
+int NESThread::InfoNES_OpenRom(const char *pszFileName) {
+    if (file != nullptr) {
+        if (file->isOpen()) {
             return static_cast<int>(file->size());
         }
     }
     file = new QFile(pszFileName);
-    if (file->open(QFile::ReadOnly))
-    {
+    if (file->open(QFile::ReadOnly)) {
         return static_cast<int>(file->size());
-    }
-    else
-    {
+    } else {
         return -1;
     }
 }
 
-int NESThread::InfoNES_ReadRom(void *buf, unsigned int len)
-{
+int NESThread::InfoNES_ReadRom(void *buf, unsigned int len) {
     return static_cast<int>(file->read(static_cast<char *>(buf), len));
 }
 
-void NESThread::InfoNES_CloseRom(void)
-{
-    if (file->isOpen())
-    {
+void NESThread::InfoNES_CloseRom(void) {
+    if (file->isOpen()) {
         file->close();
         delete file;
         file = nullptr;
     }
 }
 
-void NESThread::InfoNES_Wait(uint32_t us)
-{
+void NESThread::InfoNES_Wait(uint32_t us) {
     this->usleep(us);
 }
 
-void NESThread::InfoNES_LoadFrame(uint16_t *frame, uint32_t size)
-{
+void NESThread::InfoNES_LoadFrame(uint16_t *frame, uint32_t size) {
     memcpy(workFrame, frame, size);
 }
 
-void NESThread::InfoNES_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t *pdwSystem)
-{
+void NESThread::InfoNES_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t *pdwSystem) {
     *pdwPad1 = this->pdwPad1;
     *pdwPad2 = this->pdwPad2;
     *pdwSystem = this->pdwSystem;
 }
 
-void NESThread::InfoNES_SoundInit(void)
-{
+void NESThread::InfoNES_SoundInit(void) {
     audioFormat = new QAudioFormat();
-    audioFormat->setChannelCount(1);
-    audioFormat->setSampleSize(8);
-    audioFormat->setCodec("audio/pcm");
-    audioFormat->setByteOrder(QAudioFormat::LittleEndian);
-    audioFormat->setSampleType(QAudioFormat::UnSignedInt);
+    audioFormat->setChannelCount(2);
+    audioFormat->setSampleFormat(QAudioFormat::Int16);
 }
 
-int NESThread::InfoNES_SoundOpen(int samples_per_sync, int sample_rate)
-{
+int NESThread::InfoNES_SoundOpen(int samples_per_sync, int sample_rate) {
     audioFormat->setSampleRate(sample_rate);
-    QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice()); //选择默认输出设备
+    QAudioDevice info(QMediaDevices::defaultAudioOutput()); //选择默认输出设备
     if (!info.isFormatSupported(*audioFormat)) {
         delete audioFormat;
         audioFormat = nullptr;
         return -1;
     }
- 
-    audio = new QAudioOutput(*audioFormat, nullptr);
-    audio_buff = new uchar[samples_per_sync * SOUND_NUM_FARME];
-    memset(audio_buff, 0x0, static_cast<size_t>(samples_per_sync * SOUND_NUM_FARME));
-    audio->setBufferSize(samples_per_sync * 10);
+
+    audio = new QAudioSink(*audioFormat, nullptr);
+    audio_buff = new short[2 * samples_per_sync * SOUND_NUM_FARME];
+    memset(audio_buff, 0x0, static_cast<size_t>(2 * 2 * samples_per_sync * SOUND_NUM_FARME));
+    audio->setBufferSize(2 * 2 * samples_per_sync * 10);
     audio_dev = audio->start();
     return 0;
 }
 
-void NESThread::InfoNES_SoundClose(void)
-{
+void NESThread::InfoNES_SoundClose(void) {
     if(!audio) {
         return;
     }
@@ -420,18 +359,16 @@ void NESThread::InfoNES_SoundClose(void)
 }
 
 void NESThread::InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2, uint8_t *wave3,
-                                    uint8_t *wave4, uint8_t *wave5)
-{
+                                    uint8_t *wave4, uint8_t *wave5) {
     if(!audio) {
         return;
     }
     static int index = 0;
-    for (int i = 0; i < samples; i++)
-    {
+    for (int i = 0; i < samples; i++) {
         uint32_t wav = (static_cast<uint32_t>(wave1[i]) + //TODO: envelope generator和sweep unit未实现
                         static_cast<uint32_t>(wave2[i]) + //TODO: envelope generator和sweep unit未实现
                         //static_cast<uint32_t>(wave3[i]) + //TODO: 音频输出不正确
-                        static_cast<uint32_t>(wave4[i]) + //TODO: envelope generator未实现
+                        //static_cast<uint32_t>(wave4[i]) + //TODO: envelope generator未实现
                         //static_cast<uint32_t>(wave5[i]) + //TODO: 音频输出不正确
                         0) / 5UL;
         Q_UNUSED(wave1);
@@ -439,34 +376,29 @@ void NESThread::InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2,
         Q_UNUSED(wave3);
         Q_UNUSED(wave4);
         Q_UNUSED(wave5);
-        if (m_mute)
-        {
-            audio_buff[i + index * samples] = 0;
-        }
-        else
-        {
-            audio_buff[i + index * samples] = static_cast<uchar>(wav);
+        if (m_mute) {
+            audio_buff[i*2 + index * 2 * samples] = 0;
+            audio_buff[i*2+1 + index * 2 * samples] = 0;
+        } else {
+            audio_buff[i*2 + index * 2 * samples] = wav*128;
+            audio_buff[i*2+1 + index * 2 * samples] = wav*128;
         }
     }
-    if (index < SOUND_NUM_FARME - 1)
-    {
+    if (index < SOUND_NUM_FARME - 1) {
         index++;
-    }
-    else
-    {
+    } else {
         int len = 0;
-        forever
-        {
-            void *temp = static_cast<void *>(audio_buff + len);
-            int n = static_cast<int>(audio_dev->write(static_cast<char *>(temp), static_cast<qint64>(samples * SOUND_NUM_FARME - len)));
-            if (n == -1)
-            {
+        forever {
+            void *temp = static_cast<void *>(audio_buff);
+            char *temp1 = static_cast<char *>(temp);
+            int n = static_cast<int>(audio_dev->write(
+                            temp1 + len, 
+                            static_cast<qint64>(2 * 2 * samples * SOUND_NUM_FARME - len)));
+            if (n == -1) {
                 break;
-            }
-            else
-            {
+            } else {
                 len += n;
-                if (samples * SOUND_NUM_FARME == len)
+                if (2 * 2 * samples * SOUND_NUM_FARME == len)
                     break;
             }
         }
@@ -474,21 +406,18 @@ void NESThread::InfoNES_SoundOutput(int samples, uint8_t *wave1, uint8_t *wave2,
     }
 }
 
-void NESThread::InfoNES_MessageBox(char *buf)
-{
+void NESThread::InfoNES_MessageBox(char *buf) {
     qDebug() << buf;
 }
 
 DGENThread::DGENThread(QObject *parent, void *buff, QString pszFileName) 
-    : QThread(parent)
-{
+    : QThread(parent) {
     qImg = new QImage(static_cast<uchar *>(buff), 304, 224, QImage::Format_RGB555);
     workFrame = static_cast<uint16_t *>(buff);
     fileName = new QByteArray(pszFileName.toUtf8().data(), pszFileName.toUtf8().size());
 }
 
-DGENThread::~DGENThread()
-{
+DGENThread::~DGENThread() {
     this->pdwSystem = 1;
     requestInterruption();
     quit();
@@ -497,14 +426,12 @@ DGENThread::~DGENThread()
     delete qImg;
 }
 
-void DGENThread::run()
-{
+void DGENThread::run() {
     extern void DGEN_start(DGENThread * dgenThread, const char *pszFileName);
     DGEN_start(this, fileName->data());
 }
 
-void DGENThread::processQtKeyEvent(Qt::Key key,bool press)
-{
+void DGENThread::processQtKeyEvent(Qt::Key key,bool press) {
     const QList<QPair<Qt::Key, uint16_t>> dgenKeyMap = {
         {Qt::Key_W,0},            {Qt::Key_S,1},
         {Qt::Key_A,2},            {Qt::Key_D,3},
@@ -523,8 +450,7 @@ void DGENThread::processQtKeyEvent(Qt::Key key,bool press)
     uint8_t keyVale2 = 0xff;
     QList<QPair<Qt::Key, uint16_t>>::const_iterator it = dgenKeyMap.begin();
     while (it != dgenKeyMap.end()) {
-        if(it->first == key)
-        {
+        if(it->first == key) {
             uint16_t value = it->second;
             keyVale1 = value&0xff;
             keyVale2 = (value>>8)&0xff;
@@ -532,111 +458,84 @@ void DGENThread::processQtKeyEvent(Qt::Key key,bool press)
         }
         it++;
     }
-    if(keyVale1 != 0xff)
-    {
-        if(!press)
-        {
+    if(keyVale1 != 0xff) {
+        if(!press) {
             this->pdwPad1 |= (0x1UL << keyVale1);
-        }
-        else
-        {
+        } else {
             this->pdwPad1 &= ~(0x1UL << keyVale1);
         }
     }
-    if(keyVale2 != 0xff)
-    {
-        if(!press)
-        {
+    if(keyVale2 != 0xff) {
+        if(!press) {
             this->pdwPad2 |= (0x1UL << keyVale2);
-        }
-        else
-        {
+        } else {
             this->pdwPad2 &= ~(0x1UL << keyVale2);
         }
     }
 }
 
-void DGENThread::setMute(bool mute)
-{
+void DGENThread::setMute(bool mute) {
     m_mute = mute;
 }
 
-int DGENThread::DGEN_OpenRom(const char *pszFileName)
-{
-    if (file != nullptr)
-    {
-        if (file->isOpen())
-        {
+int DGENThread::DGEN_OpenRom(const char *pszFileName) {
+    if (file != nullptr) {
+        if (file->isOpen()) {
             return static_cast<int>(file->size());
         }
     }
     file = new QFile(pszFileName);
-    if (file->open(QFile::ReadOnly))
-    {
+    if (file->open(QFile::ReadOnly)) {
         return static_cast<int>(file->size());
-    }
-    else
-    {
+    } else {
         return -1;
     }
 }
 
-int DGENThread::DGEN_ReadRom(void *buf, unsigned int len)
-{
+int DGENThread::DGEN_ReadRom(void *buf, unsigned int len) {
     return static_cast<int>(file->read(static_cast<char *>(buf), len));
 }
 
-void DGENThread::DGEN_CloseRom(void)
-{
-    if (file->isOpen())
-    {
+void DGENThread::DGEN_CloseRom(void) {
+    if (file->isOpen()) {
         file->close();
         delete file;
         file = nullptr;
     }
 }
 
-void DGENThread::DGEN_Wait(uint32_t us)
-{
+void DGENThread::DGEN_Wait(uint32_t us) {
     this->usleep(us);
 }
 
-void DGENThread::DGEN_LoadFrame(uint8_t *frame)
-{
-    for (int i = 0; i < 224; i++)
-    {
+void DGENThread::DGEN_LoadFrame(uint8_t *frame) {
+    for (int i = 0; i < 224; i++) {
         memcpy(workFrame + i * 304, frame + (i + 8) * 2 * 336 + (16) * 2, 304 * 2);
     }
 }
 
-void DGENThread::DGEN_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t *pdwSystem)
-{
+void DGENThread::DGEN_PadState(uint32_t *pdwPad1, uint32_t *pdwPad2, uint32_t *pdwSystem) {
     *pdwPad1 = this->pdwPad1;
     *pdwPad2 = this->pdwPad2;
     *pdwSystem = this->pdwSystem;
 }
 
-void DGENThread::DGEN_SoundInit(void)
-{
+void DGENThread::DGEN_SoundInit(void) {
     audioFormat = new QAudioFormat();
     audioFormat->setChannelCount(2);
-    audioFormat->setSampleSize(16);
-    audioFormat->setCodec("audio/pcm");
-    audioFormat->setByteOrder(QAudioFormat::LittleEndian);
-    audioFormat->setSampleType(QAudioFormat::SignedInt);
+    audioFormat->setSampleFormat(QAudioFormat::Int16);
 }
 
-int DGENThread::DGEN_SoundOpen(int samples_per_sync, int sample_rate)
-{
+int DGENThread::DGEN_SoundOpen(int samples_per_sync, int sample_rate) {
     audioFormat->setSampleRate(sample_rate);
-    QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice()); //选择默认输出设备
+    QAudioDevice info(QMediaDevices::defaultAudioOutput()); //选择默认输出设备
     if (!info.isFormatSupported(*audioFormat)) {
         delete audioFormat;
         audioFormat = nullptr;
         return -1;
     }
 
-    audio = new QAudioOutput(*audioFormat, nullptr);
+    audio = new QAudioSink(*audioFormat, nullptr);
     audio_buff = new short[2 * samples_per_sync * SOUND_NUM_FARME];
     memset(audio_buff, 0x0, static_cast<size_t>(2 * 2 * samples_per_sync * SOUND_NUM_FARME));
     audio->setBufferSize(2 * 2 * samples_per_sync * 10);
@@ -644,8 +543,7 @@ int DGENThread::DGEN_SoundOpen(int samples_per_sync, int sample_rate)
     return 0;
 }
 
-void DGENThread::DGEN_SoundClose(void)
-{
+void DGENThread::DGEN_SoundClose(void) {
     if(!audio) {
         return;
     }
@@ -657,41 +555,31 @@ void DGENThread::DGEN_SoundClose(void)
     audio_buff = nullptr;
 }
 
-void DGENThread::DGEN_SoundOutput(int samples, int16_t *wave)
-{
+void DGENThread::DGEN_SoundOutput(int samples, int16_t *wave) {
     if(!audio) {
         return;
     }
     static int index = 0;
-    for (int i = 0; i < 2 * samples; i++)
-    {
-        if (m_mute)
-        {
+    for (int i = 0; i < 2 * samples; i++) {
+        if (m_mute) {
             audio_buff[i + index * 2 * samples] = 0;
-        }
-        else
-        {
+        } else {
             audio_buff[i + index * 2 * samples] = wave[i];
         }
     }
-    if (index < SOUND_NUM_FARME - 1)
-    {
+    if (index < SOUND_NUM_FARME - 1) {
         index++;
-    }
-    else
-    {
+    } else {
         int len = 0;
-        forever
-        {
+        forever {
             void *temp = static_cast<void *>(audio_buff);
             char *temp1 = static_cast<char *>(temp);
-            int n = static_cast<int>(audio_dev->write(temp1 + len, static_cast<qint64>(2 * 2 * samples * SOUND_NUM_FARME - len)));
-            if (n == -1)
-            {
+            int n = static_cast<int>(audio_dev->write(
+                            temp1 + len, 
+                            static_cast<qint64>(2 * 2 * samples * SOUND_NUM_FARME - len)));
+            if (n == -1) {
                 break;
-            }
-            else
-            {
+            } else {
                 len += n;
                 if (2 * 2 * samples * SOUND_NUM_FARME == len)
                     break;
@@ -701,7 +589,6 @@ void DGENThread::DGEN_SoundOutput(int samples, int16_t *wave)
     }
 }
 
-void DGENThread::DGEN_MessageBox(char *buf)
-{
+void DGENThread::DGEN_MessageBox(char *buf) {
     qDebug() << buf;
 }

@@ -223,7 +223,7 @@ static const char* g_cpcc[64] =
 {/* 000    001    010    011    100    101    110    111 */
 	  "f",  "eq", "ogt", "oge", "olt", "ole", "ogl",  "or", /* 000 */
 	 "un", "ueq", "ugt", "uge", "ult", "ule",  "ne",   "t", /* 001 */
-	 "sf", "seq",  "gt",  "ge",  "lt",  "le",  "gl"  "gle", /* 010 */
+     "sf", "seq",  "gt",  "ge",  "lt",  "le",  "gl",  "gle", /* 010 */
   "ngle", "ngl", "nle", "nlt", "nge", "ngt", "sne",  "st", /* 011 */
 	  "?",   "?",   "?",   "?",   "?",   "?",   "?",   "?", /* 100 */
 	  "?",   "?",   "?",   "?",   "?",   "?",   "?",   "?", /* 101 */
@@ -369,7 +369,7 @@ static char* make_signed_hex_str_32(uint val)
 /* make string of immediate value */
 static char* get_imm_str_s(uint size)
 {
-	static char str[15];
+    static char str[21];
 	if(size == 0)
 		sprintf(str, "#%s", make_signed_hex_str_8(read_imm_8()));
 	else if(size == 1)

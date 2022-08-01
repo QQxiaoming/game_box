@@ -8,18 +8,18 @@
 #include <QThread>
 #include <QFile>
 #include <QAudioFormat>
-#include <QAudioOutput>
+#include <QAudioSink>
+#include <QAudioDevice>
+#include <QMediaDevices>
 #include "keysetting.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui
-{
+namespace Ui {
     class MainWindow;
 }
 QT_END_NAMESPACE
 
-class NESThread : public QThread
-{
+class NESThread : public QThread {
     Q_OBJECT
 
 public:
@@ -54,15 +54,14 @@ protected:
 private:
     QFile *file = nullptr;
     QByteArray *fileName = nullptr;
-    QAudioOutput *audio = nullptr;
+    QAudioSink *audio = nullptr;
     QAudioFormat *audioFormat = nullptr;
-    uchar *audio_buff = nullptr;
+    short *audio_buff = nullptr;
     QIODevice *audio_dev = nullptr;
     bool m_mute = false;
 };
 
-class DGENThread : public QThread
-{
+class DGENThread : public QThread {
     Q_OBJECT
 
 public:
@@ -96,20 +95,21 @@ protected:
 private:
     QFile *file = nullptr;
     QByteArray *fileName = nullptr;
-    QAudioOutput *audio = nullptr;
+    QAudioSink *audio = nullptr;
     QAudioFormat *audioFormat = nullptr;
     short *audio_buff = nullptr;
     QIODevice *audio_dev = nullptr;
     bool m_mute = false;
 };
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    static const QString VERSION;
+    static const QString GIT_TAG;
 
 protected:
     void paintEvent(QPaintEvent *event);

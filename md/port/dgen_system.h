@@ -20,8 +20,7 @@ void DGEN_Wait(void);
 #define BITS_TO_BYTES(v) ((((v) + 7u) & ~7u) >> 3)
 
 #define le2h16(v) h2le16(v)
-static inline uint16_t h2le16(uint16_t v)
-{
+static inline uint16_t h2le16(uint16_t v) {
 #ifdef WORDS_BIGENDIAN
 	return ((v >> 8) | (v << 8));
 #else
@@ -30,8 +29,7 @@ static inline uint16_t h2le16(uint16_t v)
 }
 
 #define be2h16(v) h2be16(v)
-static inline uint16_t h2be16(uint16_t v)
-{
+static inline uint16_t h2be16(uint16_t v) {
 #ifdef WORDS_BIGENDIAN
 	return v;
 #else
@@ -40,8 +38,7 @@ static inline uint16_t h2be16(uint16_t v)
 }
 
 #define le2h32(v) h2le32(v)
-static inline uint32_t h2le32(uint32_t v)
-{
+static inline uint32_t h2le32(uint32_t v) {
 #ifdef WORDS_BIGENDIAN
 	return (((v & 0xff000000) >> 24) | ((v & 0x00ff0000) >> 8) |
 			((v & 0x0000ff00) << 8) | ((v & 0x000000ff) << 24));
@@ -51,8 +48,7 @@ static inline uint32_t h2le32(uint32_t v)
 }
 
 #define be2h32(v) h2be32(v)
-static inline uint32_t h2be32(uint32_t v)
-{
+static inline uint32_t h2be32(uint32_t v) {
 #ifdef WORDS_BIGENDIAN
 	return v;
 #else
@@ -63,8 +59,7 @@ static inline uint32_t h2be32(uint32_t v)
 
 typedef uint8_t uint24_t[3];
 
-static inline uint24_t *u24cpy(uint24_t *dst, const uint24_t *src)
-{
+static inline uint24_t *u24cpy(uint24_t *dst, const uint24_t *src) {
 	/* memcpy() is sometimes faster. */
 #ifdef U24CPY_MEMCPY
 	memcpy(*dst, *src, sizeof(*dst));
@@ -80,8 +75,7 @@ extern char **complete_path(const char *prefix, size_t len,
 							const char *relative);
 extern void complete_path_free(char **cp);
 
-static inline size_t strcommon(const char *s1, const char *s2)
-{
+static inline size_t strcommon(const char *s1, const char *s2) {
 	size_t i;
 
 	for (i = 0; ((s1[i] != '\0') && (s2[i] != '\0')); ++i)
