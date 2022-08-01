@@ -24,17 +24,19 @@ jobs:
     runs-on: ubuntu-20.04
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2.14.0
+        uses: jurplel/install-qt-action@v2
         with:
           version: '6.2.0'
+          modules: 'qtmultimedia'
+          aqtversion: ==2.1.0
 
       - name: Install prerequisites
         run: |
           sudo apt update
-          sudo apt install -y make gcc upx-ucl qt5-default
+          sudo apt install -y make gcc upx-ucl qt5-default libgstreamer-plugins-base1.0-dev libgstreamer1.0-dev libgst-dev
 
       - name: Build all
         run: |
