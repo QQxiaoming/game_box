@@ -236,8 +236,8 @@ NESThread::~NESThread() {
 }
 
 void NESThread::run() {
-    extern void InfoNES_start(NESThread * nesThread, const char *pszFileName);
-    InfoNES_start(this, fileName->data());
+    extern void Fceu_start(NESThread * nesThread, const char *pszFileName);
+    Fceu_start(this, fileName->data());
 }
 
 void NESThread::processQtKeyEvent(Qt::Key key,bool press) {
