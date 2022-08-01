@@ -12,3 +12,5 @@ sed -i "s/Prefix = ..\//Prefix = .\//g" ../../release/out/qt.conf
 chrpath -r "\$ORIGIN/./lib" ../../release/out/game_box
 rm -rf ../../release/out/share
 cp ./game_box.sh ../../release/out/game_box.sh
+chmod +x ../../release/out/game_box
+chmod +x ../../release/out/game_box.sh
