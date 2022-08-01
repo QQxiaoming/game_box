@@ -8,7 +8,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 }
 CONFIG += c++11
 DEFINES += QT_DEPRECATED_WARNINGS
-DEFINES += APP_VERSION="\\\"V0.0.5\\\""
+DEFINES += APP_VERSION="\\\"V0.1.0\\\""
 
 INCLUDEPATH += \
         -I ./nes/port \
@@ -91,7 +91,7 @@ RCC_DIR     = $$build_type/rcc
 UI_DIR      = $$build_type/ui
 
 win32:{
-    VERSION = 0.0.5.0
+    VERSION = 0.1.0.0
     RC_LANG = 0x0004
     RC_ICONS = "img\icon.ico"
 
