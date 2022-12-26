@@ -6,9 +6,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#define SOUND_NUM_FARME 2
-#define MAX_WIDTH 320
-#define MAX_HEIGHT 240
+#define MAX_WIDTH       (320)
+#define MAX_HEIGHT      (240)
+#define SPEED_WAIT      (70)   //70% speed
+#define SOUND_NUM_FARME (2)
 
 const QString MainWindow::VERSION = APP_VERSION;
 const QString MainWindow::GIT_TAG =
@@ -310,7 +311,7 @@ void NESThread::InfoNES_CloseRom(void) {
 }
 
 void NESThread::InfoNES_Wait(uint32_t us) {
-    this->usleep(us);
+    this->usleep(us*SPEED_WAIT/100);
 }
 
 void NESThread::InfoNES_LoadFrame(uint16_t *frame, uint32_t size) {
@@ -505,7 +506,7 @@ void DGENThread::DGEN_CloseRom(void) {
 }
 
 void DGENThread::DGEN_Wait(uint32_t us) {
-    this->usleep(us);
+    this->usleep(us*SPEED_WAIT/100);
 }
 
 void DGENThread::DGEN_LoadFrame(uint8_t *frame) {
