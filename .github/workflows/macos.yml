@@ -50,7 +50,7 @@ jobs:
           macdeployqt game_box.app -dmg -verbose=2
 
       - name: Upload build asserts
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: game_box_macos
           path: |
