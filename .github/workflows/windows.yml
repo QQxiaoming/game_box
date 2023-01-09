@@ -45,7 +45,7 @@ jobs:
           Copy-Item C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/bin/lib*.dll ./release/out/
 
       - name: Upload build asserts
-        uses: actions/upload-artifact@v3.1.1
+        uses: actions/upload-artifact@v3.1.2
         with:
           name: game_box_windows
           path: |
