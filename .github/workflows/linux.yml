@@ -29,9 +29,9 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
-          version: '6.2.0'
+          version: '6.5.3'
           modules: 'qtmultimedia'
-          aqtversion: ==2.1.0
+          aqtversion: ==3.1.7
 
       - name: Install prerequisites
         run: |
