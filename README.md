@@ -14,7 +14,7 @@
 
 English | [简体中文](./README_zh_CN.md)
 
-GameBox is an Old-gen console games emulator. This project only relies on the Qt framework and can be used on multiple platforms such as windows, macos, linux and even embedded linux. Since this project is developed based on a variety of open source codes, it is strongly reminded to pay attention to the license instructions.
+GameBox is a retro console game emulator. This project only relies on the Qt framework and can be used on multiple platforms such as windows, macos, linux and even embedded linux. Since this project is developed based on a variety of open source codes, it is strongly reminded to pay attention to the license instructions.
 
 ## Platform support
 
