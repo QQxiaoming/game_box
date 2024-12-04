@@ -24,28 +24,27 @@ jobs:
     runs-on: windows-2022
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install Qt
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v4
         with:
-          arch: win64_mingw81
-          version: '6.2.0'
+          arch: win64_mingw
+          version: '6.5.3'
           modules: 'qtmultimedia'
-          aqtversion: ==2.1.0
+          aqtversion: ==3.1.7
 
       - name: Build all
         run: |
           git fetch --tags --force
-          git describe --always --long --dirty --abbrev=10 --tags | ./tools/awk/awk.exe '{print \"\\\"\"$0\"\\\"\"}'  > git_tag.inc
+          git describe --always --long --dirty --abbrev=10 --tags | ./tools/awk/awk.exe '{print "\"$0\""}'  > git_tag.inc
           ./tools/sed/sed.exe -i "s/git_tag.inc/git_tag.ci.inc/g" game_box.pro
           qmake -makefile
           mingw32-make
           windeployqt.exe ./release/out/game_box.exe
-          Copy-Item C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/bin/lib*.dll ./release/out/
 
       - name: Upload build asserts
-        uses: actions/upload-artifact@v2.2.4
+        uses: actions/upload-artifact@v4.4.3
         with:
           name: game_box_windows
           path: |
