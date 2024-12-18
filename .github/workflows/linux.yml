@@ -50,7 +50,7 @@ jobs:
           ./build.sh
 
       - name: Upload build asserts
-        uses: actions/upload-artifact@v4.4.3
+        uses: actions/upload-artifact@v4.5.0
         with:
           name: game_box_ubuntu2004
           path: |
