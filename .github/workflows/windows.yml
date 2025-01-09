@@ -44,7 +44,7 @@ jobs:
           windeployqt.exe ./release/out/game_box.exe
 
       - name: Upload build asserts
-        uses: actions/upload-artifact@v4.5.0
+        uses: actions/upload-artifact@v4.6.0
         with:
           name: game_box_windows
           path: |
