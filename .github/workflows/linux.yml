@@ -36,7 +36,7 @@ jobs:
       - name: Install prerequisites
         run: |
           sudo apt update
-          sudo apt install -y make gcc upx-ucl libgstreamer-plugins-base1.0-dev libgstreamer1.0-dev libgst-dev
+          sudo apt install -y make gcc upx-ucl
 
       - name: Build all
         run: |
