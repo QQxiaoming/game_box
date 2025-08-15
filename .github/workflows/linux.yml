@@ -36,7 +36,7 @@ jobs:
       - name: Install prerequisites
         run: |
           sudo apt update
-          sudo apt install -y make gcc upx-ucl
+          sudo apt install -y make gcc upx-ucl libfuse2
 
       - name: Build all
         run: |
